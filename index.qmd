@@ -1,11 +1,24 @@
 ---
 title: "Harry Zhong"
+image: profile.jpg
+resources: "H_Zhong_Resume 2023_12.pdf"
+about:
+  template: trestles
+  image-shape: round
+  image-width: 15em
+  links: 
+    - text: LinkedIn
+      icon: linkedin
+      href: https://www.linkedin.com/in/harry2687/
+    - text: Email
+      icon: envelope-at-fill
+      href: mailto:h.zhong2687@gmail.com
 ---
 
-This is a Quarto website.
+## About Me
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Hi, I’m Harry, a Data Analyst at EBM Insurance & Risk. I have a Bachelor of Science in Actuarial Science (Honours) from Curtin University and I’m an Associate of the Institute of Actuaries of Australia (AIAA).
 
-```{r}
-1 + 1
-```
+I work with a team of professionals to provide data-driven insights and solutions within the insurance industry. I use tools like R, SQL, Microsoft Excel, and Microsoft Power BI to collect, clean, analyze, and visualize data from various sources.
+
+If you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting my website!

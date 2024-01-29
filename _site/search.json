@@ -1,16 +1,16 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Harry Zhong",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Hi, I’m Harry, a Data Analyst at EBM Insurance & Risk. I have a Bachelor of Science in Actuarial Science (Honours) from Curtin University and I’m an Associate of the Institute of Actuaries of Australia (AIAA).\nI work with a team of professionals to provide data-driven insights and solutions within the insurance industry. I use tools like R, SQL, Microsoft Excel, and Microsoft Power BI to collect, clean, analyze, and visualize data from various sources.\nIf you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting my website!"
+  },
+  {
+    "objectID": "index.html#about-me",
+    "href": "index.html#about-me",
+    "title": "Harry Zhong",
+    "section": "",
+    "text": "Hi, I’m Harry, a Data Analyst at EBM Insurance & Risk. I have a Bachelor of Science in Actuarial Science (Honours) from Curtin University and I’m an Associate of the Institute of Actuaries of Australia (AIAA).\nI work with a team of professionals to provide data-driven insights and solutions within the insurance industry. I use tools like R, SQL, Microsoft Excel, and Microsoft Power BI to collect, clean, analyze, and visualize data from various sources.\nIf you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting my website!"
   }
 ]
