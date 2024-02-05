@@ -2,7 +2,7 @@
 title: "Harry Zhong"
 image: profile.jpg
 about:
-  template: solana
+  template: jolla
   image-shape: round
   image-width: 15em
   links: 
@@ -18,15 +18,15 @@ about:
 
 Hi, I’m Harry, a Data Analyst at EBM Insurance & Risk. I have a Bachelor of Science in Actuarial Science (Honours) from Curtin University and I’m an Associate of the Institute of Actuaries of Australia (AIAA).
 
-I work with a team of professionals to provide data-driven insights and solutions within the insurance industry. I use tools like R, SQL, Microsoft Excel, and Microsoft Power BI to collect, clean, analyze, and visualize data from various sources.
+I work with a team of professionals to provide data-driven insights and solutions within the insurance industry. I use tools like R, SQL, and Microsoft Excel to clean, analyze, and visualize data from various sources.
 
 If you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting my website!
 
 ### Experience
 
-{{< fa briefcase >}} **EBM Insurance & Risk** | Data Intelligence Analyst  
+{{< fa briefcase >}} **EBM Insurance & Risk** | Data Intelligence Analyst | Nov 2022 - Present
 
-{{< fa book >}} **Actuaries Institute** | Actuary Program
+{{< fa book >}} **Actuaries Institute** | Actuary Program | Jul 2023 - Oct 2023
 
-{{< fa graduation-cap >}} **Curtin University** | Bachelor of Science (Actuarial Science) (Honours)
+{{< fa graduation-cap >}} **Curtin University** | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023
 

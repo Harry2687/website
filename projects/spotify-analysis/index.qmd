@@ -1,5 +1,5 @@
 ---
-title: "Projects"
+title: "Analysis of My Spotify Data"
 format:
   html:
     grid:
@@ -7,6 +7,8 @@ format:
 filters:
   - shinylive
 ---
+
+Currently a test page containing a serverless shiny app. Actual content coming soon.
 
 ```{shinylive-r}
 #| standalone: true
