@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Harry Zhong - Analysis of My Spotify Data</title>
+<title>Harry Zhong - Goals</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,26 +20,55 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<link href="../../logo.png" rel="icon" type="image/png">
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<meta name="shinylive:serviceworker_dir" content="../..">
-<script src="../../site_libs/quarto-contrib/shinylive-0.2.3/shinylive/load-shinylive-sw.js" type="module"></script>
-<script src="../../site_libs/quarto-contrib/shinylive-0.2.3/shinylive/run-python-blocks.js" type="module"></script>
-<link href="../../site_libs/quarto-contrib/shinylive-0.2.3/shinylive/shinylive.css" rel="stylesheet">
-<link href="../../site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<link href="../logo.png" rel="icon" type="image/png">
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "language": {
     "search-no-results-text": "No results",
@@ -54,9 +83,12 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
-<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -66,7 +98,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="../../index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Harry Zhong</span>
     </a>
   </div>
@@ -81,13 +113,13 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
         <li>
-    <a class="dropdown-item" href="../../projects/spotify-analysis/index.html" rel="" target="">
+    <a class="dropdown-item" href="../projects/spotify-analysis/index.html" rel="" target="">
  <span class="dropdown-text">Spotify Analysis</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../../goals/index.html" rel="" target="">
+    <a class="nav-link active" href="../goals/index.html" rel="" target="" aria-current="page">
  <span class="menu-text">Goals</span></a>
   </li>  
 </ul>
@@ -107,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Analysis of My Spotify Data</h1>
+<h1 class="title">Goals</h1>
 </div>
 
 
@@ -116,231 +148,95 @@ ul.task-list li input[type="checkbox"] {
 
     
   
-    <div>
-    <div class="quarto-title-meta-heading">Modified</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 7, 2024</p>
-    </div>
-  </div>
     
   </div>
   
 
 </header>
 
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<p>Work in progress.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div>
+<pre class="mermaid mermaid-js">gantt
+    title My Achievements and Future Plans
+    dateFormat  YYYY-MM-DD
+    axisFormat %b-%Y
+
+    section Past
+    Bachelor of Science     :done,    dsdf, 2019-02-01,2022-11-01
+    Bachelor of Science (Honours)     :done,    des2, 2023-02-01,2024-06-01
+    
+
+    section Future
+    Future task1        :active,  des3, 2023-09-01, 2024-01-01
+    Future task2        :         des4, 2024-02-01, 2024-06-01
+</pre>
 </div>
-<div class="callout-title-container flex-fill">
-Note
 </div>
 </div>
-<div class="callout-body-container callout-body">
-<p>This project is ongoing and is not currently complete.</p>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 204.54 318.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 314)">
+<title>
+G
+</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-314 200.54,-314 200.54,4 -4,4"></polygon> <g id="clust1" class="cluster">
+<title>
+cluster_0
+</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-151 188.54,-151 188.54,-8 8,-8"></polygon> <text text-anchor="middle" x="98.27" y="-134.4" font-family="Times,serif" font-size="14.00">Past Achievements</text> </g> <g id="clust2" class="cluster">
+<title>
+cluster_1
+</title>
+<polygon fill="none" stroke="black" points="8,-159 8,-302 188.54,-302 188.54,-159 8,-159"></polygon> <text text-anchor="middle" x="98.27" y="-285.4" font-family="Times,serif" font-size="14.00">Future Plans</text> </g> <!-- Task1 --> <g id="node1" class="node">
+<title>
+Task1
+</title>
+<polygon fill="none" stroke="black" points="180.31,-117.6 16.23,-117.6 16.23,-76.4 180.31,-76.4 180.31,-117.6"></polygon> <text text-anchor="middle" x="98.27" y="-101.2" font-family="Times,serif" font-size="14.00">Task 1</text> <text text-anchor="middle" x="98.27" y="-84.4" font-family="Times,serif" font-size="14.00">2023-01-06 to 2023-05-15</text> </g> <!-- Task2 --> <g id="node2" class="node">
+<title>
+Task2
+</title>
+<polygon fill="none" stroke="black" points="180.31,-57.6 16.23,-57.6 16.23,-16.4 180.31,-16.4 180.31,-57.6"></polygon> <text text-anchor="middle" x="98.27" y="-41.2" font-family="Times,serif" font-size="14.00">Task 2</text> <text text-anchor="middle" x="98.27" y="-24.4" font-family="Times,serif" font-size="14.00">2023-06-01 to 2023-12-20</text> </g> <!-- Task3 --> <g id="node3" class="node">
+<title>
+Task3
+</title>
+<polygon fill="none" stroke="black" points="180.31,-268.6 16.23,-268.6 16.23,-227.4 180.31,-227.4 180.31,-268.6"></polygon> <text text-anchor="middle" x="98.27" y="-252.2" font-family="Times,serif" font-size="14.00">Task 3</text> <text text-anchor="middle" x="98.27" y="-235.4" font-family="Times,serif" font-size="14.00">2024-01-01 to 2024-06-30</text> </g> <!-- Task4 --> <g id="node4" class="node">
+<title>
+Task4
+</title>
+<polygon fill="none" stroke="black" points="180.31,-208.6 16.23,-208.6 16.23,-167.4 180.31,-167.4 180.31,-208.6"></polygon> <text text-anchor="middle" x="98.27" y="-192.2" font-family="Times,serif" font-size="14.00">Task 4</text> <text text-anchor="middle" x="98.27" y="-175.4" font-family="Times,serif" font-size="14.00">2024-07-01 to 2024-12-31</text> </g> </g>
+</svg>
 </div>
 </div>
-<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
-#| viewerHeight: 1400
-#| include: false
-
-library(shiny)
-
-ui &lt;- fluidPage(
-  
-  tags$head(tags$style(HTML("
-    .shiny-text-output {
-      background-color:#fff;
-    }
-  "))),
-  
-  h1("Shiny", span("Widgets Gallery", style = "font-weight: 300"), 
-      style = "font-family: 'Source Sans Pro';
-        color: #fff; text-align: center;
-        background-image: url('texturebg.png');
-        padding: 20px"),
-  br(),
-  
-  fluidRow(
-    column(6, offset = 3,
-      p("For each widget below, the Current Value(s) window 
-        displays the value that the widget provides to shinyServer. 
-        Notice that the values change as you interact with the widgets.", 
-        style = "font-family: 'Source Sans Pro';")
-    )
-  ),
-
-  
-  br(),
-  
-  fluidRow(
-    
-    column(4,
-      wellPanel(
-        h3("Action button"),
-        actionButton("action", label = "Action"),
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("actionOut"),
-        a("See Code", class = "btn btn-primary btn-md", 
-          href = "https://gallery.shinyapps.io/068-widget-action-button/")
-      )),
-    
-    column(4,
-      wellPanel(
-        h3("Single checkbox"),
-        checkboxInput("checkbox", label = "Choice A", 
-                      value = TRUE),
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("checkboxOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/070-widget-checkbox/")
-      )),
-    
-    column(4,
-      wellPanel(
-        checkboxGroupInput("checkGroup", 
-          label = h3("Checkbox group"), 
-          choices = list("Choice 1" = 1, "Choice 2" = 2, 
-                         "Choice 3" = 3),
-          selected = 1),
-        hr(),
-        p("Current Values:", style = "color:#888888;"), 
-        verbatimTextOutput("checkGroupOut"),
-        a("See Code", class = "btn btn-primary btn-md", 
-          href = "https://gallery.shinyapps.io/069-widget-check-group/")
-      ))
-  ),
-  
-  fluidRow(
-        
-    column(4,
-      wellPanel(
-        dateInput("date", label = h3("Date input"), value = "2014-01-01"),  
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("dateOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/071-widget-date/")
-      )),
-    
-    column(4,
-      wellPanel(
-        dateRangeInput("dates", label = h3("Date range")),
-        hr(),
-        p("Current Values:", style = "color:#888888;"), 
-        verbatimTextOutput("datesOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/072-widget-date-range/")
-      )),
-    
-    column(4,
-      wellPanel(
-        fileInput("file", label = h3("File input")),
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("fileOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/073-widget-file/")
-      ))
-  ),
-  
-  fluidRow(
-        
-    column(4,
-      wellPanel(
-        numericInput("num", label = h3("Numeric input"), value = 1),
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("numOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/074-widget-numeric/")
-      )),
-    
-    column(4,
-      wellPanel(
-        radioButtons("radio", label = h3("Radio buttons"),
-          choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
-          selected = 1),
-        hr(),
-        p("Current Values:", style = "color:#888888;"), 
-        verbatimTextOutput("radioOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/075-widget-radio/")
-      )),
-    
-    column(4,
-      wellPanel(
-        selectInput("select", label = h3("Select box"), 
-        choices = list("Choice 1" = 1, "Choice 2" = 2,
-                       "Choice 3" = 3), selected = 1),
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("selectOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/076-widget-select/")
-      ))
-  ),
-  
-  fluidRow(
-    
-    column(4,
-      wellPanel(
-        sliderInput("slider1", label = h3("Slider"), min = 0, max = 100, 
-                    value = 50),
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("slider1Out"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/077-widget-slider/")
-      )),
-    
-    column(4,
-      wellPanel(
-        sliderInput("slider2", label = h3("Slider range"), min = 0, 
-                    max = 100, value = c(25, 75)),
-        hr(),
-        p("Current Values:", style = "color:#888888;"), 
-        verbatimTextOutput("slider2Out"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/077-widget-slider/")
-      )),
-    
-    column(4,
-      wellPanel(
-        textInput("text", label = h3("Text input"), 
-                  value = "Enter text..."),
-        hr(),
-        p("Current Value:", style = "color:#888888;"), 
-        verbatimTextOutput("textOut"),
-        a("See Code", class = "btn btn-primary btn-md",  
-          href = "https://gallery.shinyapps.io/080-widget-text/")
-    )) 
-  )
-
-)
-
-server &lt;- function(input, output) {
-
-  output$actionOut &lt;- renderPrint({ input$action })
-  output$checkboxOut &lt;- renderPrint({ input$checkbox })
-  output$checkGroupOut &lt;- renderPrint({ input$checkGroup })
-  output$dateOut &lt;- renderPrint({ input$date })
-  output$datesOut &lt;- renderPrint({ input$dates })
-  output$fileOut &lt;- renderPrint({ input$file })
-  output$numOut &lt;- renderPrint({ input$num })
-  output$radioOut &lt;- renderPrint({ input$radio })
-  output$selectOut &lt;- renderPrint({ input$select })
-  output$slider1Out &lt;- renderPrint({ input$slider1 })
-  output$slider2Out &lt;- renderPrint({ input$slider2 })
-  #output$submitOut &lt;- renderPrint({ input$submit })
-  output$textOut &lt;- renderPrint({ input$text })
-
-}
-
-shinyApp(ui, server)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="fu">c</span>(<span class="st">'Past Achievement 1'</span>, <span class="st">'Past Achievement 2'</span>, <span class="st">'Future Plan 1'</span>, <span class="st">'Future Plan 2'</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">'2023-01-06'</span>, <span class="st">'2023-06-01'</span>, <span class="st">'2024-01-01'</span>, <span class="st">'2024-07-01'</span>)),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">end =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">'2023-05-15'</span>, <span class="st">'2023-12-20'</span>, <span class="st">'2024-06-30'</span>, <span class="st">'2024-12-31'</span>))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the Gantt chart</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span>start, <span class="at">xend=</span>end, <span class="at">y=</span>name, <span class="at">yend=</span>name, <span class="at">color =</span> name)) <span class="sc">+</span> </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">linewidth=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'My Achievements and Future Plans'</span>, <span class="at">x=</span><span class="st">'Date'</span>, <span class="at">y=</span><span class="st">''</span>) <span class="sc">+</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor.y =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>name), <span class="at">hjust=</span><span class="dv">0</span>, <span class="at">vjust=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 
 
 

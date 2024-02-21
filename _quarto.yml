@@ -12,6 +12,8 @@ website:
         menu: 
           - text: "Spotify Analysis"
             href: projects/spotify-analysis/index.qmd
+      - text: Goals
+        href: goals/index.qmd
           
   #repo-url: https://github.com/Harry2687/my-website
   #repo-actions: [edit, issue]

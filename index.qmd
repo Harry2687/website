@@ -10,19 +10,22 @@ about:
       icon: linkedin
       href: https://www.linkedin.com/in/harry2687/
     - text: Email
-      icon: envelope-at-fill
+      icon: envelope
       href: mailto:h.zhong2687@gmail.com
 ---
 
-### About Me
 
-Hi, I’m Harry, a Data Analyst at EBM Insurance & Risk. I have a Bachelor of Science in Actuarial Science (Honours) from Curtin University and I’m an Associate of the Institute of Actuaries of Australia (AIAA).
+## About Me
 
-I work with a team of professionals to provide data-driven insights and solutions within the insurance industry. I use tools like R, SQL, and Microsoft Excel to clean, analyze, and visualize data from various sources.
+Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.
 
-If you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting my website!
+This website showcases my personal projects, achievements and plans for the future. If you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn. 
 
-### Experience
+Thanks for visiting!
+
+---
+
+## Experience
 
 {{< fa briefcase >}} **EBM Insurance & Risk** | Data Intelligence Analyst | Nov 2022 - Present
 

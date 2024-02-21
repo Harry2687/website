@@ -1,5 +1,6 @@
 ---
 title: "Analysis of My Spotify Data"
+date-modified: last-modified
 format:
   html:
     grid:
@@ -8,11 +9,14 @@ filters:
   - shinylive
 ---
 
-Currently a test page containing a serverless shiny app. Actual content coming soon.
+::: {.callout-note}
+This project is ongoing and is not currently complete.
+:::
 
 ```{shinylive-r}
 #| standalone: true
 #| viewerHeight: 1400
+#| include: false
 
 library(shiny)
 
