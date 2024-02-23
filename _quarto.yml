@@ -9,9 +9,7 @@ website:
     pinned: true
     left:
       - text: Projects
-        menu: 
-          - text: "Spotify Analysis"
-            href: projects/spotify-analysis/index.qmd
+        href: projects.qmd
       - text: Goals
         href: goals/index.qmd
           

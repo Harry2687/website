@@ -9,6 +9,9 @@ about:
     - text: LinkedIn
       icon: linkedin
       href: https://www.linkedin.com/in/harry2687/
+    - text: Github
+      icon: github
+      href: https://github.com/Harry2687
     - text: Email
       icon: envelope
       href: mailto:h.zhong2687@gmail.com

@@ -39,6 +39,20 @@
     "href": "goals/index.html",
     "title": "Goals",
     "section": "",
-    "text": "Work in progress.\n\n\n\n\ngantt\n    title My Achievements and Future Plans\n    dateFormat  YYYY-MM-DD\n    axisFormat %b-%Y\n\n    section Past\n    Bachelor of Science     :done,    dsdf, 2019-02-01,2022-11-01\n    Bachelor of Science (Honours)     :done,    des2, 2023-02-01,2024-06-01\n    \n\n    section Future\n    Future task1        :active,  des3, 2023-09-01, 2024-01-01\n    Future task2        :         des4, 2024-02-01, 2024-06-01\n\n\n\n\n\n\n\n\n\n\n\n\nG\n\n \n\ncluster_0\n\n Past Achievements  \n\ncluster_1\n\n Future Plans   \n\nTask1\n\n Task 1 2023-01-06 to 2023-05-15   \n\nTask2\n\n Task 2 2023-06-01 to 2023-12-20   \n\nTask3\n\n Task 3 2024-01-01 to 2024-06-30   \n\nTask4\n\n Task 4 2024-07-01 to 2024-12-31  \n\n\n\n\n\n\nlibrary(ggplot2)\nlibrary(ggthemes)\ndata &lt;- data.frame(\n    name = c('Past Achievement 1', 'Past Achievement 2', 'Future Plan 1', 'Future Plan 2'),\n    start = as.Date(c('2023-01-06', '2023-06-01', '2024-01-01', '2024-07-01')),\n    end = as.Date(c('2023-05-15', '2023-12-20', '2024-06-30', '2024-12-31'))\n)\n\n# Create the Gantt chart\nggplot(data, aes(x=start, xend=end, y=name, yend=name, color = name)) + \n  geom_segment(linewidth=30) +\n  labs(title='My Achievements and Future Plans', x='Date', y='') +\n  theme_minimal() +\n  theme(panel.grid.major.y = element_blank(),\n        panel.grid.minor.y = element_blank()) +\n  geom_text(aes(label=name), hjust=0, vjust=0.5)"
+    "text": "Work in progress.\n\n\n\n\ngantt\n    title My Achievements and Future Plans\n    dateFormat  YYYY-MM-DD\n    axisFormat %b-%Y\n\n    section Past\n    Bachelor of Science     :done,    des1, 2019-02-01,2022-11-01\n    Bachelor of Science (Honours)     :done,    des2, 2023-02-01,2024-06-01\n    \n\n    section Future\n    Future task1        :active,  des3, 2023-09-01, 2024-01-01\n    Future task2        :         des4, 2024-02-01, 2024-06-01\n\n\n\n\n\n\n\n\n\n\n\n\nG\n\n \n\ncluster_0\n\n Past Achievements  \n\ncluster_1\n\n Future Plans   \n\nTask1\n\n Task 1 2023-01-06 to 2023-05-15   \n\nTask2\n\n Task 2 2023-06-01 to 2023-12-20   \n\nTask3\n\n Task 3 2024-01-01 to 2024-06-30   \n\nTask4\n\n Task 4 2024-07-01 to 2024-12-31  \n\n\n\n\n\n\nlibrary(ggplot2)\nlibrary(ggthemes)\ndata &lt;- data.frame(\n    name = c('Past Achievement 1', 'Past Achievement 2', 'Future Plan 1', 'Future Plan 2'),\n    start = as.Date(c('2023-01-06', '2023-06-01', '2024-01-01', '2024-07-01')),\n    end = as.Date(c('2023-05-15', '2023-12-20', '2024-06-30', '2024-12-31'))\n)\n\n# Create the Gantt chart\nggplot(data, aes(x=start, xend=end, y=name, yend=name, color = name)) + \n  geom_segment(linewidth=30) +\n  labs(title='My Achievements and Future Plans', x='Date', y='') +\n  theme_minimal() +\n  theme(panel.grid.major.y = element_blank(),\n        panel.grid.minor.y = element_blank()) +\n  geom_text(aes(label=name), hjust=0, vjust=0.5)"
+  },
+  {
+    "objectID": "posts.html",
+    "href": "posts.html",
+    "title": "Blog",
+    "section": "",
+    "text": "No matching items"
+  },
+  {
+    "objectID": "projects.html",
+    "href": "projects.html",
+    "title": "My Projects",
+    "section": "",
+    "text": "Analysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering\n\n\n\nHarry Zhong\n\n\n\n\n\n\n\n\nNo matching items"
   }
 ]
