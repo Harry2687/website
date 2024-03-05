@@ -20,7 +20,7 @@ format:
   html:
     theme: cosmo
     css: styles.css
-    toc: false
+    toc: true
 
 editor: source
 
