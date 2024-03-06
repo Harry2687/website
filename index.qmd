@@ -1,8 +1,9 @@
 ---
 title: "Harry Zhong"
 image: profile.jpg
+toc: false
 about:
-  template: jolla
+  template: trestles
   image-shape: round
   image-width: 15em
   links: 
@@ -18,21 +19,25 @@ about:
 ---
 
 
-## About Me
+### {{<fa user-tie>}} About Me
 
 Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.
 
-This website showcases my personal projects, achievements and plans for the future. If you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn. 
+I made this website as a way to document various personal projects I'm working on and to showcase my achievements and plans for the future. This website is still a work on progress, but feel free to look around.
 
-Thanks for visiting!
+If you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!
 
 ---
 
-## Experience
+### {{<fa briefcase>}} Experience
 
-{{< fa briefcase >}} **EBM Insurance & Risk** | Data Intelligence Analyst | Nov 2022 - Present
+**EBM Insurance & Risk** | Data Intelligence Analyst | Nov 2022 - Present
 
-{{< fa book >}} **Actuaries Institute** | Actuary Program | Jul 2023 - Oct 2023
+---
 
-{{< fa graduation-cap >}} **Curtin University** | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023
+### {{<fa graduation-cap>}} Education
+
+**Actuaries Institute** | Actuary Program | Jul 2023 - Oct 2023
+
+**Curtin University** | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023
 

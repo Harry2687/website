@@ -1,59 +1,42 @@
 ---
-title: "Goals"
+title: "My Timeline"
 ---
 
-Work in progress.
+## {{<fa hourglass-half>}} Future Goals
 
-```{mermaid}
-gantt
-    title My Achievements and Future Plans
-    dateFormat  YYYY-MM-DD
-    axisFormat %b-%Y
+#### Qualify as a Fellow Actuary (FIAA).
 
-    section Past
-    Bachelor of Science     :done,    des1, 2019-02-01,2022-11-01
-    Bachelor of Science (Honours)     :done,    des2, 2023-02-01,2024-06-01
-    
+## {{<fa square-check>}} Past Achievements
 
-    section Future
-    Future task1        :active,  des3, 2023-09-01, 2024-01-01
-    Future task2        :         des4, 2024-02-01, 2024-06-01
-```
+### 2023
 
-```{dot}
-digraph G {
-    rankdir=LR;
-    node [shape=box];
-    subgraph cluster_0 {
-        label="Past Achievements";
-        Task1 [label="Task 1\n2023-01-06 to 2023-05-15"];
-        Task2 [label="Task 2\n2023-06-01 to 2023-12-20"];
-    }
-    subgraph cluster_1 {
-        label="Future Plans";
-        Task3 [label="Task 3\n2024-01-01 to 2024-06-30"];
-        Task4 [label="Task 4\n2024-07-01 to 2024-12-31"];
-    }
-}
+---
 
-```
+#### Qualified as an Associate Actuary (AIAA).
+- Studied and passed **Asset Liability Management** and **Communication, Modelling and Professionalism**, thus completing the **Actuary Program** while working full time.
 
-```{r}
-library(ggplot2)
-library(ggthemes)
-data <- data.frame(
-    name = c('Past Achievement 1', 'Past Achievement 2', 'Future Plan 1', 'Future Plan 2'),
-    start = as.Date(c('2023-01-06', '2023-06-01', '2024-01-01', '2024-07-01')),
-    end = as.Date(c('2023-05-15', '2023-12-20', '2024-06-30', '2024-12-31'))
-)
+---
 
-# Create the Gantt chart
-ggplot(data, aes(x=start, xend=end, y=name, yend=name, color = name)) + 
-  geom_segment(linewidth=30) +
-  labs(title='My Achievements and Future Plans', x='Date', y='') +
-  theme_minimal() +
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank()) +
-  geom_text(aes(label=name), hjust=0, vjust=0.5)
-```
+#### Graduated with Bachelor of Science (Actuarial Science) (Honours).
+- 78% Course weighted average.
+- Completed **Data Analytics Principles** and **Actuarial Control Cycle** subjects as part of the Actuaries Institute **Actuary Program**.
+- Completed my honours dissertation (graded 82%): [Comparing Stochastic and Constant Volatility Returns Distributions using the Heston Model](https://www.researchgate.net/publication/372915363_Comparing_Stochastic_and_Constant_Volatility_Returns_Distributions_using_the_Heston_Model).
+
+### 2022
+
+---
+
+##### Started my first graduate job at EBM Insurance & Risk.
+
+### 2021
+
+---
+
+##### Graduated with Bachelor of Science (Actuarial Science) with Distinction.
+- 85% Course weighted average.
+- Obtained all Actuaries Institute **Foundation Program** exemptions.
+- Recipient of the Curtin Excellence Scholarship.
+
+
+
 
