@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Here I will be posting about my projects which apply data science concepts to datasets and problems which I find interesting.">
 
 <title>Harry Zhong - My Projects</title>
 <style>
@@ -37,6 +38,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "language": {
     "search-no-results-text": "No results",
@@ -62,9 +65,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description","listing-categories"],
+      searchColumns: ["listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -133,11 +136,11 @@ window.Quarto = {
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link active" href="./projects.html" aria-current="page"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text"><i class="fa-solid fa-diagram-project" aria-label="diagram-project"></i> Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./goals/index.html"> 
-<span class="menu-text">Goals</span></a>
+    <a class="nav-link" href="./timeline/index.html"> 
+<span class="menu-text"><i class="fa-solid fa-calendar-check" aria-label="calendar-check"></i> Timeline</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -152,7 +155,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="K-means">K-means <span class="quarto-category-count">(1)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(0)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -161,6 +164,11 @@ window.Quarto = {
 <h1 class="title">My Projects</h1>
 </div>
 
+<div>
+  <div class="description">
+    Here I will be posting about my projects which apply data science concepts to datasets and problems which I find interesting.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -181,36 +189,7 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="K-means,R" data-listing-file-modified-sort="1709650585303" data-listing-reading-time-sort="1" data-listing-word-count-sort="20">
-<a href="./projects/spotify-analysis/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./projects/spotify-analysis/kmeans-preview.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Analysis of My Spotify Data
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('K-means'); return false;">
-K-means
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
-R
-</div>
-</div>
-<div class="card-text listing-description">
-Categorisation of my Spotify listening history using k-means clustering
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Harry Zhong
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
+
 </div>
 <div class="listing-no-matching d-none">
 No matching items

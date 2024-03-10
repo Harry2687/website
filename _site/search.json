@@ -4,14 +4,14 @@
     "href": "index.html",
     "title": "Harry Zhong",
     "section": "",
-    "text": "About Me\nHello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.\nI made this website as a way to document various personal projects I’m working on and to showcase my achievements and plans for the future. This website is still a work on progress, but feel free to look around.\nIf you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!\n\n\n\n Experience\nEBM Insurance & Risk | Data Intelligence Analyst | Nov 2022 - Present\n\n\n\n Education\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023"
+    "text": "About Me\n\nHello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.\nI made this website as a way to document various personal projects I’m working on and to showcase my achievements and plans for the future. This website is still a work in progress, but feel free to look around.\nIf you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!\n\n\n Experience\n\nEBM Insurance & Risk | Data Intelligence Analyst | Nov 2022 - Present\n\n\n Education\n\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023"
   },
   {
     "objectID": "index.html#about-me",
     "href": "index.html#about-me",
     "title": "Harry Zhong",
     "section": "",
-    "text": "Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.\nThis website showcases my personal projects, achievements and plans for the future. If you want to know more about me, my work, or my projects, feel free to contact me via email or connect with me on LinkedIn.\nThanks for visiting!"
+    "text": "Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.\nI made this website as a way to document various personal projects I’m working on and to showcase my achievements and plans for the future. This website is still a work in progress, but feel free to look around.\nIf you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!"
   },
   {
     "objectID": "index.html#experience",
@@ -19,13 +19,6 @@
     "title": "Harry Zhong",
     "section": " Experience",
     "text": "Experience\nEBM Insurance & Risk | Data Intelligence Analyst | Nov 2022 - Present"
-  },
-  {
-    "objectID": "projects/spotify-analysis/index.html",
-    "href": "projects/spotify-analysis/index.html",
-    "title": "Analysis of My Spotify Data",
-    "section": "",
-    "text": "Note\n\n\n\nThis project is ongoing and is not currently complete.\n\n\n\nIntroduction\n\n\nData\n\n\nK-means\n\n\nConclusion"
   },
   {
     "objectID": "goals/index.html",
@@ -39,7 +32,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Analysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering\n\n\n\nHarry Zhong\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "No matching items"
   },
   {
     "objectID": "index.html#education",
@@ -58,6 +51,13 @@
   {
     "objectID": "goals/index.html#past-achievements",
     "href": "goals/index.html#past-achievements",
+    "title": "My Timeline",
+    "section": " Past Achievements",
+    "text": "Past Achievements\n\n2023\n\n\nQualified as an Associate Actuary (AIAA).\n\nStudied and passed Asset Liability Management and Communication, Modelling and Professionalism, thus completing the Actuary Program while working full time.\n\n\n\n\nGraduated with Bachelor of Science (Actuarial Science) (Honours).\n\n78% Course weighted average.\nCompleted Data Analytics Principles and Actuarial Control Cycle subjects as part of the Actuaries Institute Actuary Program.\nCompleted my honours dissertation (graded 82%): Comparing Stochastic and Constant Volatility Returns Distributions using the Heston Model.\n\n\n\n\n2022\n\n\nStarted my first graduate job at EBM Insurance & Risk.\n\n\n\n2021\n\n\nGraduated with Bachelor of Science (Actuarial Science) with Distinction.\n\n85% Course weighted average.\nObtained all Actuaries Institute Foundation Program exemptions.\nRecipient of the Curtin Excellence Scholarship."
+  },
+  {
+    "objectID": "timeline/index.html#past-achievements",
+    "href": "timeline/index.html#past-achievements",
     "title": "My Timeline",
     "section": " Past Achievements",
     "text": "Past Achievements\n\n2023\n\n\nQualified as an Associate Actuary (AIAA).\n\nStudied and passed Asset Liability Management and Communication, Modelling and Professionalism, thus completing the Actuary Program while working full time.\n\n\n\n\nGraduated with Bachelor of Science (Actuarial Science) (Honours).\n\n78% Course weighted average.\nCompleted Data Analytics Principles and Actuarial Control Cycle subjects as part of the Actuaries Institute Actuary Program.\nCompleted my honours dissertation (graded 82%): Comparing Stochastic and Constant Volatility Returns Distributions using the Heston Model.\n\n\n\n\n2022\n\n\nStarted my first graduate job at EBM Insurance & Risk.\n\n\n\n2021\n\n\nGraduated with Bachelor of Science (Actuarial Science) with Distinction.\n\n85% Course weighted average.\nObtained all Actuaries Institute Foundation Program exemptions.\nRecipient of the Curtin Excellence Scholarship."

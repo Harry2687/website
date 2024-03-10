@@ -4,22 +4,186 @@ description: "Categorisation of my Spotify listening history using k-means clust
 categories: [K-means, R]
 author:
   - name: Harry Zhong
+date: today
 date-modified: last-modified
 image: kmeans-preview.png
+draft: true
 ---
 
 ::: {.callout-note}
 This project is ongoing and is not currently complete.
 :::
 
+```{r}
+#| include: false
+source("scripts/packages.R")
+```
+
 # Introduction
 
-# Data
+The motivation for this project was:
+
+1. I like music.
+2. I wanted to learn about clustering.
+
+# Data Extraction
+
+## Spotify History Data
+
+[Request Spotify data](https://www.spotify.com/us/account/privacy/)
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show code"
+
+files <- list.files("data/full_history_data", 
+                    pattern = "*.json", 
+                    full.names = TRUE)
+
+full_streaming_history <- foreach(file = files, 
+                                  .packages = c("jsonlite"),
+                                  .combine = rbind) %do% {
+  fromJSON(file, flatten = TRUE)
+} %>%
+  rename(track_name = "master_metadata_track_name",
+         artist_name = "master_metadata_album_artist_name") %>%
+  mutate(track_uri = gsub("spotify:track:", "", spotify_track_uri),
+         month = ts %>%
+           substring(1, 7) %>%
+           paste0("-01") %>%
+           ymd()) %>%
+  select(-spotify_track_uri) %>%
+  filter(month >= ymd("2019-04-01"))
+```
+
+## Track Feature Data
+
+```{r}
+#| output: false
+#| code-fold: true
+#| code-summary: "Show code"
+
+full_track_features <- read_csv("data/feature_data/full_track_features.csv")
+```
+
+```{r}
+feature_matrix <- full_track_features %>%
+  mutate(track_artist = paste(track_name, artist_name, sep = " - ")) %>%
+  select(-track_name, -artist_name) %>%
+  column_to_rownames(var = "track_artist") %>%
+  select(-track_uri,
+         -key,
+         -mode,
+         -time_signature) %>%
+  scale()
+```
 
 # K-means
 
-# Conclusion
+## What is K-means?
+
+## Feature selection
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show code"
+
+kmeans_select_features <- function(n, data, nstart, itermax) {
+  n_factors <- n
+  
+  comb_n <- data %>%
+    colnames() %>%
+    combn(n_factors, simplify = FALSE)
+  
+  old_cols <- seq(1, n_factors)
+  new_cols <- paste0("factor_", seq(1, n_factors))
+  
+  new_cols_sym <- syms(new_cols)
+  
+  factor_combinations_n <- do.call(rbind.data.frame, comb_n) %>%
+    rename_with(~new_cols, all_of(old_cols)) %>%
+    mutate(factors = pmap(list(!!!new_cols_sym), c)) %>%
+    select(-(!!new_cols)) %>%
+    mutate(data = map(factors,
+                      ~data %>%
+                        as.data.frame() %>%
+                        select(all_of(.x)))) %>%
+    mutate(n_clusters = map(data,
+                            ~fviz_nbclust(.x, 
+                                          kmeans, 
+                                          nstart = nstart, 
+                                          iter.max = itermax)[["data"]] %>%
+                              slice(which.max(y)) %>%
+                              select(clusters) %>%
+                              as.numeric(),
+                            .progress = paste("Finding optimal n_clusters:", 
+                                              n_factors, 
+                                              "factors")) %>%
+             as.numeric()) %>% 
+    mutate(km = map2(data,
+                     n_clusters,
+                     ~kmeans(.x, 
+                             .y, 
+                             nstart = nstart, 
+                             iter.max = itermax,
+                             algorithm = "MacQueen"),
+                     .progress = paste("Calculating kmeans:", 
+                                       n_factors, 
+                                       "factors"))) %>%
+    mutate(total_withinss = map(km,
+                                ~.x$tot.withinss) %>%
+             as.numeric(),
+           bsstssRatio = map(km,
+                             ~.x$betweenss/.x$totss) %>%
+             as.numeric()) %>%
+    mutate(km_plot = map2(km,
+                          data,
+                          ~fviz_cluster(.x,
+                                        data = .y,
+                                        geom = "point",
+                                        ellipse.type = "convex",
+                                        ggtheme = theme_bw()))) %>%
+    arrange(desc(bsstssRatio))  
+  
+  return(factor_combinations_n)
+}
+```
+
+```{r}
+#| eval: false
+
+set.seed(2687)
+
+cl <- makeCluster(detectCores())
+registerDoParallel(cl)
+
+start_time <- Sys.time()
+
+kmeans_nfact <- foreach(n = seq(2, ncol(feature_matrix)),
+                                 .packages = c("tidyverse",
+                                               "cluster",
+                                               "factoextra",
+                                               "rlang"),
+                                 .combine = bind_rows) %dopar% {
+                                   kmeans_select_features(n, 
+                                                          feature_matrix, 
+                                                          25, 
+                                                          1000)
+                                 } %>% 
+  arrange(desc(bsstssRatio))
+
+end_time <- Sys.time()
+time_taken <- end_time - start_time
+
+stopCluster(cl)
+```
+
+# Results
 
 ```{=html}
 <iframe src="http://harryz.shinyapps.io/shiny_dashboard" style="border: none; width: 100%; height: 600px"></iframe>
+```
+
+```{=html}
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3z6wsrB2nCHxq0ZHv7slpo?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 ```

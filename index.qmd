@@ -10,9 +10,11 @@ about:
     - text: LinkedIn
       icon: linkedin
       href: https://www.linkedin.com/in/harry2687/
+      target: _blank
     - text: Github
       icon: github
       href: https://github.com/Harry2687
+      target: _blank
     - text: Email
       icon: envelope
       href: mailto:h.zhong2687@gmail.com
@@ -20,24 +22,22 @@ about:
 
 
 ### {{<fa user-tie>}} About Me
+---
 
 Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.
 
-I made this website as a way to document various personal projects I'm working on and to showcase my achievements and plans for the future. This website is still a work on progress, but feel free to look around.
+I made this website as a way to document various personal projects I'm working on and to showcase my achievements and plans for the future. This website is still a work in progress, but feel free to look around.
 
 If you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!
 
----
-
 ### {{<fa briefcase>}} Experience
+---
 
 **EBM Insurance & Risk** | Data Intelligence Analyst | Nov 2022 - Present
 
----
-
 ### {{<fa graduation-cap>}} Education
+---
 
 **Actuaries Institute** | Actuary Program | Jul 2023 - Oct 2023
 
 **Curtin University** | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023
-
