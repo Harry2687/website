@@ -1,6 +1,8 @@
 [
   {
     "listing": "/projects.html",
-    "items": []
+    "items": [
+      "/projects/spotify-analysis/index.html"
+    ]
   }
 ]
