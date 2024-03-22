@@ -19,8 +19,8 @@ source("scripts/packages.R")
 
 The motivation for this project was:
 
-1. I like music.
-2. I wanted to learn about clustering.
+1. I thought it would be fun.
+2. That's it.
 
 So, let's get into how we can use R and Spotify's Web API to categorise songs that we have listened to.
 
@@ -41,7 +41,7 @@ Our Spotify activity history data is given as a set of `.json` files. We can ext
 
 ```{r}
 #| code-fold: true
-#| code-summary: "Show code"
+#| code-summary: "Activity History Code"
 
 files <- list.files(
   "data/full_history_data", 
@@ -81,7 +81,10 @@ full_streaming_history <- foreach(
 ```
 
 ```{r}
+#| echo: false
+
 full_streaming_history %>%
+  arrange(desc(ts)) %>%
   head() %>%
   kable()
 ```
@@ -294,7 +297,6 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-
 ## Track Feature Data
 
 Next, we'll need to use Spotify's Web API to obtain track features, which requires the track ID of each track we're interested in. Fortunately, since we requested our full activity history, this data is included as a column. 
@@ -324,12 +326,15 @@ Given the large number of track IDs, using this function on all tracks in our da
 The description for each feature can be found in Spotify's [documentation](https://developer.spotify.com/documentation/web-api/reference/get-audio-features){target=_blank}.
 
 ```{r}
-#| output: false
+#| include: false
 
-full_track_features <- read_csv("data/feature_data/full_track_features.csv")
+full_track_features <- read_csv("data/feature_data/full_track_features.csv") %>%
+  arrange(desc(track_uri))
 ```
 
 ```{r}
+#| echo: false
+
 full_track_features %>%
   head() %>%
   kable()
@@ -355,6 +360,8 @@ feature_matrix <- full_track_features %>%
 ```
 
 ```{r}
+#| echo: false
+
 feature_matrix %>%
   head() %>%
   kable()
@@ -365,6 +372,55 @@ feature_matrix %>%
 Now that we have the required data, we can move on to the machine learning algorithm of interest, k-means clustering.
 
 ## What is K-means?
+
+The k-means algorithm basically goes:
+
+1. Choose $k$ random points within the domain of your factors.
+2. Create $k$ clusters by assigning each observation to its nearest point, which is now referred to as a mean.
+3. The centroid of each cluster then becomes the new mean.
+4. Repeat until convergence.
+
+The obvious question is: how do we determine the value of $k$ for a given set of factors? One method would be to use something called a silhouette value. We can understand the silhouette value by considering a group of clustered data points, shown below.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Chart Code"
+
+set.seed(2687)
+
+rand_data <- data.frame(
+  x = rnorm(50),
+  y = rnorm(50)
+)
+
+km <- kmeans(rand_data, 3)
+
+fviz_cluster(
+  km,
+  data = rand_data,
+  geom = "point"
+)
+```
+
+We'll let $s_i$ be the silhouette value for point $i$ which belongs to cluster $C_I$, then
+
+$$
+\begin{split}
+s_i&=\frac{b_i-a_i}{\text{max}(a_i,b_i)},\text{ if }|C_I|>1,\\
+s_i&=0,\text{ if }|C_I|=0,
+\end{split}
+$$
+
+where
+
+$$
+\begin{split}
+a_i&=\frac{1}{|C_I|-1}\sum_{j\in C_I,i\neq j}\text{d}(i,j),\\
+b_i&=\text{min}\frac{1}{|C_J|}\sum_{j\in C_J}\text{d}(i,j),\text{ where }J\neq I.
+\end{split}
+$$
+
+Simply put, $a_i$ is the average distance between point $i$ and every other point in cluster $C_I$ besides itself, and $b_i$ is the minimum average distance between $i$ and every other point for some other cluster $C_J$. The cluster $C_J$ used to determine $b_i$ is sometimes referred to as the neighboring cluster of point $i$ as it is the next closest cluster after $C_I$.
 
 ## Feature selection
 
