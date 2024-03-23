@@ -4,8 +4,7 @@ description: "Categorisation of my Spotify listening history using k-means clust
 categories: [K-means, R]
 author:
   - name: Harry Zhong
-date: today
-date-modified: last-modified
+date: 2024-03-23
 image: kmeans-preview.png
 draft: false
 ---
@@ -145,15 +144,8 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       sliderInput(
-        "top_n_artists",
-        "Top n Artists",
-        min = 1,
-        max = 20,
-        value = 10
-      ),
-      sliderInput(
-        "top_n_tracks",
-        "Top n Tracks",
+        "top_n",
+        "Top n",
         min = 1,
         max = 20,
         value = 10
@@ -186,11 +178,11 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   output$artist_history_title <- renderText({
-    top_n_artists <- input$top_n_artists
+    top_n <- input$top_n
     
     paste0(
       "Proportion of Hours Listened: Top ",
-      top_n_artists,
+      top_n,
       " Artists"
     )
   })
@@ -208,7 +200,7 @@ server <- function(input, output) {
             filter(month == .x) %>%
             group_by(artist_name) %>%
             summarise(time = sum(ms_played)) %>%
-            slice_max(time, n = as.numeric(input$top_n_artists)) %>%
+            slice_max(time, n = as.numeric(input$top_n)) %>%
             pull(artist_name)
         )
       )
@@ -239,11 +231,11 @@ server <- function(input, output) {
   })
   
   output$track_history_title <- renderText({
-    top_n_tracks <- input$top_n_tracks
+    top_n <- input$top_n
     
     paste0(
       "Proportion of Hours Listened: Top ",
-      top_n_tracks,
+      top_n,
       " Tracks"
     )
   })
@@ -262,7 +254,7 @@ server <- function(input, output) {
             mutate(track_artist_name = paste(track_name, artist_name, sep = "\n")) %>%
             group_by(track_artist_name) %>%
             summarise(time = sum(ms_played)) %>%
-            slice_max(time, n = as.numeric(input$top_n_tracks)) %>%
+            slice_max(time, n = as.numeric(input$top_n)) %>%
             pull(track_artist_name)
         )
       )
@@ -300,6 +292,10 @@ shinyApp(ui = ui, server = server)
 ## Track Feature Data
 
 Next, we'll need to use Spotify's Web API to obtain track features, which requires the track ID of each track we're interested in. Fortunately, since we requested our full activity history, this data is included as a column. 
+
+::: {.callout-note}
+On the topic of Spotify's Web API, it's interesting to note that it also includes genres. However, genres are linked to artists, not tracks, which makes this feature less noteworthy compared to track features.
+:::
 
 We can use the `httr` and `jsonlite` packages to create a function that takes a Spotify track ID and returns its track features.
 
@@ -420,15 +416,37 @@ b_i&=\text{min}\frac{1}{|C_J|}\sum_{j\in C_J}\text{d}(i,j),\text{ where }J\neq I
 \end{split}
 $$
 
-Simply put, $a_i$ is the average distance between point $i$ and every other point in cluster $C_I$ besides itself, and $b_i$ is the minimum average distance between $i$ and every other point for some other cluster $C_J$. The cluster $C_J$ used to determine $b_i$ is sometimes referred to as the neighboring cluster of point $i$ as it is the next closest cluster after $C_I$.
+Simply put, $a_i$ is the average of some measure of distance between point $i$ and every other point in cluster $C_I$ besides itself, and $b_i$ is the minimum average of some measure of distance between $i$ and every other point in some other cluster $C_J$. The cluster $C_J$, used to determine $b_i$, is sometimes referred to as the neighboring cluster of point $i$ as it is the next closest cluster after $C_I$.
+
+Thus, given the definition of $s_i$, higher values of $s_i$ indicate a better fit of a point $i$ in its cluster $C_I$.
+
+Following the definition of a silhouette value for a single point, the clustering performance of the entire dataset is calculated via the average silhouette value of all points.
+
+Thus, we can determine the optimal number of clusters by:
+
+1. Running the k-means algorithm using $n$ clusters.
+2. Evaluating the average silhouette value.
+3. Repeat for a reasonable range of $n$.
+4. Ranking $n$ by maximum average silhouette value. 
+
+Conveniently, the `fviz_nbclust` function takes care of this process for us.
 
 ## Feature selection
 
+The next problem is finding the optimal features to include our model. Generally speaking, an easy way to determine the relevant features to include in a model is to use domain knowledge. However, we do not have this luxury as I know nothing about audio engineering. So, we will do it the hard way, by trying every combination of features and selecting the ones with the best performance.
 
+To do this, we can use a function I wrote that does the following:
+
+1. Takes inputs `n`, `data`, `nstart`, `itermax`. Where `n` is is the number of factors to consider, and `data` is the feature matrix previously generated. The `nstart` and `itermax` inputs are values passed on to the `kmeans` function.
+2. Finds all combinations of `n` factors within `data`.
+3. For each combination, determine the optimal number of clusters using using average silhouette value, and fit k-means clusters.
+4. Records performance metrics and cluster plot.
+
+The function then outputs a dataframe that contains a row for each combination of `n` factors.
 
 ```{r}
 #| code-fold: true
-#| code-summary: "Show code"
+#| code-summary: "Function Code"
 
 kmeans_select_features <- function(n, data, nstart, itermax) {
   comb_n <- data %>%
@@ -489,6 +507,8 @@ kmeans_select_features <- function(n, data, nstart, itermax) {
 }
 ```
 
+The function can then be used on all values of `n`, from 2 to the total number of factors. As this process is computationally intensive, and most R packages do not support multi-threading, we can use the `foreach` and `doParallel` packages to write a multi-threaded for loop which utilises all cores of the local computer. If we paid for all our CPU cores, we might as well use them right?
+
 ```{r}
 #| eval: false
 
@@ -512,18 +532,379 @@ kmeans_nfact <- foreach(n = seq(2, ncol(feature_matrix)),
 stopCluster(cl)
 ```
 
-```{r}
-load("data/R_data/kmeans_nfact.RData")
-```
+This results in a dataframe containing all possible combinations of factors for our dataset, and their k-means clustering results and performance, based on a value of $k$ determined by average silhouette value.
+
+# Results
+
+We can now visualise the top 20 k-means results from our previous calculation using a shiny application. It's interesting that the highest performing clustering results only contain 2-3 factors.
 
 ```{=html}
 <iframe src="https://harryz.shinyapps.io/spotify_clustering_dashboard/" style="border: none; width: 100%; height: 900px"></iframe>
 ```
 
-# Results
+```{r}
+#| eval: false
+#| code-fold: true
+#| code-summary: "app.R"
 
+library(shiny)
+library(tidyverse)
+library(here)
+library(foreach)
+library(english)
 
+# Load Data
+
+load("data/R_data/kmeans_nfact.RData")
+
+files <- list.files(
+  paste0(here(), "/data/full_history_data"), 
+  pattern = "*.json", 
+  full.names = TRUE
+)
+
+full_streaming_history <- foreach(
+  file = files, 
+  .packages = c("jsonlite"),
+  .combine = rbind
+) %do% {
+  fromJSON(file, flatten = TRUE)
+} %>%
+  rename(
+    track_name = "master_metadata_track_name",
+    artist_name = "master_metadata_album_artist_name"
+  ) %>%
+  mutate(
+    track_uri = gsub("spotify:track:", "", spotify_track_uri),
+    month = ts %>%
+      substring(1, 7) %>%
+      paste0("-01") %>%
+      ymd()
+  ) %>%
+  select(-spotify_track_uri) %>%
+  filter(month >= ymd("2019-04-01"))
+
+min_date <- full_streaming_history %>%
+  pull(month) %>%
+  min()
+
+max_date <- full_streaming_history %>%
+  pull(month) %>%
+  max()
+
+# UI
+
+ui <- fluidPage(
+  titlePanel("Spotify Clustering"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(
+        "index", 
+        "Clustering Performance Rank", 
+        choices = seq(1, nrow(kmeans_nfact_save))
+      ),
+      sliderInput(
+        "dates",
+        "Streaming History Date Range",
+        min = min_date,
+        max = max_date,
+        value = c(max_date %m-% months(6), max_date)
+      )
+    ),
+    mainPanel(
+      tabsetPanel(
+        type = "tabs",
+        tabPanel(
+          "Cluster Plot",
+          h1(textOutput("cluster_title")),
+          textOutput("cluster_description"),
+          h2("Cluster Centres"),
+          tableOutput("cluster_table"),
+          h2("Cluster Plot"),
+          plotOutput("cluster_plot")
+        ),
+        tabPanel(
+          "Cluster History Plot", 
+          h1("Cluster History Plot"),
+          p("This plot shows the proportion of hours listened for each cluster."),
+          plotOutput("cluster_history_plot")
+        ),
+        tabPanel(
+          "Track Clusters", 
+          h1("Track Clusters"),
+          textOutput("track_clusters_desc"),
+          dataTableOutput("track_clusters")
+        )
+      )
+    )
+  )
+)
+
+# SERVER
+
+server <- function(input, output) {
+  output$cluster_title <- renderText({
+    rank <- input$index
+    
+    paste0(
+      "K-means Cluster: Rank ",
+      rank
+    )
+  })
+  
+  output$cluster_description <- renderText({
+    total_withinss <- kmeans_nfact_save %>%
+      slice(as.numeric(input$index)) %>%
+      pull(total_withinss) %>%
+      round(digits = 2)
+    
+    bsstssRatio <- kmeans_nfact_save %>%
+      slice(as.numeric(input$index)) %>%
+      pull(bsstssRatio) %>%
+      round(digits = 2)
+    
+    index_ordinal <- input$index %>%
+      as.numeric() %>%
+      ordinal()
+    
+    paste0(
+      "The graph below shows the k-means cluster with the ", 
+      index_ordinal,
+      " highest BSS/TSS ratio of ",
+      bsstssRatio,
+      " and a total within sum of squares of ",
+      total_withinss,
+      "."
+    )
+  })
+  
+  output$track_clusters_desc <- renderText({
+    start_date <- input$dates[1]
+    end_date <- input$dates[2]
+    
+    paste0(
+      "This table shows the cluster of all tracks listened to from ",
+      start_date,
+      " to ",
+      end_date,
+      "."
+    )
+  })
+  
+  output$track_clusters <- renderDataTable({
+    kmeans_nfact_save %>%
+      slice(as.numeric(input$index)) %>%
+      pull(km) %>%
+      pluck(1) %>%
+      pluck("cluster") %>%
+      as.data.frame() %>%
+      rownames_to_column("track_artist") %>%
+      rename(cluster = 2) %>% 
+      mutate(cluster = paste0("Cluster ", cluster)) %>%
+      left_join(
+        full_streaming_history %>%
+          filter(
+            month %>%
+              between(input$dates[1], input$dates[2])
+          ) %>%
+          select(
+            track_name,
+            artist_name
+          ) %>%
+          na.omit() %>%
+          distinct() %>%
+          mutate(
+            track_artist = paste(
+              track_name,
+              artist_name,
+              sep = " - "
+            )
+          ),
+        .,
+        by = "track_artist"
+      ) %>%
+      select(
+        cluster,
+        artist_name,
+        track_name
+      ) %>%
+      arrange(
+        cluster,
+        artist_name,
+        track_name
+      ) %>%
+      rename(
+        Cluster = "cluster",
+        `Artist Name` = "artist_name",
+        `Track Name` = "track_name"
+      )
+  })
+  
+  output$cluster_plot <- renderPlot({
+    kmeans_nfact_save %>%
+      slice(as.numeric(input$index)) %>%
+      pull(km_plot)
+  })
+  
+  output$cluster_table <- renderTable({
+    kmeans_nfact_save %>%
+      slice(as.numeric(input$index)) %>%
+      pull(km) %>%
+      pluck(1) %>%
+      pluck("centers") %>%
+      as.data.frame() %>%
+      rownames_to_column("cluster") %>%
+      mutate(cluster = paste0("Cluster ", cluster))
+  })
+  
+  output$cluster_history_plot <- renderPlot({
+    track_clusters <- kmeans_nfact_save %>%
+      slice(as.numeric(input$index)) %>%
+      pull(km) %>%
+      pluck(1) %>%
+      pluck("cluster") %>%
+      as.data.frame() %>%
+      rownames_to_column("track_artist") %>%
+      rename(cluster = 2) %>% 
+      mutate(cluster = paste0("Cluster ", cluster)) %>%
+      left_join(
+        full_streaming_history %>%
+          select(
+            track_name,
+            artist_name
+          ) %>%
+          na.omit() %>%
+          distinct() %>%
+          mutate(
+            track_artist = paste(
+              track_name,
+              artist_name,
+              sep = " - "
+            )
+          ),
+        .,
+        by = "track_artist"
+      ) %>%
+      select(-track_artist) %>%
+      arrange(
+        artist_name,
+        track_name
+      )
+    
+    cluster_summary <- full_streaming_history %>%
+      select(
+        month,
+        track_name,
+        artist_name,
+        ms_played
+      ) %>%
+      na.omit() %>%
+      filter(
+        month %>%
+          between(input$dates[1], input$dates[2])
+      ) %>%
+      left_join(
+        track_clusters, 
+        by = c("track_name", "artist_name")
+      ) %>%
+      group_by(
+        month, 
+        cluster
+      ) %>%
+      summarise(hours_listened = sum(ms_played/(1000*60)))
+    
+    ggplot(cluster_summary, aes(x = month, y = hours_listened, fill = cluster, label = cluster)) +
+      xlab("Date") +
+      ylab("Proportion") +
+      geom_bar(position = "fill", stat = "identity")
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+## Cluster Playlists
+
+Just for fun, and to see if our subjective interpretation of grouping songs together aligns at all with k-means and Spotify's API, we can calculate the top 5 tracks by hours listened for each cluster in the highest performing k-means result.
+
+```{r}
+#| include: false
+load("data/R_data/kmeans_nfact.RData")
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Top 5 Tracks Code"
+#| output: false
+
+cluster_top_tracks <- kmeans_nfact_save %>%
+  slice(1) %>%
+  pull(km) %>%
+  pluck(1) %>%
+  pluck("cluster") %>%
+  as.data.frame() %>%
+  rownames_to_column("track_artist") %>%
+  rename(cluster = 2) %>% 
+  mutate(cluster = paste0("Cluster ", cluster)) %>%
+  left_join(
+    full_streaming_history %>%
+      select(
+        track_name,
+        artist_name,
+        ms_played
+      ) %>%
+      na.omit() %>%
+      group_by(
+        track_name,
+        artist_name
+      ) %>%
+      summarise(
+        hours_listened = sum(ms_played/(1000*60))
+      ) %>%
+      mutate(
+        track_artist = paste(
+          track_name,
+          artist_name,
+          sep = " - "
+        )
+      ),
+      .,
+      by = "track_artist"
+    ) %>%
+  select(-track_artist) %>%
+  group_by(cluster) %>%
+  slice_max(hours_listened, n = 5) %>%
+  ungroup() %>%
+  select(
+    cluster,
+    track_name,
+    artist_name
+  )
+```
+
+```{r}
+#| echo: false
+
+cluster_top_tracks %>%
+  kable()
+```
+
+Then, we can make some playlists:
+
+##### Cluster 1 Playlist
 
 ```{=html}
-<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3z6wsrB2nCHxq0ZHv7slpo?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/0FWZHIrHFCy4fdcmdmuez1?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+```
+
+##### Cluster 2 Playlist
+
+```{=html}
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2EO24dIxXTDizr6FbXamqY?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+```
+
+##### Cluster 3 Playlist
+
+```{=html}
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5kLF4CIVyNg7A9PADnV23E?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 ```

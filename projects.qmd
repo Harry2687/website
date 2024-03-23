@@ -6,4 +6,12 @@ listing:
   type: grid
   sort: "date desc" 
   categories: true 
+  fields: 
+    - image
+    - date
+    - title
+    - author
+    - description
+    - categories
+    - reading-time
 ---

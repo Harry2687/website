@@ -65,7 +65,7 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-image','listing-date','listing-title','listing-author','listing-description','listing-categories','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
       searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
     };
@@ -189,7 +189,7 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="K-means,R" data-listing-date-sort="1711123200000" data-listing-file-modified-sort="1711128412038" data-listing-date-modified-sort="1711128412000" data-listing-reading-time-sort="18" data-listing-word-count-sort="3599">
+<div class="g-col-1" data-index="0" data-categories="K-means,R" data-listing-date-sort="1711123200000" data-listing-file-modified-sort="1711174765602" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6168">
 <a href="./projects/spotify-analysis/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -199,6 +199,9 @@ window.Quarto = {
 <h5 class="no-anchor card-title listing-title">
 Analysis of My Spotify Data
 </h5>
+<div class="listing-reading-time card-text text-muted">
+31 min
+</div>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('K-means'); return false;">
 K-means

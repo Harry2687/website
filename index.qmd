@@ -22,9 +22,9 @@ about:
 
 ### {{<fa user-tie>}} About Me
 
-Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst.
+Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst. I enjoy spending my time learning about data science, lifting weights, and playing God of War.
 
-I made this website as a way to document various personal projects and to showcase my achievements and plans for the future. This website is still a work in progress, but feel free to look around.
+I made this website as a way to document various personal projects and to showcase my achievements and plans for the future.
 
 If you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!
 
