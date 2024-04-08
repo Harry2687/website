@@ -6,6 +6,8 @@ title: "My Timeline"
 
 #### Qualify as a Fellow Actuary (FIAA).
 
+#### Learn about data science!
+
 ## {{<fa square-check>}} Past Achievements
 
 ### 2023
@@ -13,7 +15,7 @@ title: "My Timeline"
 ---
 
 #### Qualified as an Associate Actuary (AIAA).
-- Studied and passed **Asset Liability Management** and **Communication, Modelling and Professionalism**, thus completing the [**Actuary Program**](https://www.actuaries.asn.au/education-program/actuary-program){target="_blank"} while working full time.
+- Studied and passed **Asset Liability Management** and **Communication, Modelling and Professionalism**, thus completing the **Actuary Program** while working at EBM.
 
 ---
 

@@ -32,7 +32,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Analysis of My Spotify Data\n\n\n31 min\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Projects I am currently working on include:\n\n Identifying conversation topics within my Facebook Messenger chat history using latent Dirichlet allocation.\n Training a neural network to classify images of faces into male or female.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n31 min\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html#education",
@@ -60,7 +60,7 @@
     "href": "timeline/index.html#past-achievements",
     "title": "My Timeline",
     "section": " Past Achievements",
-    "text": "Past Achievements\n\n2023\n\n\nQualified as an Associate Actuary (AIAA).\n\nStudied and passed Asset Liability Management and Communication, Modelling and Professionalism, thus completing the Actuary Program while working full time.\n\n\n\n\nGraduated with Bachelor of Science (Actuarial Science) (Honours).\n\n78% Course weighted average.\nCompleted Data Analytics Principles and Actuarial Control Cycle subjects as part of the Actuaries Institute Actuary Program.\nCompleted my honours dissertation (graded 82%): Comparing Stochastic and Constant Volatility Returns Distributions using the Heston Model.\n\n\n\n\n2022\n\n\nStarted my first graduate job at EBM Insurance & Risk.\n\n\n\n2021\n\n\nGraduated with Bachelor of Science (Actuarial Science) with Distinction.\n\n85% Course weighted average.\nObtained all Actuaries Institute Foundation Program exemptions.\nRecipient of the Curtin Excellence Scholarship."
+    "text": "Past Achievements\n\n2023\n\n\nQualified as an Associate Actuary (AIAA).\n\nStudied and passed Asset Liability Management and Communication, Modelling and Professionalism, thus completing the Actuary Program while working at EBM.\n\n\n\n\nGraduated with Bachelor of Science (Actuarial Science) (Honours).\n\n78% Course weighted average.\nCompleted Data Analytics Principles and Actuarial Control Cycle subjects as part of the Actuaries Institute Actuary Program.\nCompleted my honours dissertation (graded 82%): Comparing Stochastic and Constant Volatility Returns Distributions using the Heston Model.\n\n\n\n\n2022\n\n\nStarted my first graduate job at EBM Insurance & Risk.\n\n\n\n2021\n\n\nGraduated with Bachelor of Science (Actuarial Science) with Distinction.\n\n85% Course weighted average.\nObtained all Actuaries Institute Foundation Program exemptions.\nRecipient of the Curtin Excellence Scholarship."
   },
   {
     "objectID": "projects/spotify-analysis/index.html",

@@ -3,10 +3,12 @@ title: "Analysis of My Spotify Data"
 description: "Categorisation of my Spotify listening history using k-means clustering."
 categories: [K-means, R]
 author:
-  - name: Harry Zhong
+  name: Harry Zhong
 date: 2024-03-23
 image: kmeans-preview.png
 draft: false
+execute:
+  freeze: true
 ---
 
 ```{r}

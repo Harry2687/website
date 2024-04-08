@@ -15,3 +15,8 @@ listing:
     - categories
     - reading-time
 ---
+
+Projects I am currently working on include:
+
+- [{{<fa brands github>}}](https://github.com/Harry2687/Messenger-Analysis){target="_blank"} Identifying conversation topics within my Facebook Messenger chat history using latent Dirichlet allocation.
+- [{{<fa brands github>}}](https://github.com/Harry2687/Face-Gender-NN){target="_blank"} Training a neural network to classify images of faces into male or female.
