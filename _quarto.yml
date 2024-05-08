@@ -11,7 +11,7 @@ website:
       - text: "{{<fa diagram-project>}} Projects"
         href: projects.qmd
       - text: "{{<fa calendar-check>}} Timeline"
-        href: timeline/index.qmd
+        href: timeline.qmd
     right:
       - icon: linkedin
         href: https://www.linkedin.com/in/harry2687/

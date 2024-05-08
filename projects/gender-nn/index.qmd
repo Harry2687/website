@@ -1,0 +1,12 @@
+---
+title: "Gender Classification using PyTorch"
+description: "Classification of faces into genders using a convolutional neural network with residual layers."
+categories: [Gender Classification, Neural Networks, Python, PyTorch]
+author:
+  name: Harry Zhong
+date: last-modified
+image: cnn-layer.png
+draft: false
+execute:
+  freeze: auto
+---
