@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Harry Zhong">
-<meta name="dcterms.date" content="2024-05-08">
+<meta name="dcterms.date" content="2024-05-12">
 <meta name="description" content="Classification of faces into genders using a convolutional neural network with residual layers.">
 
 <title>Harry Zhong - Gender Classification using PyTorch</title>
@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -116,7 +150,27 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#neural-networks" id="toc-neural-networks" class="nav-link" data-scroll-target="#neural-networks">Neural Networks</a>
+  <ul class="collapse">
+  <li><a href="#data-loading" id="toc-data-loading" class="nav-link" data-scroll-target="#data-loading">Data Loading</a></li>
+  <li><a href="#fully-connected-layers" id="toc-fully-connected-layers" class="nav-link" data-scroll-target="#fully-connected-layers">Fully Connected Layers</a></li>
+  <li><a href="#convolutional-layers" id="toc-convolutional-layers" class="nav-link" data-scroll-target="#convolutional-layers">Convolutional Layers</a></li>
+  <li><a href="#residual-layers" id="toc-residual-layers" class="nav-link" data-scroll-target="#residual-layers">Residual Layers</a></li>
+  <li><a href="#activation-functions" id="toc-activation-functions" class="nav-link" data-scroll-target="#activation-functions">Activation Functions</a></li>
+  </ul></li>
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a>
+  <ul class="collapse">
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a></li>
+  <li><a href="#stochastic-gradient-descent" id="toc-stochastic-gradient-descent" class="nav-link" data-scroll-target="#stochastic-gradient-descent">Stochastic Gradient Descent</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -151,7 +205,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 8, 2024</p>
+      <p class="date">May 12, 2024</p>
     </div>
   </div>
   
@@ -163,8 +217,87 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Neural networks are cool, they can take complex tasks that are usually pretty easy for humans to do and automate them, given you have sufficient training data and computing power. In this project, we will explore how to make our own neural network, and attempt to predict the gender of faces.</p>
+</section>
+<section id="neural-networks" class="level1">
+<h1>Neural Networks</h1>
+<p>To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown’s <a href="https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ" target="_blank">YouTube playlist</a> on neural networks. We will be applying the theory discussed in the playlist in Python, mainly using the <code>PyTorch</code> library.</p>
+<section id="data-loading" class="level2">
+<h2 class="anchored" data-anchor-id="data-loading">Data Loading</h2>
+<p>First we’ll need to import images</p>
+<div id="80aac572" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.datasets <span class="im">as</span> datasets</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.transforms <span class="im">as</span> transforms</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> DataLoader</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="0e7aafb3" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> modules.models <span class="im">as</span> models</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> modules.functions <span class="im">as</span> func</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="9a94f730" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> func.set_device()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>loader <span class="op">=</span> transforms.Compose([</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    transforms.Resize([<span class="dv">128</span>, <span class="dv">128</span>]),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    transforms.Grayscale(<span class="dv">1</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    transforms.ToTensor()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>my_dataset <span class="op">=</span> datasets.ImageFolder(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    root<span class="op">=</span><span class="st">'test_images/'</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    transform<span class="op">=</span>loader</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>my_dataset_loader <span class="op">=</span> DataLoader(</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    my_dataset,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    batch_size<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    generator<span class="op">=</span>torch.Generator(device<span class="op">=</span>device)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>dataiter <span class="op">=</span> <span class="bu">iter</span>(my_dataset_loader)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>images, labels <span class="op">=</span> <span class="bu">next</span>(dataiter)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>func.imshow(images[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-4-output-1.png" width="424" height="415" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fully-connected-layers" class="level2">
+<h2 class="anchored" data-anchor-id="fully-connected-layers">Fully Connected Layers</h2>
+</section>
+<section id="convolutional-layers" class="level2">
+<h2 class="anchored" data-anchor-id="convolutional-layers">Convolutional Layers</h2>
+</section>
+<section id="residual-layers" class="level2">
+<h2 class="anchored" data-anchor-id="residual-layers">Residual Layers</h2>
+</section>
+<section id="activation-functions" class="level2">
+<h2 class="anchored" data-anchor-id="activation-functions">Activation Functions</h2>
+</section>
+</section>
+<section id="training" class="level1">
+<h1>Training</h1>
+<section id="dataset" class="level2">
+<h2 class="anchored" data-anchor-id="dataset">Dataset</h2>
+</section>
+<section id="stochastic-gradient-descent" class="level2">
+<h2 class="anchored" data-anchor-id="stochastic-gradient-descent">Stochastic Gradient Descent</h2>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

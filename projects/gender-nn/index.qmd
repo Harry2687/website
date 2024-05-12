@@ -10,3 +10,70 @@ draft: false
 execute:
   freeze: auto
 ---
+
+# Introduction
+
+Neural networks are cool, they can take complex tasks that are usually pretty easy for humans to do and automate them, given you have sufficient training data and computing power. In this project, we will explore how to make our own neural network, and attempt to predict the gender of faces.
+
+# Neural Networks
+
+To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown's [YouTube playlist](https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ){target=_blank} on neural networks. We will be applying the theory discussed in the playlist in Python, mainly using the `PyTorch` library.
+
+## Data Loading
+
+First we'll need to import images
+
+```{python}
+import torch
+import torchvision
+import torchvision.datasets as datasets
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
+```
+
+```{python}
+import modules.models as models
+import modules.functions as func
+```
+
+```{python}
+device = func.set_device()
+
+loader = transforms.Compose([
+    transforms.Resize([128, 128]),
+    transforms.Grayscale(1),
+    transforms.ToTensor()
+])
+
+my_dataset = datasets.ImageFolder(
+    root='test_images/',
+    transform=loader
+)
+
+my_dataset_loader = DataLoader(
+    my_dataset,
+    batch_size=2,
+    generator=torch.Generator(device=device)
+)
+
+dataiter = iter(my_dataset_loader)
+images, labels = next(dataiter)
+
+func.imshow(images[1])
+```
+
+## Fully Connected Layers
+
+## Convolutional Layers
+
+## Residual Layers
+
+## Activation Functions
+
+# Training
+
+## Dataset
+
+## Stochastic Gradient Descent
+
+# Results

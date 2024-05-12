@@ -32,7 +32,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Projects I am currently working on include:\n\n Identifying conversation topics within my Facebook Messenger chat history using latent Dirichlet allocation.\n Training a neural network to classify images of faces into male or female.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n1 min\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 8, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n31 min\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Projects I am currently working on include:\n\n Identifying conversation topics within my Facebook Messenger chat history using latent Dirichlet allocation.\n Training a neural network to classify images of faces into male or female.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n1 min\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 12, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n31 min\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html#education",
@@ -124,5 +124,61 @@
     "title": "My Timeline",
     "section": " Past Achievements",
     "text": "Past Achievements\n\n2023\n\n\nQualified as an Associate Actuary (AIAA).\n\nStudied and passed Asset Liability Management and Communication, Modelling and Professionalism, thus completing the Actuary Program while working at EBM.\n\n\n\n\nGraduated with Bachelor of Science (Actuarial Science) (Honours).\n\n78% Course weighted average.\nCompleted Data Analytics Principles and Actuarial Control Cycle subjects as part of the Actuaries Institute Actuary Program.\nCompleted my honours dissertation (graded 82%): Comparing Stochastic and Constant Volatility Returns Distributions using the Heston Model.\n\n\n\n\n2022\n\n\nStarted my first graduate job at EBM Insurance & Risk.\n\n\n\n2021\n\n\nGraduated with Bachelor of Science (Actuarial Science) with Distinction.\n\n85% Course weighted average.\nObtained all Actuaries Institute Foundation Program exemptions.\nRecipient of the Curtin Excellence Scholarship."
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#fully-connected-layers",
+    "href": "projects/gender-nn/index.html#fully-connected-layers",
+    "title": "Gender Classification using PyTorch",
+    "section": "Fully Connected Layers",
+    "text": "Fully Connected Layers"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#convolutional-layers",
+    "href": "projects/gender-nn/index.html#convolutional-layers",
+    "title": "Gender Classification using PyTorch",
+    "section": "Convolutional Layers",
+    "text": "Convolutional Layers"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#residual-layers",
+    "href": "projects/gender-nn/index.html#residual-layers",
+    "title": "Gender Classification using PyTorch",
+    "section": "Residual Layers",
+    "text": "Residual Layers"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#activation-functions",
+    "href": "projects/gender-nn/index.html#activation-functions",
+    "title": "Gender Classification using PyTorch",
+    "section": "Activation Functions",
+    "text": "Activation Functions"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#dataset",
+    "href": "projects/gender-nn/index.html#dataset",
+    "title": "Gender Classification using PyTorch",
+    "section": "Dataset",
+    "text": "Dataset"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#stochastic-gradient-descent",
+    "href": "projects/gender-nn/index.html#stochastic-gradient-descent",
+    "title": "Gender Classification using PyTorch",
+    "section": "Stochastic Gradient Descent",
+    "text": "Stochastic Gradient Descent"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html",
+    "href": "projects/gender-nn/index.html",
+    "title": "Gender Classification using PyTorch",
+    "section": "",
+    "text": "Neural networks are cool, they can take complex tasks that are usually pretty easy for humans to do and automate them, given you have sufficient training data and computing power. In this project, we will explore how to make our own neural network, and attempt to predict the gender of faces."
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#data-loading",
+    "href": "projects/gender-nn/index.html#data-loading",
+    "title": "Gender Classification using PyTorch",
+    "section": "Data Loading",
+    "text": "Data Loading\nFirst we’ll need to import images\n\nimport torch\nimport torchvision\nimport torchvision.datasets as datasets\nimport torchvision.transforms as transforms\nfrom torch.utils.data import DataLoader\n\n\nimport modules.models as models\nimport modules.functions as func\n\n\ndevice = func.set_device()\n\nloader = transforms.Compose([\n    transforms.Resize([128, 128]),\n    transforms.Grayscale(1),\n    transforms.ToTensor()\n])\n\nmy_dataset = datasets.ImageFolder(\n    root='test_images/',\n    transform=loader\n)\n\nmy_dataset_loader = DataLoader(\n    my_dataset,\n    batch_size=2,\n    generator=torch.Generator(device=device)\n)\n\ndataiter = iter(my_dataset_loader)\nimages, labels = next(dataiter)\n\nfunc.imshow(images[1])"
   }
 ]

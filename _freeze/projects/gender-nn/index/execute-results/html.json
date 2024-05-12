@@ -1,0 +1,12 @@
+{
+  "hash": "c04098d8dac4c3138ec52c5999c67cba",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Gender Classification using PyTorch\"\ndescription: \"Classification of faces into genders using a convolutional neural network with residual layers.\"\ncategories: [Gender Classification, Neural Networks, Python, PyTorch]\nauthor:\n  name: Harry Zhong\ndate: last-modified\nimage: cnn-layer.png\ndraft: false\nexecute:\n  freeze: auto\n---\n\n# Introduction\n\nNeural networks are cool, they can take complex tasks that are usually pretty easy for humans to do and automate them, given you have sufficient training data and computing power. In this project, we will explore how to make our own neural network, and attempt to predict the gender of faces.\n\n# Neural Networks\n\nTo get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown's [YouTube playlist](https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ){target=_blank} on neural networks. We will be applying the theory discussed in the playlist in Python, mainly using the `PyTorch` library.\n\n## Data Loading\n\nFirst we'll need to import images\n\n::: {#80aac572 .cell execution_count=1}\n``` {.python .cell-code}\nimport torch\nimport torchvision\nimport torchvision.datasets as datasets\nimport torchvision.transforms as transforms\nfrom torch.utils.data import DataLoader\n```\n:::\n\n\n::: {#0e7aafb3 .cell execution_count=2}\n``` {.python .cell-code}\nimport modules.models as models\nimport modules.functions as func\n```\n:::\n\n\n::: {#9a94f730 .cell execution_count=3}\n``` {.python .cell-code}\ndevice = func.set_device()\n\nloader = transforms.Compose([\n    transforms.Resize([128, 128]),\n    transforms.Grayscale(1),\n    transforms.ToTensor()\n])\n\nmy_dataset = datasets.ImageFolder(\n    root='test_images/',\n    transform=loader\n)\n\nmy_dataset_loader = DataLoader(\n    my_dataset,\n    batch_size=2,\n    generator=torch.Generator(device=device)\n)\n\ndataiter = iter(my_dataset_loader)\nimages, labels = next(dataiter)\n\nfunc.imshow(images[1])\n```\n\n::: {.cell-output .cell-output-display}\n![](index_files/figure-html/cell-4-output-1.png){width=424 height=415}\n:::\n:::\n\n\n## Fully Connected Layers\n\n## Convolutional Layers\n\n## Residual Layers\n\n## Activation Functions\n\n# Training\n\n## Dataset\n\n## Stochastic Gradient Descent\n\n# Results\n\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
