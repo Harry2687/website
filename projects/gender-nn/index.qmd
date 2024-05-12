@@ -17,26 +17,26 @@ Neural networks are cool, they can take complex tasks that are usually pretty ea
 
 # Neural Networks
 
-To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown's [YouTube playlist](https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ){target=_blank} on neural networks. We will be applying the theory discussed in the playlist in Python, mainly using the `PyTorch` library.
+To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown's [YouTube playlist](https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ){target=_blank} on neural networks. We will be applying the theory discussed in the playlist in Python using the PyTorch library.
 
-## Data Loading
+## Sample Data
 
-First we'll need to import images
+Before we define our model architecture, we'll first load some data to enable us to visualise what the model is doing. We can do this using a couple of modules from `torchvision`.
 
 ```{python}
 import torch
-import torchvision
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-```
 
-```{python}
-import modules.models as models
+# Some functions we'll need later
 import modules.functions as func
 ```
 
+We can then use our imported modules to create `Dataset` and `DataLoader` objects. The `Dataset` represents our image data, after applying a transformation which resizes our images to 128 by 128 pixels, converts to grayscale, and then converts the image to a tensor. The `DataLoader` object then creates an iterable object using our `Dataset`, which is useful for accessing our data in batches, this will help us later when we train our model.
+
 ```{python}
+# Set device for GPU acceleration, if available.
 device = func.set_device()
 
 loader = transforms.Compose([
@@ -52,23 +52,133 @@ my_dataset = datasets.ImageFolder(
 
 my_dataset_loader = DataLoader(
     my_dataset,
-    batch_size=2,
+    batch_size=len(my_dataset),
     generator=torch.Generator(device=device)
 )
-
-dataiter = iter(my_dataset_loader)
-images, labels = next(dataiter)
-
-func.imshow(images[1])
 ```
 
-## Fully Connected Layers
+Let's set `images` and `labels` based on the first and only batch in our `DataLoader`.
 
-## Convolutional Layers
+```{python}
+data = iter(my_dataset_loader)
+images, labels = next(data)
+```
 
-## Residual Layers
+We can then access our images, which are currently tensors. We can display the image tensors using a simple wrapper function that uses `matplotlib.pyplot` under the hood.
 
-## Activation Functions
+```{python}
+for i in range(len(images)):
+  func.imshow(images[i])
+```
+
+We now have Kratos and Freya as tensors! This will be useful later.
+
+## Model Architecture
+
+To start, we'll need to determine the architecture, or combination of layers, that our neural network will use. I tested model architectures starting from basic multilayer perceptrons to various forms of convolutional neural network (CNN), and found that fairly basic CNNs worked well on training and testing data which are split from the same main data source. However, I found that most CNN architectures failed to generalise well, and had poor accuracy when used on images outside of the training and testing splits.
+
+The final model I settled on was a form of residual neural network, which adds residual layers to CNNs. We can define the model using `torch`.
+
+```{python}
+import torch.nn as nn
+import torch.nn.functional as F
+
+# Define recurring sequence of convolution, batch normalisation, and rectified linear activation function layers.
+def conv_block(in_channels, out_channels, pool=False):
+    layers = [
+        nn.Conv2d(
+            in_channels, 
+            out_channels, 
+            kernel_size=3, 
+            padding=1
+        ),
+        nn.BatchNorm2d(out_channels),
+        nn.ReLU()
+    ]
+    if pool:
+        layers.append(
+            nn.MaxPool2d(4)
+        )
+    return nn.Sequential(*layers)
+
+class resnetModel_128(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        # Define convolution and residual layers based on conv_block function.
+        self.conv_1 = conv_block(1, 64)
+        self.res_1 = nn.Sequential(
+            conv_block(64, 64), 
+            conv_block(64, 64)
+        )
+        self.conv_2 = conv_block(64, 256, pool=True)
+        self.res_2 = nn.Sequential(
+            conv_block(256, 256),
+            conv_block(256, 256)
+        )
+        self.conv_3 = conv_block(256, 512, pool=True)
+        self.res_3 = nn.Sequential(
+            conv_block(512, 512),
+            conv_block(512, 512)
+        )
+        self.conv_4 = conv_block(512, 1024, pool=True)
+        self.res_4 = nn.Sequential(
+            conv_block(1024, 1024),
+            conv_block(1024, 1024)
+        )
+
+        # Define classifier function using fully connected, dropout, and rectified linear activation function.
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(2*2*1024, 2048),
+            nn.Dropout(0.5),
+            nn.ReLU(),
+            nn.Linear(2048, 1024),
+            nn.Dropout(0.5),
+            nn.ReLU(),
+            nn.Linear(1024, 2)
+        )
+    
+    # Define forward function using functions initialised earlier, which outputs predictions.
+    def forward(self, x):
+        x = self.conv_1(x)
+        x = self.res_1(x) + x
+        x = self.conv_2(x)
+        x = self.res_2(x) + x
+        x = self.conv_3(x)
+        x = self.res_3(x) + x
+        x = self.conv_4(x)
+        x = self.res_4(x) + x
+        x = self.classifier(x)
+        x = F.softmax(x, dim=1)
+        return x
+```
+
+Now let's create an instance of `resnetModel_128` and define our classes.
+
+```{python}
+# Set seed for reproducibility.
+torch.manual_seed(2687)
+resnet = resnetModel_128()
+classes = ('Female', 'Male')
+```
+
+We now have `resnet` which is our model which we defined earlier, but with completely random parameters. Let's make a prediction based on the untrained model
+
+```{python}
+resnet.eval()
+with torch.no_grad():
+  output = resnet.forward(images.to(device))
+  predicted = torch.max(output.data, 1)[1]
+
+for i in range(len(predicted)):
+  print(f'Image: {my_dataset.imgs[i][0]}')
+  print(f'Prediction: {classes[predicted[i]]}')
+  print(f'{classes[0]} weight: {output[i][0]}')
+  print(f'{classes[1]} weight: {output[i][1]}\n')
+```
+
+As expected, the model is doing nothing more than randomly guessing. Next, we'll explore how we can train our model and make it smarter.
 
 # Training
 

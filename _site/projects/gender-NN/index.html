@@ -157,11 +157,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#neural-networks" id="toc-neural-networks" class="nav-link" data-scroll-target="#neural-networks">Neural Networks</a>
   <ul class="collapse">
-  <li><a href="#data-loading" id="toc-data-loading" class="nav-link" data-scroll-target="#data-loading">Data Loading</a></li>
-  <li><a href="#fully-connected-layers" id="toc-fully-connected-layers" class="nav-link" data-scroll-target="#fully-connected-layers">Fully Connected Layers</a></li>
-  <li><a href="#convolutional-layers" id="toc-convolutional-layers" class="nav-link" data-scroll-target="#convolutional-layers">Convolutional Layers</a></li>
-  <li><a href="#residual-layers" id="toc-residual-layers" class="nav-link" data-scroll-target="#residual-layers">Residual Layers</a></li>
-  <li><a href="#activation-functions" id="toc-activation-functions" class="nav-link" data-scroll-target="#activation-functions">Activation Functions</a></li>
+  <li><a href="#sample-data" id="toc-sample-data" class="nav-link" data-scroll-target="#sample-data">Sample Data</a></li>
+  <li><a href="#model-architecture" id="toc-model-architecture" class="nav-link" data-scroll-target="#model-architecture">Model Architecture</a></li>
   </ul></li>
   <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a>
   <ul class="collapse">
@@ -223,65 +220,178 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="neural-networks" class="level1">
 <h1>Neural Networks</h1>
-<p>To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown’s <a href="https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ" target="_blank">YouTube playlist</a> on neural networks. We will be applying the theory discussed in the playlist in Python, mainly using the <code>PyTorch</code> library.</p>
-<section id="data-loading" class="level2">
-<h2 class="anchored" data-anchor-id="data-loading">Data Loading</h2>
-<p>First we’ll need to import images</p>
-<div id="80aac572" class="cell" data-execution_count="1">
+<p>To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown’s <a href="https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ" target="_blank">YouTube playlist</a> on neural networks. We will be applying the theory discussed in the playlist in Python using the PyTorch library.</p>
+<section id="sample-data" class="level2">
+<h2 class="anchored" data-anchor-id="sample-data">Sample Data</h2>
+<p>Before we define our model architecture, we’ll first load some data to enable us to visualise what the model is doing. We can do this using a couple of modules from <code>torchvision</code>.</p>
+<div id="1e90d4f8" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.datasets <span class="im">as</span> datasets</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.transforms <span class="im">as</span> transforms</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> DataLoader</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.datasets <span class="im">as</span> datasets</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.transforms <span class="im">as</span> transforms</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> DataLoader</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Some functions we'll need later</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> modules.functions <span class="im">as</span> func</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="0e7aafb3" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> modules.models <span class="im">as</span> models</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> modules.functions <span class="im">as</span> func</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can then use our imported modules to create <code>Dataset</code> and <code>DataLoader</code> objects. The <code>Dataset</code> represents our image data, after applying a transformation which resizes our images to 128 by 128 pixels, converts to grayscale, and then converts the image to a tensor. The <code>DataLoader</code> object then creates an iterable object using our <code>Dataset</code>, which is useful for accessing our data in batches, this will help us later when we train our model.</p>
+<div id="3d9a57cb" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set device for GPU acceleration, if available.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> func.set_device()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>loader <span class="op">=</span> transforms.Compose([</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    transforms.Resize([<span class="dv">128</span>, <span class="dv">128</span>]),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    transforms.Grayscale(<span class="dv">1</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    transforms.ToTensor()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>my_dataset <span class="op">=</span> datasets.ImageFolder(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    root<span class="op">=</span><span class="st">'test_images/'</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    transform<span class="op">=</span>loader</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>my_dataset_loader <span class="op">=</span> DataLoader(</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    my_dataset,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    batch_size<span class="op">=</span><span class="bu">len</span>(my_dataset),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    generator<span class="op">=</span>torch.Generator(device<span class="op">=</span>device)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="9a94f730" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> func.set_device()</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>loader <span class="op">=</span> transforms.Compose([</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    transforms.Resize([<span class="dv">128</span>, <span class="dv">128</span>]),</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    transforms.Grayscale(<span class="dv">1</span>),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    transforms.ToTensor()</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>])</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>my_dataset <span class="op">=</span> datasets.ImageFolder(</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    root<span class="op">=</span><span class="st">'test_images/'</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    transform<span class="op">=</span>loader</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>my_dataset_loader <span class="op">=</span> DataLoader(</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    my_dataset,</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    batch_size<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    generator<span class="op">=</span>torch.Generator(device<span class="op">=</span>device)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>dataiter <span class="op">=</span> <span class="bu">iter</span>(my_dataset_loader)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>images, labels <span class="op">=</span> <span class="bu">next</span>(dataiter)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>func.imshow(images[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s set <code>images</code> and <code>labels</code> based on the first and only batch in our <code>DataLoader</code>.</p>
+<div id="8224ef1e" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> <span class="bu">iter</span>(my_dataset_loader)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>images, labels <span class="op">=</span> <span class="bu">next</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then access our images, which are currently tensors. We can display the image tensors using a simple wrapper function that uses <code>matplotlib.pyplot</code> under the hood.</p>
+<div id="076ee1bb" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(images)):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  func.imshow(images[i])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-4-output-1.png" width="424" height="415" class="figure-img"></p>
+<p><img src="index_files/figure-html/cell-5-output-1.png" width="424" height="415" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-5-output-2.png" width="424" height="415" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>We now have Kratos and Freya as tensors! This will be useful later.</p>
 </section>
-<section id="fully-connected-layers" class="level2">
-<h2 class="anchored" data-anchor-id="fully-connected-layers">Fully Connected Layers</h2>
-</section>
-<section id="convolutional-layers" class="level2">
-<h2 class="anchored" data-anchor-id="convolutional-layers">Convolutional Layers</h2>
-</section>
-<section id="residual-layers" class="level2">
-<h2 class="anchored" data-anchor-id="residual-layers">Residual Layers</h2>
-</section>
-<section id="activation-functions" class="level2">
-<h2 class="anchored" data-anchor-id="activation-functions">Activation Functions</h2>
+<section id="model-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="model-architecture">Model Architecture</h2>
+<p>To start, we’ll need to determine the architecture, or combination of layers, that our neural network will use. I tested model architectures starting from basic multilayer perceptrons to various forms of convolutional neural network (CNN), and found that fairly basic CNNs worked well on training and testing data which are split from the same main data source. However, I found that most CNN architectures failed to generalise well, and had poor accuracy when used on images outside of the training and testing splits.</p>
+<p>The final model I settled on was a form of residual neural network, which adds residual layers to CNNs. We can define the model using <code>torch</code>.</p>
+<div id="28d053fd" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define recurring sequence of convolution, batch normalisation, and rectified linear activation function layers.</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> conv_block(in_channels, out_channels, pool<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    layers <span class="op">=</span> [</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        nn.Conv2d(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            in_channels, </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            out_channels, </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            kernel_size<span class="op">=</span><span class="dv">3</span>, </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            padding<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        nn.BatchNorm2d(out_channels),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        nn.ReLU()</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pool:</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        layers.append(</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            nn.MaxPool2d(<span class="dv">4</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> nn.Sequential(<span class="op">*</span>layers)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> resnetModel_128(nn.Module):</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Define convolution and residual layers based on conv_block function.</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.conv_1 <span class="op">=</span> conv_block(<span class="dv">1</span>, <span class="dv">64</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.res_1 <span class="op">=</span> nn.Sequential(</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">64</span>, <span class="dv">64</span>), </span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">64</span>, <span class="dv">64</span>)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.conv_2 <span class="op">=</span> conv_block(<span class="dv">64</span>, <span class="dv">256</span>, pool<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.res_2 <span class="op">=</span> nn.Sequential(</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">256</span>, <span class="dv">256</span>),</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">256</span>, <span class="dv">256</span>)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.conv_3 <span class="op">=</span> conv_block(<span class="dv">256</span>, <span class="dv">512</span>, pool<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.res_3 <span class="op">=</span> nn.Sequential(</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">512</span>, <span class="dv">512</span>),</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">512</span>, <span class="dv">512</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.conv_4 <span class="op">=</span> conv_block(<span class="dv">512</span>, <span class="dv">1024</span>, pool<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.res_4 <span class="op">=</span> nn.Sequential(</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">1024</span>, <span class="dv">1024</span>),</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>            conv_block(<span class="dv">1024</span>, <span class="dv">1024</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Define classifier function using fully connected, dropout, and rectified linear activation function.</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.classifier <span class="op">=</span> nn.Sequential(</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>            nn.Flatten(),</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>            nn.Linear(<span class="dv">2</span><span class="op">*</span><span class="dv">2</span><span class="op">*</span><span class="dv">1024</span>, <span class="dv">2048</span>),</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>            nn.Dropout(<span class="fl">0.5</span>),</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>            nn.ReLU(),</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>            nn.Linear(<span class="dv">2048</span>, <span class="dv">1024</span>),</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>            nn.Dropout(<span class="fl">0.5</span>),</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>            nn.ReLU(),</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>            nn.Linear(<span class="dv">1024</span>, <span class="dv">2</span>)</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define forward function using functions initialised earlier, which outputs predictions.</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.conv_1(x)</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.res_1(x) <span class="op">+</span> x</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.conv_2(x)</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.res_2(x) <span class="op">+</span> x</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.conv_3(x)</span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.res_3(x) <span class="op">+</span> x</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.conv_4(x)</span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.res_4(x) <span class="op">+</span> x</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.classifier(x)</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> F.softmax(x, dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s create an instance of <code>resnetModel_128</code> and define our classes.</p>
+<div id="c84b2573" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility.</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">2687</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>resnet <span class="op">=</span> resnetModel_128()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>classes <span class="op">=</span> (<span class="st">'Female'</span>, <span class="st">'Male'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We now have <code>resnet</code> which is our model which we defined earlier, but with completely random parameters. Let’s make a prediction based on the untrained model</p>
+<div id="1628c803" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>resnet.<span class="bu">eval</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  output <span class="op">=</span> resnet.forward(images.to(device))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  predicted <span class="op">=</span> torch.<span class="bu">max</span>(output.data, <span class="dv">1</span>)[<span class="dv">1</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(predicted)):</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f'Image: </span><span class="sc">{</span>my_dataset<span class="sc">.</span>imgs[i][<span class="dv">0</span>]<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f'Prediction: </span><span class="sc">{</span>classes[predicted[i]]<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>classes[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> weight: </span><span class="sc">{</span>output[i][<span class="dv">0</span>]<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>classes[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> weight: </span><span class="sc">{</span>output[i][<span class="dv">1</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Image: test_images/Female/freya.png
+Prediction: Female
+Female weight: 0.5020168423652649
+Male weight: 0.4979831576347351
+
+Image: test_images/Male/kratos.png
+Prediction: Female
+Female weight: 0.5018221139907837
+Male weight: 0.4981779158115387
+</code></pre>
+</div>
+</div>
+<p>As expected, the model is doing nothing more than randomly guessing. Next, we’ll explore how we can train our model and make it smarter.</p>
 </section>
 </section>
 <section id="training" class="level1">
