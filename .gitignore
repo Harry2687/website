@@ -6,3 +6,5 @@
 /.quarto/
 .DS_Store
 /.vscode/
+**/__pycache__
+/projects/gender-nn/celeba

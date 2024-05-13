@@ -25,6 +25,7 @@ Before we define our model architecture, we'll first load some data to enable us
 
 ```{python}
 import torch
+import torchvision
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
@@ -174,6 +175,7 @@ with torch.no_grad():
 for i in range(len(predicted)):
   print(f'Image: {my_dataset.imgs[i][0]}')
   print(f'Prediction: {classes[predicted[i]]}')
+  print(f'Actual: {classes[labels[i]]}')
   print(f'{classes[0]} weight: {output[i][0]}')
   print(f'{classes[1]} weight: {output[i][1]}\n')
 ```
@@ -182,7 +184,126 @@ As expected, the model is doing nothing more than randomly guessing. Next, we'll
 
 # Training
 
+In order to make our model better, we need to train it. Training a neural network requires a training dataset and goes through the following iteration until the model is sufficiently trained.
+
+1. Make predictions on training data using forward propagation.
+2. Calculate loss measure based on the difference between predicted labels and actual labels.
+3. Use back propagation to determine changes to parameters required to minimise loss measure.
+4. Make changes to parameters.
+
+Let's explore how we can do this using PyTorch.
+
 ## Dataset
+
+Conveniently for us, the [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html){target=_blank} is a publicly available labelled dataset of around 200k faces. As it's a pretty well known dataset, there is a function in PyTorch that creates a automatically creates a dataset object for CelebA.
+
+```{python}
+imsize = int(128/0.8)
+batch_size = 10
+
+fivecrop_transform = transforms.Compose([
+    transforms.Resize([imsize, imsize]),
+    transforms.Grayscale(1),
+    transforms.FiveCrop(int(imsize*0.8)),
+    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+    transforms.Normalize(0, 1)
+])
+
+train_dataset = datasets.CelebA(
+    root = './',
+    split='all',
+    target_type='attr',
+    transform=fivecrop_transform,
+    download=True
+)
+
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=batch_size,
+    shuffle=True,
+    generator=torch.Generator(device=device)
+)
+```
+
+```{python}
+train_data = iter(train_loader)
+train_images, train_labels = next(train_data)
+
+factor = func.attributes.index('Male')
+```
+
+```{python}
+func.imshow(torchvision.utils.make_grid(train_images[0]))
+print('Selected factor:')
+print(classes[train_labels[:, factor][0]])
+print('\nAll factors:')
+for i, value in enumerate(train_labels[0]):
+    if value.item() == 1:
+        print(func.attributes[i])
+```
+
+```{python}
+resnet.train()
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(
+    resnet.parameters(), 
+    lr=0.01,
+    momentum=0.9,
+    weight_decay=0.001
+)
+scheduler = torch.optim.lr_scheduler.StepLR(
+    optimizer=optimizer,
+    step_size=1,
+    gamma=0.1
+)
+```
+
+```{python}
+parameters = func.n_parameters(resnet)
+print(f'Total Parameters: {parameters[0]}')
+print(f'Trainable Parameters: {parameters[1]}')
+```
+
+```{python}
+#| eval: false
+
+epochs = 2
+train_losses = []
+test_losses = []
+for i in range(epochs):
+    train_cr = 0
+    test_cr = 0
+
+    for j, (X_train, y_train) in enumerate(train_loader):
+        X_train = X_train.to(device)
+        y_train = y_train[:, factor]
+
+        bs, ncrops, c, h, w = X_train.size()
+        y_pred_crops = resnet.forward(X_train.view(-1, c, h, w))
+        y_pred = y_pred_crops.view(bs, ncrops, -1).mean(1)
+
+        loss = criterion(y_pred, y_train)
+
+        predicted = torch.max(y_pred.data, 1)[1]
+        train_batch_cr = (predicted == y_train).sum()
+        train_cr += train_batch_cr
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        if (j+1) % 10 == 0:
+            print(f'\nEpoch: {i+1} | Train Batch: {j+1}')
+            print(f'Train Loss: {loss.item()}')
+            print(f'Train Accuracy: {train_batch_cr/len(X_train)}')
+
+    train_losses.append(loss.item())
+    train_correct.append(train_cr.item())
+
+    scheduler.step()
+```
+
+
 
 ## Stochastic Gradient Descent
 
