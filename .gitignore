@@ -8,3 +8,5 @@
 /.vscode/
 **/__pycache__
 /projects/gender-nn/celeba
+/projects/gender-nn/ThisPersonDoesNotExist
+/projects/gender-nn/trained_models

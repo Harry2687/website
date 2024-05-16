@@ -23,6 +23,14 @@ To get a basic understanding of how neural networks, I would recommend watching 
 
 Before we define our model architecture, we'll first load some data to enable us to visualise what the model is doing. We can do this using a couple of modules from `torchvision`.
 
+::: {layout-ncol=3}
+![Freya](test_images/Female/freya.png)
+
+![Kratos](test_images/Male/kratos.png)
+
+![Me](test_images/Male/me.png)
+:::
+
 ```{python}
 import torch
 import torchvision
@@ -68,8 +76,8 @@ images, labels = next(data)
 We can then access our images, which are currently tensors. We can display the image tensors using a simple wrapper function that uses `matplotlib.pyplot` under the hood.
 
 ```{python}
-for i in range(len(images)):
-  func.imshow(images[i])
+#| fig-align: center
+func.imshow(torchvision.utils.make_grid(images))
 ```
 
 We now have Kratos and Freya as tensors! This will be useful later.
@@ -226,14 +234,40 @@ train_loader = DataLoader(
 ```
 
 ```{python}
+test_transform = transforms.Compose([
+    transforms.Resize([int(imsize*0.8), int(imsize*0.8)]),
+    transforms.Grayscale(1),
+    transforms.ToTensor()
+])
+
+test_dataset = datasets.ImageFolder(
+    root='ThisPersonDoesNotExist/',
+    transform=test_transform
+)
+
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=batch_size,
+    shuffle=True,
+    generator=torch.Generator(device=device)
+)
+```
+
+```{python}
+#| fig-align: center
 train_data = iter(train_loader)
 train_images, train_labels = next(train_data)
 
 factor = func.attributes.index('Male')
-```
 
-```{python}
-func.imshow(torchvision.utils.make_grid(train_images[0]))
+func.imshow(torchvision.utils.make_grid(
+    torch.cat((
+        train_images[0],
+        train_images[1],
+        train_images[2]
+    )),
+    nrow=5
+))
 print('Selected factor:')
 print(classes[train_labels[:, factor][0]])
 print('\nAll factors:')
@@ -241,6 +275,16 @@ for i, value in enumerate(train_labels[0]):
     if value.item() == 1:
         print(func.attributes[i])
 ```
+
+```{python}
+#| fig-align: center
+test_data = iter(test_loader)
+test_images, test_labels = next(test_data)
+
+func.imshow(torchvision.utils.make_grid(test_images, nrow=5))
+```
+
+## Stochastic Gradient Descent
 
 ```{python}
 resnet.train()
@@ -265,14 +309,13 @@ print(f'Trainable Parameters: {parameters[1]}')
 ```
 
 ```{python}
-#| eval: false
-
 epochs = 2
 train_losses = []
 test_losses = []
+train_accuracy = []
+test_accuracy = []
 for i in range(epochs):
-    train_cr = 0
-    test_cr = 0
+    epoch_time = 0
 
     for j, (X_train, y_train) in enumerate(train_loader):
         X_train = X_train.to(device)
@@ -285,26 +328,76 @@ for i in range(epochs):
         loss = criterion(y_pred, y_train)
 
         predicted = torch.max(y_pred.data, 1)[1]
-        train_batch_cr = (predicted == y_train).sum()
-        train_cr += train_batch_cr
+        train_batch_accuracy = (predicted == y_train).sum()/len(X_train)
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        
-        if (j+1) % 10 == 0:
-            print(f'\nEpoch: {i+1} | Train Batch: {j+1}')
-            print(f'Train Loss: {loss.item()}')
-            print(f'Train Accuracy: {train_batch_cr/len(X_train)}')
 
-    train_losses.append(loss.item())
-    train_correct.append(train_cr.item())
+        train_losses.append(loss.item())
+        train_accuracy.append(train_batch_accuracy.item())
+        
+        print(f'\nEpoch: {i+1}/{epochs} | Train Batch: {j+1}/{len(train_loader)}')
+        print(f'Train Loss: {loss}')
+        print(f'Train Accuracy: {train_batch_accuracy}')
+        break
+
+    with torch.no_grad():
+        for j, (X_test, y_test) in enumerate(test_loader):
+            X_test = X_test.to(device)
+            y_val = resnet.forward(X_test)
+            loss = criterion(y_val, y_test)
+
+            predicted = torch.max(y_val.data, 1)[1]
+            test_batch_accuracy = (predicted == y_test).sum()/len(X_test)
+
+            test_losses.append(loss.item())
+            test_accuracy.append(test_batch_accuracy.item())
+
+            print(f'\nEpoch: {i+1}/{epochs} | Test Batch: {j+1}/{len(test_loader)}')
+            print(f'Test Loss: {loss}')
+            print(f'Test Accuracy: {test_batch_accuracy}')
+            break
 
     scheduler.step()
+    break
 ```
 
+```{python}
+import pandas as pd
 
+train_plot_data = pd.read_csv('training_plot_data/train_data.csv')
+test_plot_data = pd.read_csv('training_plot_data/test_data.csv')
 
-## Stochastic Gradient Descent
+train_plot_data = train_plot_data.drop(columns='Unnamed: 0')
+test_plot_data = test_plot_data.drop(columns='Unnamed: 0')
+```
+
+```{python}
+train_plot_MA_data = train_plot_data.rolling(500).mean()
+train_plot_MA_data.dropna(inplace=True)
+
+test_plot_MA_data = test_plot_data.rolling(50).mean()
+test_plot_MA_data.dropna(inplace=True)
+
+train_plot_MA_data.plot(use_index=True)
+test_plot_MA_data.plot(use_index=True)
+```
 
 # Results
+
+```{python}
+resnet.load_state_dict(torch.load('trained_models/resnetModel_128_epoch_2.pt', map_location=device))
+
+resnet.eval()
+with torch.no_grad():
+  output = resnet.forward(images.to(device))
+  predicted = torch.max(output.data, 1)[1]
+
+for i in range(len(predicted)):
+  print(f'Image: {my_dataset.imgs[i][0]}')
+  print(f'Prediction: {classes[predicted[i]]}')
+  print(f'Actual: {classes[labels[i]]}')
+  print(f'{classes[0]} weight: {output[i][0]}')
+  print(f'{classes[1]} weight: {output[i][1]}\n')
+```
