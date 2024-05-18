@@ -206,6 +206,8 @@ Let's explore how we can do this using PyTorch.
 Conveniently for us, the [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html){target=_blank} is a publicly available labelled dataset of around 200k faces. As it's a pretty well known dataset, there is a function in PyTorch that creates a automatically creates a dataset object for CelebA.
 
 ```{python}
+#| output: false
+
 imsize = int(128/0.8)
 batch_size = 10
 
@@ -213,8 +215,7 @@ fivecrop_transform = transforms.Compose([
     transforms.Resize([imsize, imsize]),
     transforms.Grayscale(1),
     transforms.FiveCrop(int(imsize*0.8)),
-    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
-    transforms.Normalize(0, 1)
+    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops]))
 ])
 
 train_dataset = datasets.CelebA(
@@ -234,27 +235,6 @@ train_loader = DataLoader(
 ```
 
 ```{python}
-test_transform = transforms.Compose([
-    transforms.Resize([int(imsize*0.8), int(imsize*0.8)]),
-    transforms.Grayscale(1),
-    transforms.ToTensor()
-])
-
-test_dataset = datasets.ImageFolder(
-    root='ThisPersonDoesNotExist/',
-    transform=test_transform
-)
-
-test_loader = DataLoader(
-    test_dataset,
-    batch_size=batch_size,
-    shuffle=True,
-    generator=torch.Generator(device=device)
-)
-```
-
-```{python}
-#| fig-align: center
 train_data = iter(train_loader)
 train_images, train_labels = next(train_data)
 
@@ -268,20 +248,39 @@ func.imshow(torchvision.utils.make_grid(
     )),
     nrow=5
 ))
-print('Selected factor:')
-print(classes[train_labels[:, factor][0]])
-print('\nAll factors:')
-for i, value in enumerate(train_labels[0]):
-    if value.item() == 1:
-        print(func.attributes[i])
+
+for i in range(3):
+    print(classes[train_labels[:, factor][i]])
 ```
 
 ```{python}
-#| fig-align: center
+test_transform = transforms.Compose([
+    transforms.Resize([int(imsize*0.8), int(imsize*0.8)]),
+    transforms.Grayscale(1),
+    transforms.ToTensor()
+])
+
+test_dataset = datasets.ImageFolder(
+    root='ThisPersonDoesNotExist_resize/',
+    transform=test_transform
+)
+
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=batch_size,
+    shuffle=True,
+    generator=torch.Generator(device=device)
+)
+```
+
+```{python}
 test_data = iter(test_loader)
 test_images, test_labels = next(test_data)
 
 func.imshow(torchvision.utils.make_grid(test_images, nrow=5))
+
+for i in range(batch_size):
+    print(classes[test_labels[i]])
 ```
 
 ## Stochastic Gradient Descent
