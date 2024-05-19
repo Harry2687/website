@@ -15,13 +15,11 @@ execute:
 
 Neural networks are cool, they can take complex tasks that are usually pretty easy for humans to do and automate them, given you have sufficient training data and computing power. In this project, we will explore how to make our own neural network, and attempt to predict the gender of faces.
 
-# Neural Networks
+To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown's [YouTube playlist](https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ){target=_blank} on neural networks. As neural networks are slightly more complicated than most common machine learning algorithms, I won't go through the basics in much detail here.
 
-To get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown's [YouTube playlist](https://youtu.be/aircAruvnKk?si=CbemO9CxNtSznhKJ){target=_blank} on neural networks. We will be applying the theory discussed in the playlist in Python using the PyTorch library.
+# Objective
 
-## Sample Data
-
-Before we define our model architecture, we'll first load some data to enable us to visualise what the model is doing. We can do this using a couple of modules from `torchvision`.
+For this project, we'll aim to successfully classify the following images of Freya, Kratos, and me using a neural network model. 
 
 ::: {layout-ncol=3}
 ![Freya](test_images/Female/freya.png)
@@ -31,6 +29,8 @@ Before we define our model architecture, we'll first load some data to enable us
 ![Me](test_images/Male/me.png)
 :::
 
+We'll achieve this using publicly available training and testing datasets. But first, we need to load these images as a data type that can be inputted into a PyTorch neural network, a `torch` tensor. We can do this using a couple of modules from `torchvision`.
+
 ```{python}
 import torch
 import torchvision
@@ -39,14 +39,14 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 # Some functions we'll need later
-import modules.functions as func
+import modules.functions as functions
 ```
 
-We can then use our imported modules to create `Dataset` and `DataLoader` objects. The `Dataset` represents our image data, after applying a transformation which resizes our images to 128 by 128 pixels, converts to grayscale, and then converts the image to a tensor. The `DataLoader` object then creates an iterable object using our `Dataset`, which is useful for accessing our data in batches, this will help us later when we train our model.
+We can then use our imported modules to create `Dataset` and `DataLoader` objects. The `Dataset` represents our image data, after applying a transformation which resizes our images to 128 by 128 pixels, converts to grayscale (this saves us some computational power, hopefully colour isn't an important feature), and then converts the image to a tensor. The `DataLoader` object then creates an iterable object using our `Dataset`, which is useful for accessing our data in batches, this will help us later when we train our model.
 
 ```{python}
 # Set device for GPU acceleration, if available.
-device = func.set_device()
+device = functions.set_device()
 
 loader = transforms.Compose([
     transforms.Resize([128, 128]),
@@ -66,25 +66,142 @@ my_dataset_loader = DataLoader(
 )
 ```
 
-Let's set `images` and `labels` based on the first and only batch in our `DataLoader`.
+Let's set `images` and `labels` as the image and label tensors in the first and only batch in our `DataLoader`.
 
 ```{python}
 data = iter(my_dataset_loader)
 images, labels = next(data)
 ```
 
-We can then access our images, which are currently tensors. We can display the image tensors using a simple wrapper function that uses `matplotlib.pyplot` under the hood.
+We can then display the image tensors using a simple function that uses `matplotlib.pyplot` under the hood.
 
 ```{python}
-#| fig-align: center
-func.imshow(torchvision.utils.make_grid(images))
+functions.imshow(torchvision.utils.make_grid(images))
 ```
 
-We now have Kratos and Freya as tensors! This will be useful later.
+# Datasets
 
-## Model Architecture
+As with any supervised machine learning algorithm, neural networks require a training and testing dataset for the model to learn and evaluate out of sample performance. In this section we'll explore what this looks like for a neural network.
 
-To start, we'll need to determine the architecture, or combination of layers, that our neural network will use. I tested model architectures starting from basic multilayer perceptrons to various forms of convolutional neural network (CNN), and found that fairly basic CNNs worked well on training and testing data which are split from the same main data source. However, I found that most CNN architectures failed to generalise well, and had poor accuracy when used on images outside of the training and testing splits.
+## Training
+
+For this project, we'll require a dataset containing a large number of labelled images of faces, which as you can imagine isn't all that common. Luckily for us, the [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html){target=_blank} is a publicly available labelled dataset of around 200k faces. As it's a well known dataset, there is a function in `torch` that automatically downloads the required files (sometimes, usually the Google drive link is down) and creates a dataset object for the CelebA.
+
+```{python}
+#| output: false
+
+imsize = int(128/0.8)
+batch_size = 10
+classes = ('Female', 'Male')
+
+fivecrop_transform = transforms.Compose([
+    transforms.Resize([imsize, imsize]),
+    transforms.Grayscale(1),
+    transforms.FiveCrop(int(imsize*0.8)),
+    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops]))
+])
+
+train_dataset = datasets.CelebA(
+    root = './',
+    split='all',
+    target_type='attr',
+    transform=fivecrop_transform,
+    download=True
+)
+
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=batch_size,
+    shuffle=True,
+    generator=torch.Generator(device=device)
+)
+```
+
+We can verify the number of training images using `len`.
+
+```{python}
+len(train_dataset)
+```
+
+Note that the set of transformations applied to the training dataset contains `FiveCrop` in addition to the standard resize and grayscale transformations, `FiveCrop` makes 5 cropped versions of each image (who would have guessed), one for each corner plus centered. This improves model performance and reduces overfitting to the training dataset. However, this also increases the computation resources required to train the model on this dataset by a factor of 5.
+
+::: {.callout-note}
+There is also a `TenCrop` function which applies the transformations from `FiveCrop`, plus a vertical flip. I would have liked to use `TenCrop`, but my old MacBook did not agree with that decision.
+:::
+
+We can then access a few sample training images and their labels as we did previously.
+
+```{python}
+train_data = iter(train_loader)
+train_images, train_labels = next(train_data)
+
+# Index of Male label, as CelebA contains multiple labels.
+factor = functions.attributes.index('Male')
+
+functions.imshow(torchvision.utils.make_grid(
+    torch.cat((
+        train_images[0],
+        train_images[1],
+        train_images[2]
+    )),
+    nrow=5
+))
+
+for i in range(3):
+    print(classes[train_labels[:, factor][i]])
+```
+
+## Testing
+
+Next, we need a dataset to test the performance of our model on unseen data. The simple option would be to split CelebA into train and test partitions. However, I found achieving high test accuracy under this setup to be fairly simple, and resulted in poor performance on other image datasets, such as a random selection of my own images.
+
+Thus, we'll use a [Kaggle dataset](https://www.kaggle.com/datasets/bwandowando/all-these-people-dont-exist){target=_blank} of AI generated faces as the test dataset, which I found required a significantly more complicated model to achieve high accuracy in, but produced models with better performance when given a random selection of my own images.
+
+```{python}
+test_transform = transforms.Compose([
+    transforms.Resize([int(imsize*0.8), int(imsize*0.8)]),
+    transforms.Grayscale(1),
+    transforms.ToTensor()
+])
+
+test_dataset = datasets.ImageFolder(
+    root='ThisPersonDoesNotExist_resize/',
+    transform=test_transform
+)
+
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=batch_size,
+    shuffle=True,
+    generator=torch.Generator(device=device)
+)
+```
+
+Once again, we can get the number of images in the test dataset.
+
+```{python}
+len(test_dataset)
+```
+
+::: {.callout-note}
+This dataset was originally the training dataset, given significantly reduced number of images compared to CelebA, it's unsurprising the initial models did not perform well.
+:::
+
+We can then show a few images from the test dataset, along with their labels.
+
+```{python}
+test_data = iter(test_loader)
+test_images, test_labels = next(test_data)
+
+functions.imshow(torchvision.utils.make_grid(test_images, nrow=5))
+
+for i in range(batch_size):
+    print(classes[test_labels[i]])
+```
+
+# Model Architecture
+
+Next, we'll need to determine the architecture, or combination of layers, that our neural network will use. I tested model architectures starting from basic multilayer perceptrons to various forms of convolutional neural network (CNN), and found that fairly basic CNNs worked well on training and testing data which are split from the same main data source. However, I found that most CNN architectures failed to generalise well, and had poor accuracy when used on images outside of the training and testing splits.
 
 The final model I settled on was a form of residual neural network, which adds residual layers to CNNs. We can define the model using `torch`.
 
@@ -169,7 +286,6 @@ Now let's create an instance of `resnetModel_128` and define our classes.
 # Set seed for reproducibility.
 torch.manual_seed(2687)
 resnet = resnetModel_128()
-classes = ('Female', 'Male')
 ```
 
 We now have `resnet` which is our model which we defined earlier, but with completely random parameters. Let's make a prediction based on the untrained model
@@ -192,99 +308,6 @@ As expected, the model is doing nothing more than randomly guessing. Next, we'll
 
 # Training
 
-In order to make our model better, we need to train it. Training a neural network requires a training dataset and goes through the following iteration until the model is sufficiently trained.
-
-1. Make predictions on training data using forward propagation.
-2. Calculate loss measure based on the difference between predicted labels and actual labels.
-3. Use back propagation to determine changes to parameters required to minimise loss measure.
-4. Make changes to parameters.
-
-Let's explore how we can do this using PyTorch.
-
-## Dataset
-
-Conveniently for us, the [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html){target=_blank} is a publicly available labelled dataset of around 200k faces. As it's a pretty well known dataset, there is a function in PyTorch that creates a automatically creates a dataset object for CelebA.
-
-```{python}
-#| output: false
-
-imsize = int(128/0.8)
-batch_size = 10
-
-fivecrop_transform = transforms.Compose([
-    transforms.Resize([imsize, imsize]),
-    transforms.Grayscale(1),
-    transforms.FiveCrop(int(imsize*0.8)),
-    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops]))
-])
-
-train_dataset = datasets.CelebA(
-    root = './',
-    split='all',
-    target_type='attr',
-    transform=fivecrop_transform,
-    download=True
-)
-
-train_loader = DataLoader(
-    train_dataset,
-    batch_size=batch_size,
-    shuffle=True,
-    generator=torch.Generator(device=device)
-)
-```
-
-```{python}
-train_data = iter(train_loader)
-train_images, train_labels = next(train_data)
-
-factor = func.attributes.index('Male')
-
-func.imshow(torchvision.utils.make_grid(
-    torch.cat((
-        train_images[0],
-        train_images[1],
-        train_images[2]
-    )),
-    nrow=5
-))
-
-for i in range(3):
-    print(classes[train_labels[:, factor][i]])
-```
-
-```{python}
-test_transform = transforms.Compose([
-    transforms.Resize([int(imsize*0.8), int(imsize*0.8)]),
-    transforms.Grayscale(1),
-    transforms.ToTensor()
-])
-
-test_dataset = datasets.ImageFolder(
-    root='ThisPersonDoesNotExist_resize/',
-    transform=test_transform
-)
-
-test_loader = DataLoader(
-    test_dataset,
-    batch_size=batch_size,
-    shuffle=True,
-    generator=torch.Generator(device=device)
-)
-```
-
-```{python}
-test_data = iter(test_loader)
-test_images, test_labels = next(test_data)
-
-func.imshow(torchvision.utils.make_grid(test_images, nrow=5))
-
-for i in range(batch_size):
-    print(classes[test_labels[i]])
-```
-
-## Stochastic Gradient Descent
-
 ```{python}
 resnet.train()
 criterion = nn.CrossEntropyLoss()
@@ -302,7 +325,7 @@ scheduler = torch.optim.lr_scheduler.StepLR(
 ```
 
 ```{python}
-parameters = func.n_parameters(resnet)
+parameters = functions.n_parameters(resnet)
 print(f'Total Parameters: {parameters[0]}')
 print(f'Trainable Parameters: {parameters[1]}')
 ```
@@ -362,6 +385,8 @@ for i in range(epochs):
     break
 ```
 
+# Results
+
 ```{python}
 import pandas as pd
 
@@ -382,8 +407,6 @@ test_plot_MA_data.dropna(inplace=True)
 train_plot_MA_data.plot(use_index=True)
 test_plot_MA_data.plot(use_index=True)
 ```
-
-# Results
 
 ```{python}
 resnet.load_state_dict(torch.load('trained_models/resnetModel_128_epoch_2.pt', map_location=device))
