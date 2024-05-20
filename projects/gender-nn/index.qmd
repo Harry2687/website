@@ -201,9 +201,7 @@ for i in range(batch_size):
 
 # Model Architecture
 
-Next, we'll need to determine the architecture, or combination of layers, that our neural network will use. I tested model architectures starting from basic multilayer perceptrons to various forms of convolutional neural network (CNN), and found that fairly basic CNNs worked well on training and testing data which are split from the same main data source. However, I found that most CNN architectures failed to generalise well, and had poor accuracy when used on images outside of the training and testing splits.
-
-The final model I settled on was a form of residual neural network, which adds residual layers to CNNs. We can define the model using `torch`.
+Next, we'll need to determine the architecture, or combination of layers, that our neural network will use. 
 
 ```{python}
 import torch.nn as nn
@@ -343,8 +341,10 @@ for i in range(epochs):
         X_train = X_train.to(device)
         y_train = y_train[:, factor]
 
+        # Input all crops as separate images.
         bs, ncrops, c, h, w = X_train.size()
         y_pred_crops = resnet.forward(X_train.view(-1, c, h, w))
+        # Let image prediction be the mean of crop predictions.
         y_pred = y_pred_crops.view(bs, ncrops, -1).mean(1)
 
         loss = criterion(y_pred, y_train)
@@ -368,6 +368,7 @@ for i in range(epochs):
         for j, (X_test, y_test) in enumerate(test_loader):
             X_test = X_test.to(device)
             y_val = resnet.forward(X_test)
+
             loss = criterion(y_val, y_test)
 
             predicted = torch.max(y_val.data, 1)[1]
