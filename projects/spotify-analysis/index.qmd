@@ -7,8 +7,6 @@ author:
 date: 2024-03-23
 image: kmeans-preview.png
 draft: false
-execute:
-  freeze: true
 ---
 
 ```{r}
