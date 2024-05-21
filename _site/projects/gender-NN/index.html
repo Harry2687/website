@@ -261,7 +261,7 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 </div>
 </div>
 <p>We’ll achieve this using publicly available training and testing datasets. But first, we need to load these images as a data type that can be inputted into a PyTorch neural network, a <code>torch</code> tensor. We can do this using a couple of modules from <code>torchvision</code>.</p>
-<div id="464d203c" class="cell" data-execution_count="1">
+<div id="6e5397d0" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.datasets <span class="im">as</span> datasets</span>
@@ -272,7 +272,7 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> modules.functions <span class="im">as</span> functions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then use our imported modules to create <code>Dataset</code> and <code>DataLoader</code> objects. The <code>Dataset</code> represents our image data, after applying a transformation which resizes our images to 128 by 128 pixels, converts to grayscale (this saves us some computational power, hopefully colour isn’t an important feature), and then converts the image to a tensor. The <code>DataLoader</code> object then creates an iterable object using our <code>Dataset</code>, which is useful for accessing our data in batches, this will help us later when we train our model.</p>
-<div id="3065106e" class="cell" data-execution_count="2">
+<div id="fc85a7c2" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set device for GPU acceleration, if available.</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> functions.set_device()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -294,12 +294,12 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s set <code>images</code> and <code>labels</code> as the image and label tensors in the first and only batch in our <code>DataLoader</code>.</p>
-<div id="f954309d" class="cell" data-execution_count="3">
+<div id="ec8c1156" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> <span class="bu">iter</span>(my_dataset_loader)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>images, labels <span class="op">=</span> <span class="bu">next</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then display the image tensors using a simple function that uses <code>matplotlib.pyplot</code> under the hood.</p>
-<div id="192f8e19" class="cell" data-execution_count="4">
+<div id="6bc21f89" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>functions.imshow(torchvision.utils.make_grid(images))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -316,7 +316,7 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 <section id="training" class="level2">
 <h2 class="anchored" data-anchor-id="training">Training</h2>
 <p>For this project, we’ll require a dataset containing a large number of labelled images of faces, which as you can imagine isn’t all that common. Luckily for us, the <a href="https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html" target="_blank">CelebA</a> is a publicly available labelled dataset of around 200k faces. As it’s a well known dataset, there is a function in <code>torch</code> that automatically downloads the required files (sometimes, usually the Google drive link is down) and creates a dataset object for the CelebA.</p>
-<div id="0268a38f" class="cell" data-execution_count="5">
+<div id="7cfe3a67" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>imsize <span class="op">=</span> <span class="bu">int</span>(<span class="dv">128</span><span class="op">/</span><span class="fl">0.8</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>classes <span class="op">=</span> (<span class="st">'Female'</span>, <span class="st">'Male'</span>)</span>
@@ -344,7 +344,7 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 <span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can verify the number of training images using <code>len</code>.</p>
-<div id="00aa68d4" class="cell" data-execution_count="6">
+<div id="d8d025ef" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(train_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>202599</code></pre>
@@ -365,7 +365,7 @@ Note
 </div>
 </div>
 <p>We can then access a few sample training images and their labels as we did previously.</p>
-<div id="7bf99994" class="cell" data-execution_count="7">
+<div id="6a926651" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train_data <span class="op">=</span> <span class="bu">iter</span>(train_loader)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>train_images, train_labels <span class="op">=</span> <span class="bu">next</span>(train_data)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -401,7 +401,7 @@ Female</code></pre>
 <h2 class="anchored" data-anchor-id="testing">Testing</h2>
 <p>Next, we need a dataset to test the performance of our model on unseen data. The simple option would be to split CelebA into train and test partitions. However, I found achieving high test accuracy under this setup to be fairly simple, and resulted in poor performance on other image datasets, such as a random selection of my own images.</p>
 <p>Thus, we’ll use a <a href="https://www.kaggle.com/datasets/bwandowando/all-these-people-dont-exist" target="_blank">Kaggle dataset</a> of AI generated faces as the test dataset, which I found required a significantly more complicated model to achieve high accuracy in, but produced models with better performance when given a random selection of my own images.</p>
-<div id="d0ce1289" class="cell" data-execution_count="8">
+<div id="a3fbbc79" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>test_transform <span class="op">=</span> transforms.Compose([</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    transforms.Resize([<span class="bu">int</span>(imsize<span class="op">*</span><span class="fl">0.8</span>), <span class="bu">int</span>(imsize<span class="op">*</span><span class="fl">0.8</span>)]),</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    transforms.Grayscale(<span class="dv">1</span>),</span>
@@ -421,7 +421,7 @@ Female</code></pre>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Once again, we can get the number of images in the test dataset.</p>
-<div id="51998a0b" class="cell" data-execution_count="9">
+<div id="09ac094d" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(test_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>6873</code></pre>
@@ -441,7 +441,7 @@ Note
 </div>
 </div>
 <p>We can then show a few images from the test dataset, along with their labels.</p>
-<div id="e830e352" class="cell" data-execution_count="10">
+<div id="6d58af70" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>test_data <span class="op">=</span> <span class="bu">iter</span>(test_loader)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>test_images, test_labels <span class="op">=</span> <span class="bu">next</span>(test_data)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -473,8 +473,8 @@ Male</code></pre>
 </section>
 <section id="model-architecture" class="level1">
 <h1>Model Architecture</h1>
-<p>Next, we’ll need to determine the architecture, or combination of layers, that our neural network will use.</p>
-<div id="f4f30609" class="cell" data-execution_count="11">
+<p>Next, we’ll need to determine the architecture, or combination of layers and activation functions, that our neural network will use. I’ll skip the experimentation and failed models part of this project but I found that a scaled up version of the model used in this <a href="https://github.com/CallanL/Facial_Feature_Detection_Neural_Network/tree/main" target="_blank">repository</a> by <a href="https://github.com/CallanL" target="_blank">CallenL</a> worked the best (of the models I tried). This model seemed to perform better due to a combination of having residual layers and more convolution layers.</p>
+<div id="67978a4d" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -548,14 +548,14 @@ Male</code></pre>
 <span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> F.softmax(x, dim<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now let’s create an instance of <code>resnetModel_128</code> and define our classes.</p>
-<div id="f196ec12" class="cell" data-execution_count="12">
+<p>We can now create a variable using our neural network class.</p>
+<div id="8dd498dd" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility.</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">2687</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>resnet <span class="op">=</span> resnetModel_128()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We now have <code>resnet</code> which is our model which we defined earlier, but with completely random parameters. Let’s make a prediction based on the untrained model</p>
-<div id="f289a978" class="cell" data-execution_count="13">
+<p>We now have the variable <code>resnet</code> which is our model with completely random parameters. For fun, let’s make a prediction based on the untrained model.</p>
+<div id="239bd942" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>resnet.<span class="bu">eval</span>()</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  output <span class="op">=</span> resnet.forward(images.to(device))</span>
@@ -588,11 +588,11 @@ Male weight: 0.49847298860549927
 </code></pre>
 </div>
 </div>
-<p>As expected, the model is doing nothing more than randomly guessing. Next, we’ll explore how we can train our model and make it smarter.</p>
+<p>As expected, the model is doing nothing more than randomly guessing.</p>
 </section>
 <section id="training-1" class="level1">
 <h1>Training</h1>
-<div id="4fa8101e" class="cell" data-execution_count="14">
+<div id="2639138b" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>resnet.train()</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>criterion <span class="op">=</span> nn.CrossEntropyLoss()</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> torch.optim.SGD(</span>
@@ -607,7 +607,7 @@ Male weight: 0.49847298860549927
 <span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    gamma<span class="op">=</span><span class="fl">0.1</span></span>
 <span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="811cd191" class="cell" data-execution_count="15">
+<div id="5605d06b" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> functions.n_parameters(resnet)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Total Parameters: </span><span class="sc">{</span>parameters[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">'</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Trainable Parameters: </span><span class="sc">{</span>parameters[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -616,7 +616,7 @@ Male weight: 0.49847298860549927
 Trainable Parameters: 41400194</code></pre>
 </div>
 </div>
-<div id="f06c97b6" class="cell" data-execution_count="16">
+<div id="ff1875f2" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">2</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>train_losses <span class="op">=</span> []</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>test_losses <span class="op">=</span> []</span>
@@ -686,7 +686,7 @@ Test Accuracy: 0.30000001192092896</code></pre>
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
-<div id="a9fe4712" class="cell" data-execution_count="17">
+<div id="d2e7c315" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>train_plot_data <span class="op">=</span> pd.read_csv(<span class="st">'training_plot_data/train_data.csv'</span>)</span>
@@ -695,7 +695,7 @@ Test Accuracy: 0.30000001192092896</code></pre>
 <span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>train_plot_data <span class="op">=</span> train_plot_data.drop(columns<span class="op">=</span><span class="st">'Unnamed: 0'</span>)</span>
 <span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>test_plot_data <span class="op">=</span> test_plot_data.drop(columns<span class="op">=</span><span class="st">'Unnamed: 0'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="3518cde0" class="cell" data-execution_count="18">
+<div id="1d956acb" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>train_plot_MA_data <span class="op">=</span> train_plot_data.rolling(<span class="dv">500</span>).mean()</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>train_plot_MA_data.dropna(inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -719,7 +719,7 @@ Test Accuracy: 0.30000001192092896</code></pre>
 </div>
 </div>
 </div>
-<div id="bd34492a" class="cell" data-execution_count="19">
+<div id="a7840f46" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>resnet.load_state_dict(torch.load(<span class="st">'trained_models/resnetModel_128_epoch_2.pt'</span>, map_location<span class="op">=</span>device))</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>resnet.<span class="bu">eval</span>()</span>

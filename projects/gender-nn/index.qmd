@@ -201,7 +201,7 @@ for i in range(batch_size):
 
 # Model Architecture
 
-Next, we'll need to determine the architecture, or combination of layers, that our neural network will use. 
+Next, we'll need to determine the architecture, or combination of layers and activation functions, that our neural network will use. I'll skip the experimentation and failed models part of this project but I found that a scaled up version of the model used in this [repository](https://github.com/CallanL/Facial_Feature_Detection_Neural_Network/tree/main){target=_blank} by [CallenL](https://github.com/CallanL){target=_blank} worked the best (of the models I tried). This model seemed to perform better due to a combination of having residual layers and more convolution layers.
 
 ```{python}
 import torch.nn as nn
@@ -278,7 +278,7 @@ class resnetModel_128(nn.Module):
         return x
 ```
 
-Now let's create an instance of `resnetModel_128` and define our classes.
+We can now create a variable using our neural network class.
 
 ```{python}
 # Set seed for reproducibility.
@@ -286,7 +286,7 @@ torch.manual_seed(2687)
 resnet = resnetModel_128()
 ```
 
-We now have `resnet` which is our model which we defined earlier, but with completely random parameters. Let's make a prediction based on the untrained model
+We now have the variable `resnet` which is our model with completely random parameters. For fun, let's make a prediction based on the untrained model.
 
 ```{python}
 resnet.eval()
@@ -302,7 +302,7 @@ for i in range(len(predicted)):
   print(f'{classes[1]} weight: {output[i][1]}\n')
 ```
 
-As expected, the model is doing nothing more than randomly guessing. Next, we'll explore how we can train our model and make it smarter.
+As expected, the model is doing nothing more than randomly guessing.
 
 # Training
 
