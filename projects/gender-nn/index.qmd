@@ -123,7 +123,7 @@ We can verify the number of training images using `len`.
 len(train_dataset)
 ```
 
-Note that the set of transformations applied to the training dataset contains `FiveCrop` in addition to the standard resize and grayscale transformations, `FiveCrop` makes 5 cropped versions of each image (who would have guessed), one for each corner plus centered. This improves model performance and reduces overfitting to the training dataset. However, this also increases the computation resources required to train the model on this dataset by a factor of 5.
+Note that the set of transformations applied to the training dataset contains `FiveCrop` in addition to the standard resize and grayscale transformations, `FiveCrop` makes 5 cropped versions of each image (who would have guessed), one for each corner plus centered. This improves model performance and reduces overfitting to the training dataset. However, this also increases the computational resources required to train the model on this dataset by a factor of 5.
 
 ::: {.callout-note}
 There is also a `TenCrop` function which applies the transformations from `FiveCrop`, plus a vertical flip. I would have liked to use `TenCrop`, but my old MacBook did not agree with that decision.
@@ -153,7 +153,7 @@ for i in range(3):
 
 ## Testing
 
-Next, we need a dataset to test the performance of our model on unseen data. The simple option would be to split CelebA into train and test partitions. However, I found achieving high test accuracy under this setup to be fairly simple, and resulted in poor performance on other image datasets, such as a random selection of my own images.
+Next, we need a dataset to test the performance of our model on unseen data. The simple option would be to split CelebA into train and test partitions. However, I found achieving high test accuracy under this setup to be fairly simple, and resulted in poor performance on other image datasets.
 
 Thus, we'll use a [Kaggle dataset](https://www.kaggle.com/datasets/bwandowando/all-these-people-dont-exist){target=_blank} of AI generated faces as the test dataset, which I found required a significantly more complicated model to achieve high accuracy in, but produced models with better performance when given a random selection of my own images.
 
@@ -201,7 +201,7 @@ for i in range(batch_size):
 
 # Model Architecture
 
-Next, we'll need to determine the architecture, or combination of layers and activation functions, that our neural network will use. I'll skip the experimentation and failed models part of this project but I found that a scaled up version of the model used in this [repository](https://github.com/CallanL/Facial_Feature_Detection_Neural_Network/tree/main){target=_blank} by [CallenL](https://github.com/CallanL){target=_blank} worked the best (of the models I tried). This model seemed to perform better due to a combination of having residual layers and more convolution layers.
+Next, we'll need to determine the architecture, or combination of layers and activation functions, that our neural network will use. I'll skip the experimentation and failed models part of this project but I found that a scaled up version of the model used in this [repository](https://github.com/CallanL/Facial_Feature_Detection_Neural_Network/tree/main){target=_blank} by [CallenL](https://github.com/CallanL){target=_blank} worked the best (of the models I tried). This model seemed to perform better due to a combination of having residual layers (enabling back propogation to work better) and more convolution layers (allowing more features to be detected).
 
 ```{python}
 import torch.nn as nn
@@ -286,7 +286,15 @@ torch.manual_seed(2687)
 resnet = resnetModel_128()
 ```
 
-We now have the variable `resnet` which is our model with completely random parameters. For fun, let's make a prediction based on the untrained model.
+Now is also a good time to check how many parameters (individual weights and biases) our model contains.
+
+```{python}
+total_params, trainable_params = functions.n_parameters(resnet)
+print(f'Total Parameters: {total_params}')
+print(f'Trainable Parameters: {trainable_params}')
+```
+
+The variable `resnet` is our model initialised with completely random parameters. For fun, let's make a prediction based on the untrained model.
 
 ```{python}
 resnet.eval()
@@ -302,15 +310,19 @@ for i in range(len(predicted)):
   print(f'{classes[1]} weight: {output[i][1]}\n')
 ```
 
-As expected, the model is doing nothing more than randomly guessing.
+As expected, the weights are about 50-50 which indicates the model isn't doing much predicting.
 
 # Training
+
+So, how to we change the parameters of the model such that it generates more accurate outputs? Basically, by doing an interative process known as backpropagation, which incrementally changes the model parameters based on the partial derivatives of the parameters with respect to the loss function, which minimises error and thus makes the model more accurate. This [YouTube video](https://youtu.be/SmZmBKc7Lrs?si=wrAQCV6b65fKmeao){target=_blank} by Artem Kirsanov provides a more detailed explanation of backpropagation.
+
+In the code below, `criterion` specifies the loss function and `optimizer` specifies the optimisation algorithm used, which in this case is stochastic gradient descent. The additional optional variable `scheduler` specifies how the learning rate changes. Here I have used `torch.optim.lr_scheduler.StepLR` to multiply the learning rate by `0.1` after every step, with step being defined as an epoch in the training loop.
 
 ```{python}
 resnet.train()
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(
-    resnet.parameters(), 
+    resnet.parameters(),
     lr=0.01,
     momentum=0.9,
     weight_decay=0.001
@@ -322,11 +334,21 @@ scheduler = torch.optim.lr_scheduler.StepLR(
 )
 ```
 
-```{python}
-parameters = functions.n_parameters(resnet)
-print(f'Total Parameters: {parameters[0]}')
-print(f'Trainable Parameters: {parameters[1]}')
-```
+Now we can train our model. For each batch in our training data, we need to:
+
+1. Resize the input tensors such that `resnet.forward` can take all cropped image tensors as inputs.
+2. Average the outputs of each group of cropped image tensors, so each distinct image only gets one final prediction.
+3. Calculate loss based on predicted and actual labels.
+4. Update parameters using backpropagation.
+5. Record loss and accuracy.
+
+::: {.callout-note}
+Steps 1 and 2 would be unnecessary if we didn't use `FiveCrop`.
+:::
+
+When we have completed this loop for the entire training dataset, we then make predictions on the entire test dataset via its batches and record the loss and accuracy for each batch.
+
+This entire process is called an epoch, and we specify how many epochs to train for. I chose 2 epochs for this model due to time constraints (this exact training setup took 20 hours on my 2020 MacBook Pro), and because it resulted in satisfactory performance anyway.
 
 ```{python}
 epochs = 2
@@ -386,7 +408,7 @@ for i in range(epochs):
     break
 ```
 
-# Results
+Since the training loop takes a significant amount of time, I've broken the loop to demonstrate how it works on this page. However, the loss and accuracy data produced by the training loop was conveniently saved last time the model was trained, so we'll load it in with `pandas` and plot it.
 
 ```{python}
 import pandas as pd
@@ -396,18 +418,30 @@ test_plot_data = pd.read_csv('training_plot_data/test_data.csv')
 
 train_plot_data = train_plot_data.drop(columns='Unnamed: 0')
 test_plot_data = test_plot_data.drop(columns='Unnamed: 0')
-```
 
-```{python}
 train_plot_MA_data = train_plot_data.rolling(500).mean()
 train_plot_MA_data.dropna(inplace=True)
 
 test_plot_MA_data = test_plot_data.rolling(50).mean()
 test_plot_MA_data.dropna(inplace=True)
 
-train_plot_MA_data.plot(use_index=True)
-test_plot_MA_data.plot(use_index=True)
+train_plot_MA_data.plot(
+    use_index=True, 
+    title='Training Loss/Accuracy (2 Epochs)', 
+    xlabel='Batch'
+)
+test_plot_MA_data.plot(
+    use_index=True, 
+    title='Test Loss/Accuracy (2 Epochs)', 
+    xlabel='Batch'
+)
 ```
+
+We can notice that the model converges fairly quickly, with improvements to performance plateauing after about 5000 batches. Testing performance stays relatively consistent, as it's only evaluated after a full epoch of training is completed, and the model converges before a full epoch is complete.
+
+# Results
+
+Going back to our original objective, we will once again attempt to classify Freya, Kratos, and me. But this time, we will use our trained model parameters, which can be loaded in using `torch.load`.
 
 ```{python}
 resnet.load_state_dict(torch.load('trained_models/resnetModel_128_epoch_2.pt', map_location=device))
@@ -424,3 +458,7 @@ for i in range(len(predicted)):
   print(f'{classes[0]} weight: {output[i][0]}')
   print(f'{classes[1]} weight: {output[i][1]}\n')
 ```
+
+Success! The neural network successfully classified all 3 images. It even picked up that Kratos has a higher likelihood of being a man compared to me, which is fairly reasonable.
+
+The code to train and use this model to make predictions on custom images is available in this GitHub [repo](https://github.com/Harry2687/Gender-Prediction){target=_blank}.

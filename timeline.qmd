@@ -6,8 +6,6 @@ title: "My Timeline"
 
 #### Qualify as a Fellow Actuary (FIAA).
 
-#### Learn about data science!
-
 ## {{<fa square-check>}} Past Achievements
 
 ### 2023
