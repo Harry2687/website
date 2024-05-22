@@ -1,7 +1,7 @@
 # My-Website
 
-Source code for Harry's [personal website](https://harryz.netlify.app/){target=_blank}.
+Source code for Harry's [personal website](https://harryz.netlify.app/).
 
-Made using [Quarto](https://quarto.org/){target=_blank}, [R](https://www.r-project.org/){target=_blank}, and [Python](https://www.python.org/){target=_blank}.
+Made using [Quarto](https://quarto.org/), [R](https://www.r-project.org/), and [Python](https://www.python.org/).
 
-Deployed using [Netlify](https://www.netlify.com/){target=_blank}.
+Deployed using [Netlify](https://www.netlify.com/).
