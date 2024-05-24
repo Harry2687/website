@@ -4,11 +4,8 @@ description: "Classification of faces into genders using a convolutional neural 
 categories: [Gender Classification, Neural Networks, Python, PyTorch]
 author:
   name: Harry Zhong
-date: last-modified
+date: 2024-05-24
 image: cnn-layer.png
-draft: false
-execute:
-  freeze: auto
 ---
 
 # Introduction
@@ -424,18 +421,31 @@ train_plot_MA_data.dropna(inplace=True)
 
 test_plot_MA_data = test_plot_data.rolling(50).mean()
 test_plot_MA_data.dropna(inplace=True)
+```
 
+::: {.panel-tabset}
+
+## Training Plot
+
+```{python}
 train_plot_MA_data.plot(
     use_index=True, 
     title='Training Loss/Accuracy (2 Epochs)', 
     xlabel='Batch'
 )
+```
+
+## Testing Plot
+
+```{python}
 test_plot_MA_data.plot(
     use_index=True, 
     title='Test Loss/Accuracy (2 Epochs)', 
     xlabel='Batch'
 )
 ```
+
+:::
 
 We can notice that the model converges fairly quickly, with improvements to performance plateauing after about 5000 batches. Testing performance stays relatively consistent, as it's only evaluated after a full epoch of training is completed, and the model converges before a full epoch is complete.
 
@@ -460,5 +470,114 @@ for i in range(len(predicted)):
 ```
 
 Success! The neural network successfully classified all 3 images. It even picked up that Kratos has a higher likelihood of being a man compared to me, which is fairly reasonable.
+
+To get a bit of insight into what the neural network is doing we can visualise what the happens to an image as it passes through the convolutional layers. This shows us how the convolutional layers chooses features and the weight of each feature for our chosen image.
+
+```{python}
+# Choose image of Kratos.
+image = images[1]
+
+with torch.no_grad():
+    layer_1 = resnet.conv_1(image.to(device).unsqueeze(0))
+    layer_2 = resnet.res_1(layer_1) + layer_1
+    layer_3 = resnet.conv_2(layer_2)
+    layer_4 = resnet.res_2(layer_3) + layer_3
+    layer_5 = resnet.conv_3(layer_4)
+    layer_6 = resnet.res_3(layer_5) + layer_5
+    layer_7 = resnet.conv_4(layer_6)
+    layer_8 = resnet.res_4(layer_7) + layer_7
+```
+
+::: {.panel-tabset}
+
+## Layer 1
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_1.squeeze(0).unsqueeze(1),
+        nrow=int(64**0.5)
+    )
+)
+```
+
+## Layer 2
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_2.squeeze(0).unsqueeze(1),
+        nrow=int(64**0.5)
+    )
+)
+```
+
+## Layer 3
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_3.squeeze(0).unsqueeze(1),
+        nrow=int(256**0.5)
+    )
+)
+```
+
+## Layer 4
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_4.squeeze(0).unsqueeze(1),
+        nrow=int(256**0.5)
+    )
+)
+```
+
+## Layer 5
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_5.squeeze(0).unsqueeze(1),
+        nrow=int(512**0.5)
+    )
+)
+```
+
+## Layer 6
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_6.squeeze(0).unsqueeze(1),
+        nrow=int(512**0.5)
+    )
+)
+```
+
+## Layer 7
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_7.squeeze(0).unsqueeze(1),
+        nrow=int(1024**0.5)
+    )
+)
+```
+
+## Layer 8
+
+```{python}
+functions.imshow(
+    torchvision.utils.make_grid(
+        layer_8.squeeze(0).unsqueeze(1),
+        nrow=int(1024**0.5)
+    )
+)
+```
+
+:::
 
 The code to train and use this model to make predictions on custom images is available in this GitHub [repo](https://github.com/Harry2687/Gender-Prediction){target=_blank}.
