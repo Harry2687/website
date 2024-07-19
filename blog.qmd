@@ -1,0 +1,9 @@
+---
+title: "My Blog"
+description: "Here I will be posting about some of my experiences which aren't project related."
+listing: 
+  contents: blog
+  type: grid
+  sort: "date desc" 
+  categories: true 
+---

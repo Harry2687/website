@@ -7,7 +7,3 @@ listing:
   sort: "date desc" 
   categories: true 
 ---
-
-Projects I am currently working on include:
-
-- [{{<fa brands github>}}](https://github.com/Harry2687/Messenger-Analysis){target="_blank"} Identifying conversation topics within my Facebook Messenger chat history using latent Dirichlet allocation.

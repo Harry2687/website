@@ -22,7 +22,7 @@ about:
 
 ### {{<fa user-tie>}} About Me
 
-Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst. I enjoy spending my time learning about data science, lifting weights, and playing God of War.
+Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, lifting weights, and playing God of War.
 
 I made this website as a way to document various personal projects and to showcase my achievements and plans for the future.
 
@@ -30,7 +30,9 @@ If you want to know more about me, feel free to contact me via email or connect 
 
 ### {{<fa briefcase>}} Experience
 
-**EBM Insurance & Risk** \| Data Intelligence Analyst \| Nov 2022 - Present
+**Commonwealth Bank** \| Risk Analytics Analyst \| Aug 2024 - Present
+
+**EBM Insurance & Risk** \| Data Analyst \| Nov 2022 - Jul 2024
 
 ### {{<fa graduation-cap>}} Education
 

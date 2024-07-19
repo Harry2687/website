@@ -11,6 +11,8 @@ website:
     left:
       - text: "{{<fa diagram-project>}} Projects"
         href: projects.qmd
+      - text: "{{<fa newspaper>}} Blog"
+        href: blog.qmd
       - text: "{{<fa calendar-check>}} Timeline"
         href: timeline.qmd
     right:

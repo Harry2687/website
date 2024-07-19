@@ -11,7 +11,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Projects I am currently working on include:\n\n Identifying conversation topics within my Facebook Messenger chat history using latent Dirichlet allocation.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Gender Classification using PyTorch\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "projects/gender-nn/index.html",
@@ -81,6 +81,13 @@
     "href": "index.html",
     "title": "Harry Zhong",
     "section": "",
-    "text": "About Me\nHello and welcome to my website! I’m Harry, an Actuary (AIAA) working as a Data Analyst. I enjoy spending my time learning about data science, lifting weights, and playing God of War.\nI made this website as a way to document various personal projects and to showcase my achievements and plans for the future.\nIf you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!\n\n\n Experience\nEBM Insurance & Risk | Data Intelligence Analyst | Nov 2022 - Present\n\n\n Education\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023"
+    "text": "About Me\nHello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, lifting weights, and playing God of War.\nI made this website as a way to document various personal projects and to showcase my achievements and plans for the future.\nIf you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!\n\n\n Experience\nCommonwealth Bank | Risk Analytics Analyst | Aug 2024 - Present\nEBM Insurance & Risk | Data Analyst | Nov 2022 - Jul 2024\n\n\n Education\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023"
+  },
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "My Blog",
+    "section": "",
+    "text": "My experience using R and SQL for reporting in a corporate job\n\n\n\nR\n\n\nSQL\n\n\n\n\n\n\n\nHarry Zhong\n\n\nJul 19, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   }
 ]
