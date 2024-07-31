@@ -13,8 +13,6 @@ website:
         href: projects.qmd
       - text: "{{<fa newspaper>}} Blog"
         href: blog.qmd
-      - text: "{{<fa calendar-check>}} Timeline"
-        href: timeline.qmd
     right:
       - icon: linkedin
         href: https://www.linkedin.com/in/harry2687/

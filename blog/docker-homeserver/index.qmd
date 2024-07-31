@@ -1,0 +1,16 @@
+---
+title: "Using Ubuntu and Docker to create a home server"
+description: "A beginners experience of setting up a home server using Ubuntu and Docker."
+categories: [Linux, Docker]
+author:
+  name: Harry Zhong
+date: today
+image: https://www.docker.com/wp-content/uploads/2023/08/logo-guide-logos-1.svg
+draft: true
+---
+
+# Why build a home server?
+
+# The hardware
+
+# The software

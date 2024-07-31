@@ -22,9 +22,9 @@ about:
 
 ### {{<fa user-tie>}} About Me
 
-Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, lifting weights, and playing God of War.
+Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, computers, and lifting weights.
 
-I made this website as a way to document various personal projects and to showcase my achievements and plans for the future.
+I made this website as a way to document various personal projects, software, and topics which I find interesting.
 
 If you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!
 

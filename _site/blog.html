@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Here I will be posting about some of my experiences which aren’t project related.">
+<meta name="description" content="Here I will be posting about some of my experiences which aren’t data science related.">
 
 <title>Harry Zhong - My Blog</title>
 <style>
@@ -67,9 +67,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
+      searchColumns: ["listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -153,10 +153,6 @@ window.Quarto = {
     <a class="nav-link active" href="./blog.html" aria-current="page"> 
 <span class="menu-text"><i class="fa-solid fa-newspaper" aria-label="newspaper"></i> Blog</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./timeline.html"> 
-<span class="menu-text"><i class="fa-solid fa-calendar-check" aria-label="calendar-check"></i> Timeline</span></a>
-  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -188,7 +184,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(1)</span></div><div class="category" data-category="SQL">SQL <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(0)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -199,7 +195,7 @@ window.Quarto = {
 
 <div>
   <div class="description">
-    Here I will be posting about some of my experiences which aren’t project related.
+    Here I will be posting about some of my experiences which aren’t data science related.
   </div>
 </div>
 
@@ -222,37 +218,7 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="R,SQL" data-listing-date-sort="1721318400000" data-listing-file-modified-sort="1721404477851" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="1">
-<a href="./blog/R-in-corporate-job/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-My experience using R and SQL for reporting in a corporate job
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
-R
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('SQL'); return false;">
-SQL
-</div>
-</div>
-<div class="card-text listing-description">
 
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-Jul 19, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
 </div>
 <div class="listing-no-matching d-none">
 No matching items
