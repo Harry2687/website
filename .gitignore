@@ -3,10 +3,13 @@
 .RData
 .Ruserdata
 
-/.quarto/
-.DS_Store
-/.vscode/
 **/__pycache__
+
+.DS_Store
+
+/.quarto/
+/.vscode/
+
 /projects/gender-nn/celeba
 /projects/gender-nn/ThisPersonDoesNotExist_resize
 /projects/gender-nn/trained_models
