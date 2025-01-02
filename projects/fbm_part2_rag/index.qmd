@@ -1,0 +1,23 @@
+---
+title: "Facebook Messenger Data Part 2: Retrieval Augmented Generation"
+description: "Large language model analysis of Facebook Messenger conversations using Retrieval Augmented Generation (RAG)."
+categories: [RAG, LLM, Python]
+author:
+  name: Harry Zhong
+date: today
+# image: 
+---
+
+# Introduction
+
+# Data Extraction
+
+# Retrieval Augmented Generation
+
+## Embedding Model
+
+### Chunk Sizing
+
+## Large Language Model
+
+# Results

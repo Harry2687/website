@@ -1,0 +1,33 @@
+---
+title: "Facebook Messenger Data Part 1: Latent Dirichlet Allocation"
+description: "Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA)."
+categories: [LDA, Python]
+author:
+  name: Harry Zhong
+date: today
+# image: 
+---
+
+# Introduction
+
+# Data Extraction
+
+```{python}
+import modules.preprocessing as prep
+import json
+```
+
+```{python}
+with open('sample_messages.json') as file:
+    sample = file.read()
+
+print(sample)
+```
+
+# Latent Dirichlet Allocation
+
+## How does LDA work?
+
+## Hyperparameter Tuning
+
+# Results

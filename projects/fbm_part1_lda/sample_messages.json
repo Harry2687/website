@@ -1,0 +1,84 @@
+{
+    "participants": [
+      {
+        "name": "Alice"
+      },
+      {
+        "name": "Bob"
+      }
+    ],
+    "messages": [
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710762618535,
+        "content": "Hey, Bob! Did you see the new movie?",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710762591958,
+        "content": "Yeah, I just watched it last night. What did you think of it?",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710762583886,
+        "content": "I loved the plot twist at the end. It was so unexpected!",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749703948,
+        "content": "I know, right? I was totally surprised when it happened.",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710749659963,
+        "content": "What did you think of the special effects?",
+        "reactions": [
+          {
+            "reaction": "\ud83d\ude04",
+            "actor": "Alice"
+          }
+        ],
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710749648743,
+        "content": "I thought they were really well done. The explosions were so cool!",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749547622,
+        "content": "Definitely! I loved the action scenes.",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749516271,
+        "content": "I'm so glad we watched it together. It was a lot more fun that way.",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710749502826,
+        "content": "Definitely! We should do it again soon.",
+        "reactions": [
+          {
+            "reaction": "\ud83d\ude04",
+            "actor": "Alice"
+          }
+        ],
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749462947,
+        "content": "Sounds like a plan to me!",
+        "is_geoblocked_for_viewer": false
+      }
+    ]
+  }

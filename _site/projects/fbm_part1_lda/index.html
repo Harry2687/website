@@ -6,9 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Here I will be posting about my projects, which will involve datasets and problems which I find interesting.">
+<meta name="author" content="Harry Zhong">
+<meta name="dcterms.date" content="2025-01-02">
+<meta name="description" content="Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).">
 
-<title>Harry Zhong - My Projects</title>
+<title>Harry Zhong - Facebook Messenger Data Part 1: Latent Dirichlet Allocation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,27 +23,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<link href="./logo.png" rel="icon" type="image/png">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "language": {
     "search-no-results-text": "No results",
@@ -57,35 +91,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SDG552HSPC"></script>
 
 <script type="text/javascript">
@@ -96,37 +101,8 @@ gtag('js', new Date());
 gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 </script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -136,7 +112,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Harry Zhong</span>
     </a>
   </div>
@@ -146,11 +122,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./projects.html" aria-current="page"> 
+    <a class="nav-link" href="../../projects.html"> 
 <span class="menu-text"><i class="fa-solid fa-diagram-project" aria-label="diagram-project"></i> Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../../blog.html"> 
 <span class="menu-text"><i class="fa-solid fa-newspaper" aria-label="newspaper"></i> Blog</span></a>
   </li>  
 </ul>
@@ -183,26 +159,55 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Gender Classification">Gender Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="K-means">K-means <span class="quarto-category-count">(1)</span></div><div class="category" data-category="LDA">LDA <span class="quarto-category-count">(1)</span></div><div class="category" data-category="LLM">LLM <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Neural Networks">Neural Networks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="PyTorch">PyTorch <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Python">Python <span class="quarto-category-count">(3)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(1)</span></div><div class="category" data-category="RAG">RAG <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data-extraction" id="toc-data-extraction" class="nav-link" data-scroll-target="#data-extraction">Data Extraction</a></li>
+  <li><a href="#latent-dirichlet-allocation" id="toc-latent-dirichlet-allocation" class="nav-link" data-scroll-target="#latent-dirichlet-allocation">Latent Dirichlet Allocation</a>
+  <ul class="collapse">
+  <li><a href="#how-does-lda-work" id="toc-how-does-lda-work" class="nav-link" data-scroll-target="#how-does-lda-work">How does LDA work?</a></li>
+  <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning">Hyperparameter Tuning</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">My Projects</h1>
-</div>
+<h1 class="title">Facebook Messenger Data Part 1: Latent Dirichlet Allocation</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">LDA</div>
+    <div class="quarto-category">Python</div>
+  </div>
+  </div>
 
 <div>
   <div class="description">
-    Here I will be posting about my projects, which will involve datasets and problems which I find interesting.
+    Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).
   </div>
 </div>
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Harry Zhong </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 2, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -212,154 +217,124 @@ window.Quarto = {
 </header>
 
 
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+</section>
+<section id="data-extraction" class="level1">
+<h1>Data Extraction</h1>
+<div id="e6f3bb90" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import modules.preprocessing as prep</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import json</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="2f8cb47e" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'data/sample/sample_messages.json'</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    sample <span class="op">=</span> <span class="bu">file</span>.read()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sample)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+    "participants": [
+      {
+        "name": "Alice"
+      },
+      {
+        "name": "Bob"
+      }
+    ],
+    "messages": [
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710762618535,
+        "content": "Hey, Bob! Did you see the new movie?",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710762591958,
+        "content": "Yeah, I just watched it last night. What did you think of it?",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710762583886,
+        "content": "I loved the plot twist at the end. It was so unexpected!",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749703948,
+        "content": "I know, right? I was totally surprised when it happened.",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710749659963,
+        "content": "What did you think of the special effects?",
+        "reactions": [
+          {
+            "reaction": "\ud83d\ude04",
+            "actor": "Alice"
+          }
+        ],
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710749648743,
+        "content": "I thought they were really well done. The explosions were so cool!",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749547622,
+        "content": "Definitely! I loved the action scenes.",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749516271,
+        "content": "I'm so glad we watched it together. It was a lot more fun that way.",
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Bob",
+        "timestamp_ms": 1710749502826,
+        "content": "Definitely! We should do it again soon.",
+        "reactions": [
+          {
+            "reaction": "\ud83d\ude04",
+            "actor": "Alice"
+          }
+        ],
+        "is_geoblocked_for_viewer": false
+      },
+      {
+        "sender_name": "Alice",
+        "timestamp_ms": 1710749462947,
+        "content": "Sounds like a plan to me!",
+        "is_geoblocked_for_viewer": false
+      }
+    ]
+  }</code></pre>
+</div>
+</div>
+</section>
+<section id="latent-dirichlet-allocation" class="level1">
+<h1>Latent Dirichlet Allocation</h1>
+<section id="how-does-lda-work" class="level2">
+<h2 class="anchored" data-anchor-id="how-does-lda-work">How does LDA work?</h2>
+</section>
+<section id="hyperparameter-tuning" class="level2">
+<h2 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h2>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="RAG,LLM,Python" data-listing-date-sort="1735747200000" data-listing-file-modified-sort="1735791893593" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="14">
-<a href="./projects/fbm_part2_rag/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Facebook Messenger Data Part 2: Retrieval Augmented Generation
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('RAG'); return false;">
-RAG
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('LLM'); return false;">
-LLM
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Python'); return false;">
-Python
-</div>
-</div>
-<div class="card-text listing-description">
-Large language model analysis of Facebook Messenger conversations using Retrieval Augmented Generation (RAG).
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-Jan 2, 2025
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="LDA,Python" data-listing-date-sort="1735747200000" data-listing-file-modified-sort="1735797669977" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="28">
-<a href="./projects/fbm_part1_lda/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Facebook Messenger Data Part 1: Latent Dirichlet Allocation
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('LDA'); return false;">
-LDA
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Python'); return false;">
-Python
-</div>
-</div>
-<div class="card-text listing-description">
-Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-Jan 2, 2025
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="Gender Classification,Neural Networks,Python,PyTorch" data-listing-date-sort="1716480000000" data-listing-file-modified-sort="1716528543978" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3128">
-<a href="./projects/gender-nn/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./projects/gender-nn/cnn-layer.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Gender Classification using PyTorch
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('Gender Classification'); return false;">
-Gender Classification
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Neural Networks'); return false;">
-Neural Networks
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Python'); return false;">
-Python
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('PyTorch'); return false;">
-PyTorch
-</div>
-</div>
-<div class="card-text listing-description">
-Classification of faces into genders using a convolutional neural network with residual layers.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-May 24, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="3" data-categories="K-means,R" data-listing-date-sort="1711123200000" data-listing-file-modified-sort="1716528543986" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6170">
-<a href="./projects/spotify-analysis/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./projects/spotify-analysis/kmeans-preview.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Analysis of My Spotify Data
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('K-means'); return false;">
-K-means
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
-R
-</div>
-</div>
-<div class="card-text listing-description">
-Categorisation of my Spotify listening history using k-means clustering.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-Mar 23, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

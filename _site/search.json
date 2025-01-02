@@ -11,7 +11,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Gender Classification using PyTorch\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Facebook Messenger Data Part 2: Retrieval Augmented Generation\n\n\n\nRAG\n\n\nLLM\n\n\nPython\n\n\n\nLarge language model analysis of Facebook Messenger conversations using Retrieval Augmented Generation (RAG).\n\n\n\nHarry Zhong\n\n\nJan 2, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nFacebook Messenger Data Part 1: Latent Dirichlet Allocation\n\n\n\nLDA\n\n\nPython\n\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\nHarry Zhong\n\n\nJan 2, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "projects/gender-nn/index.html",
@@ -89,5 +89,40 @@
     "title": "My Blog",
     "section": "",
     "text": "No matching items"
+  },
+  {
+    "objectID": "projects/fbm_part1_lda/index.html#how-does-lda-work",
+    "href": "projects/fbm_part1_lda/index.html#how-does-lda-work",
+    "title": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation",
+    "section": "How does LDA work?",
+    "text": "How does LDA work?"
+  },
+  {
+    "objectID": "projects/fbm_part1_lda/index.html#hyperparameter-tuning",
+    "href": "projects/fbm_part1_lda/index.html#hyperparameter-tuning",
+    "title": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation",
+    "section": "Hyperparameter Tuning",
+    "text": "Hyperparameter Tuning"
+  },
+  {
+    "objectID": "projects/fbm_part2_rag/index.html",
+    "href": "projects/fbm_part2_rag/index.html",
+    "title": "Facebook Messenger Data Part 2: Retrieval Augmented Generation",
+    "section": "",
+    "text": "Introduction"
+  },
+  {
+    "objectID": "projects/fbm_part2_rag/index.html#embedding-model",
+    "href": "projects/fbm_part2_rag/index.html#embedding-model",
+    "title": "Facebook Messenger Data Part 2: Retrieval Augmented Generation",
+    "section": "Embedding Model",
+    "text": "Embedding Model\n\nChunk Sizing"
+  },
+  {
+    "objectID": "projects/fbm_part2_rag/index.html#large-language-model",
+    "href": "projects/fbm_part2_rag/index.html#large-language-model",
+    "title": "Facebook Messenger Data Part 2: Retrieval Augmented Generation",
+    "section": "Large Language Model",
+    "text": "Large Language Model"
   }
 ]
