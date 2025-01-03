@@ -12,5 +12,5 @@
 .DS_Store
 
 # Other
-.quarto
 .vscode
+/.quarto/
