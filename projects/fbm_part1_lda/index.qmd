@@ -268,7 +268,50 @@ for doc in documents[0:3]:
 
 # Latent Dirichlet Allocation
 
-## How does LDA work?
+LDA is an unsupervised machine learning algorithm used for topic discovery within a collection of documents, where a topic is considered to be a distribution of words. LDA models the creation of documents (members of the chat messaging in this case) as a generative process involving two Dirichlet distributions and two multinomial distributions (with one trial).
+
+## Dirichlet Distribution
+
+The Dirichlet distribution is a continuous multivariate distribution, LDA typically uses the symmetric case of the Dirichlet distribution where the parameter is sparse, defined by the probability density function:
+
+$$
+f(x_1,...,x_K;\alpha)=\frac{\Gamma(\alpha K)}{\Gamma(\alpha)^K}\prod_{i=1}^{K}x_i^{\alpha-1}
+$$
+
+Where $\Gamma(z)$ is the [Gamma function](https://en.wikipedia.org/wiki/Gamma_function), and the following constraints are satisfied:
+
+1. $\alpha <1$ (sparse condition).
+2. $K\ge 2$
+3. $\sum_{i=1}^K x_i=1$
+4. $x_i\in [0,1]$
+
+We can think of a Dirichlet distribution as a distribution of multinomial distributions, where $x_1,...,x_K$ is the sample space of the multinomial distributions. The sparse condition ($\alpha <1$) indicates that the probability density function is greater around the points $x_1,...,x_K$. Constraints 2 to 4 basically allows the domain of the Dirichlet PDF to satisfy the sample space of a multinomial distribution.
+
+This distribution can intuitively be understood as a topic distribution for documents, as documents will typically have very few primary topics, and a sparse Dirichlet distribution will assign a higher probability to multinomial distributions that are heavily weighted to a few outcomes (topics). This works similarly for word distributions for topics, as topics will typically be defined by a handful of words.
+
+## Document Generating Process
+
+Now that we understand the relevant type of Dirichlet distribution, we'll assign some parameters which will define how documents are generated under LDA, let:
+
+- $M$ be the number of documents.
+- $N_i$ be the number of words in document $i\in \{1,...,M\}$.
+- $K$ be the total number of topics across the $M$ documents.
+- $\alpha$ be the symmetric parameter of the Dirichlet distribution for topics within documents.
+- $\beta$ be the symmetric parameter of the Dirichlet distribution for words within topics.
+- $\theta_i$ be the multinomial topic distribution for document $i\in \{1,...,M\}$.
+- $\phi_k$ be the multinomial word distribution for topic $k\in \{1,...,K\}$
+
+So we have $M$ documents which each have a length of $N_i$. To generate documents, we'll first sample $\phi_k\sim Dir(\beta)$ for all $k$. This gives us the multinomial word distribution for each of the $K$ topics. Then, for each document $i$:
+
+1. Sample $\theta_i\sim Dir(\alpha)$. This gives us the multinomial topic distribution for document $i$.
+2. Generate word $j\in \{1,...,N_i\}$ in document $i$ by:
+    - Sampling a topic from $\theta_i$.
+    - Sampling a word from the corresponding $\phi_k$ where $k$ is the topic chosen previously.
+3. Repeat for all $i$.
+
+## Training
+
+
 
 ## Hyperparameter Tuning
 
