@@ -2,7 +2,6 @@
   {
     "listing": "/projects.html",
     "items": [
-      "/projects/fbm_part2_rag/index.html",
       "/projects/fbm_part1_lda/index.html",
       "/projects/gender-nn/index.html",
       "/projects/spotify-analysis/index.html"

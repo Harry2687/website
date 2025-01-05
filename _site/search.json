@@ -11,7 +11,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Facebook Messenger Data Part 2: Retrieval Augmented Generation\n\n\n\nRAG\n\n\nLLM\n\n\nPython\n\n\n\nLarge language model analysis of Facebook Messenger conversations using Retrieval Augmented Generation (RAG).\n\n\n\nHarry Zhong\n\n\nJan 3, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nFacebook Messenger Data Part 1: Latent Dirichlet Allocation\n\n\n\nLDA\n\n\nPython\n\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\nHarry Zhong\n\n\nJan 3, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation\n\n\n\nLDA\n\n\nPython\n\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\nHarry Zhong\n\n\nJan 5, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n\nGender Classification\n\n\nNeural Networks\n\n\nPython\n\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "projects/gender-nn/index.html",
@@ -102,28 +102,7 @@
     "href": "projects/fbm_part1_lda/index.html#hyperparameter-tuning",
     "title": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation",
     "section": "Hyperparameter Tuning",
-    "text": "Hyperparameter Tuning"
-  },
-  {
-    "objectID": "projects/fbm_part2_rag/index.html",
-    "href": "projects/fbm_part2_rag/index.html",
-    "title": "Facebook Messenger Data Part 2: Retrieval Augmented Generation",
-    "section": "",
-    "text": "Introduction"
-  },
-  {
-    "objectID": "projects/fbm_part2_rag/index.html#embedding-model",
-    "href": "projects/fbm_part2_rag/index.html#embedding-model",
-    "title": "Facebook Messenger Data Part 2: Retrieval Augmented Generation",
-    "section": "Embedding Model",
-    "text": "Embedding Model\n\nChunk Sizing"
-  },
-  {
-    "objectID": "projects/fbm_part2_rag/index.html#large-language-model",
-    "href": "projects/fbm_part2_rag/index.html#large-language-model",
-    "title": "Facebook Messenger Data Part 2: Retrieval Augmented Generation",
-    "section": "Large Language Model",
-    "text": "Large Language Model"
+    "text": "Hyperparameter Tuning\nNaturally, the next step would be to test a range of values for num_topics to evaluate which ones gives the best UMass coherence score. This is easily done by extending the LDA class we created previously.\n\n\n\n\n\n\nNote\n\n\n\nAs someone who mainly uses R at work, extending a class with additional functionality like this is pretty neat.\n\n\n\nimport numpy as np\n\nclass tune_lda(fbm_lda):\n    def tune(self, n_start, n_stop, step, sort: bool=False):\n        n_topics_values = np.arange(n_start, n_stop, step)\n\n        tuning_results = pd.DataFrame(\n            columns=[\n                'n_topics',\n                'umass_coherence'\n            ]\n        )\n\n        for index in range(len(n_topics_values)):\n            n_topics = n_topics_values[index]\n            self.train_lda(num_topics=n_topics)\n            umass_coherence = self.get_coherence()\n\n            tuning_results.loc[index] = (\n                [n_topics] + \n                [umass_coherence]\n            )\n\n        if sort:\n            tuning_results = tuning_results.sort_values('umass_coherence', ascending=False)\n\n        return tuning_results\n\nThe new class can then easily be used to test values 2 to 20 for num_topics.\n\ntuning = tune_lda(documents)\ntuning_results = tuning.tune(2, 21, 1)\ntuning_results.plot(x='n_topics')"
   },
   {
     "objectID": "projects/fbm_part1_lda/index.html",
@@ -151,6 +130,6 @@
     "href": "projects/fbm_part1_lda/index.html#training",
     "title": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation",
     "section": "Training",
-    "text": "Training"
+    "text": "Training\nThe goal of model training is to find the \\(K\\) word distributions and \\(M\\) topic distributions which maximises the likelihood of the model generating the training data given the hyperparameters \\(\\alpha\\), \\(\\beta\\) and \\(K\\). There are various methods to achieve this, we’ll be using gensim.models.ldamodel.LdaModel which implements online leaning.\n\nCoherence Score\nNext, to evaluate the performance of trained models we’ll use UMass coherence. The idea behind UMass coherence is that words that come from the same topic should appear together in documents more often than not, so we take each word pair from the top \\(N\\) (gensim sets this as 20 by default) words of each topic and compare the probability of appearing together vs the probability of appearing by itself. UMass coherence for a topic is defined by the formula below.\n\\[\nUMass=\\frac{2}{N(N-1)}\\sum_{i=1}^N\\sum_{j=1}^{i-1}\\text{log}(\\frac{\\text{P}(w_i,w_j)+\\epsilon}{\\text{P}(w_j)})\n\\]\nWhere:\n\n\\((w_i,w_j)\\) is a word pair.\n\\(\\text{P}()\\) is the probability of the word/pair occurring calculated using the frequency observed in the training documents.\n\\(\\epsilon=1\\) to avoid \\(\\text{log}(0)\\).\n\n\n\nImplementation\nWe can then create a class that uses gensim to train the model, show the discovered topics and calculate the coherence score as an evaluation metric. For simplicity, we’ll leave \\(\\alpha\\) and \\(\\beta\\) as the default value in LdaModel which is 1/num_topics, this leave us with only num_topics as a tunable hyperparameter.\n\nclass fbm_lda:\n    def __init__(self, documents):\n        self.documents = documents\n        self.texts = [doc.split() for doc in documents]\n        self.dictionary = gs.corpora.Dictionary(self.texts)\n        self.corpus = [self.dictionary.doc2bow(text) for text in self.texts]\n    \n    def train_lda(self, num_topics, passes=10, random_state=2687):\n        self.num_topics = num_topics\n\n        self.lda_model = gs.models.ldamodel.LdaModel(\n            corpus=self.corpus,\n            num_topics=num_topics,\n            id2word=self.dictionary,\n            passes=passes,\n            random_state=random_state\n        )\n\n        return self.lda_model\n\n    def print_topics(self, num_words=5):\n        for topic in self.lda_model.print_topics(num_topics=self.num_topics, num_words=num_words):\n            print(topic)\n\n    def get_coherence(self, coherence_type='u_mass'):\n        coherence = gs.models.CoherenceModel(\n            model=self.lda_model,\n            texts=self.texts,\n            dictionary=self.dictionary,\n            coherence=coherence_type\n        )\n\n        return coherence.get_coherence()\n\nThis allows us to train a LDA model using our documents given a number of topics and calculate its coherence score.\n\nmodel = fbm_lda(documents)\nmodel.train_lda(5)\nmodel.get_coherence()\n\n-2.206920240598983"
   }
 ]

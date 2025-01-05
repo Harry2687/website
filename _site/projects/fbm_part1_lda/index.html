@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Harry Zhong">
-<meta name="dcterms.date" content="2025-01-03">
+<meta name="dcterms.date" content="2025-01-05">
 <meta name="description" content="Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).">
 
 <title>Harry Zhong - Facebook Messenger Data Part 1: Latent Dirichlet Allocation</title>
@@ -201,7 +201,11 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#dirichlet-distribution" id="toc-dirichlet-distribution" class="nav-link" data-scroll-target="#dirichlet-distribution">Dirichlet Distribution</a></li>
   <li><a href="#document-generating-process" id="toc-document-generating-process" class="nav-link" data-scroll-target="#document-generating-process">Document Generating Process</a></li>
-  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a>
+  <ul class="collapse">
+  <li><a href="#coherence-score" id="toc-coherence-score" class="nav-link" data-scroll-target="#coherence-score">Coherence Score</a></li>
+  <li><a href="#implementation" id="toc-implementation" class="nav-link" data-scroll-target="#implementation">Implementation</a></li>
+  </ul></li>
   <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning">Hyperparameter Tuning</a></li>
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
@@ -239,7 +243,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 3, 2025</p>
+      <p class="date">January 5, 2025</p>
     </div>
   </div>
   
@@ -259,7 +263,7 @@ window.Quarto = {
 <section id="data-extraction" class="level1">
 <h1>Data Extraction</h1>
 <p>First we’ll need to load the data, which Facebook provides as a series of <code>json</code> files. The raw data is structured like the sample below.</p>
-<div id="78e5d6c3" class="cell" data-execution_count="1">
+<div id="3cdf2004" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'sample_messages.json'</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    sample <span class="op">=</span> <span class="bu">file</span>.read()</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -352,7 +356,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Ideally though, we’ll need to extract the relevant information from each <code>json</code> file and store it as a dataframe. In this case only the <code>messages</code> property is required. To do this, we’ll first import some libraries which we’ll need.</p>
-<div id="a1a06ba2" class="cell" data-execution_count="2">
+<div id="c1981c94" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -360,7 +364,7 @@ window.Quarto = {
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim <span class="im">as</span> gs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then, we can define a function which takes a directory containing <code>json</code> files as an input and returns a dataframe using the <code>messages</code> property of the <code>json</code> files in a <code>pandas</code> dataframe.</p>
-<div id="678de04d" class="cell" data-execution_count="3">
+<div id="098a7590" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ms_import_data(directory: <span class="bu">str</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    data_file_names <span class="op">=</span> os.listdir(directory)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    data_files <span class="op">=</span> [os.path.join(directory, data_file_name) <span class="cf">for</span> data_file_name <span class="kw">in</span> data_file_names]</span>
@@ -394,10 +398,10 @@ window.Quarto = {
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> messenger_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>My analysis will focus on a group chat called “The Office” which should have the most data, starting from 2019 to early 2024 when Facebook sent me the data. Using the function we just made, we can import the chat logs and look at the resulting dataframe.</p>
-<div id="5ed8f1d9" class="cell" data-execution_count="4">
+<div id="949c47a6" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>chat_data <span class="op">=</span> ms_import_data(<span class="st">'data/the_office'</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>chat_data.head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="94">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 <div>
 
@@ -447,115 +451,56 @@ window.Quarto = {
 </ol>
 <p>Points 1 to 3 are fairly straightforward to implement using <code>pandas</code>. However, point 4 brings us to our first usage of <code>gensim</code>, a Python topic modelling library, where it’s used to remove generic stop words from the chat log. Additional stop words specific to the chat are then defined and removed on top of the words from <code>gensim</code>.</p>
 <p>The code used to implement points 1 to 4 is shown below.</p>
-<div id="24d0d41d" class="cell" data-execution_count="5">
-<details class="code-fold">
-<summary>Preprocessing Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remove_custom_stopwords(document: <span class="bu">str</span>, stopwords: <span class="bu">list</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> word <span class="kw">in</span> stopwords:</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        pattern <span class="op">=</span> <span class="vs">r'\b'</span><span class="op">+</span>word<span class="op">+</span><span class="vs">r'\b'</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        document <span class="op">=</span> re.sub(pattern, <span class="st">''</span>, document).replace(<span class="st">'  '</span>, <span class="st">' '</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> document</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lda_preprocess(dataframe: pd.DataFrame, content_col: <span class="bu">str</span>, cleaned_col: <span class="bu">str</span>, rm_stopwords: <span class="bu">bool</span><span class="op">=</span><span class="va">True</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    dataframe[cleaned_col] <span class="op">=</span> (</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        dataframe[content_col]</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.lower()</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.strip()</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.replace(<span class="st">'[^a-z</span><span class="ch">\\</span><span class="st">s]'</span>, <span class="st">''</span>, regex<span class="op">=</span><span class="va">True</span>) <span class="co"># remove anything that isn't text or spaces</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.replace(<span class="st">'</span><span class="ch">\\</span><span class="st">s{2,}'</span>, <span class="st">' '</span>, regex<span class="op">=</span><span class="va">True</span>) <span class="co"># replace 2+ spaces with single space</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    chat_actions <span class="op">=</span> [</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">'reacted to your message'</span>,</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">'https'</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># remove chat actions which aren't part of the conversation</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    dataframe <span class="op">=</span> dataframe[</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        <span class="op">~</span>dataframe[cleaned_col]</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.contains(</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">'|'</span>.join(chat_actions)</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># stopwords which are not included in gensim</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    custom_stopwords <span class="op">=</span> [</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">'aditya'</span>,</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>        <span class="st">'gupta'</span>,</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">'dhruv'</span>,</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">'jobanputra'</span>,</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">'harry'</span>,</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">'zhong'</span>,</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        <span class="st">'mansoor'</span>,</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        <span class="st">'khawaja'</span>,</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>        <span class="st">'saquib'</span>,</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>        <span class="st">'ahmed'</span>,</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>        <span class="st">'anand'</span>,</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>        <span class="st">'karna'</span>,</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>        <span class="st">'chaitany'</span>,</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>        <span class="st">'goyal'</span>,</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>        <span class="st">'himal'</span>,</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>        <span class="st">'pandey'</span>,</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>        <span class="st">'anirudth'</span>,</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>        <span class="st">'sanivarapu'</span>,</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>        <span class="st">'sai'</span>,</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>        <span class="st">'roshan'</span>,</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>        <span class="st">'prashant'</span>,</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>        <span class="st">'u'</span>, </span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>        <span class="st">'lmao'</span>, </span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>        <span class="st">'lol'</span>, </span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>        <span class="st">'ur'</span>, </span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>        <span class="st">'like'</span>, </span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>        <span class="st">'yea'</span>, </span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>        <span class="st">'thats'</span>, </span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>        <span class="st">'nah'</span>, </span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>        <span class="st">'im'</span>, </span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>        <span class="st">'yeh'</span>, </span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>        <span class="st">'dont'</span>,</span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>        <span class="st">'yeah'</span>, </span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>        <span class="st">'gonna'</span>, </span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>        <span class="st">'didnt'</span>,</span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>        <span class="st">'idk'</span>,</span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>        <span class="st">'got'</span>,</span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>        <span class="st">'r'</span>,</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>        <span class="st">'sure'</span>,</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>        <span class="st">'come'</span>,</span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>        <span class="st">'stuff'</span>,</span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>        <span class="st">'k'</span>,</span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>        <span class="st">'damn'</span>,</span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>        <span class="st">'ez'</span>,</span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>        <span class="st">'ill'</span>,</span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>        <span class="st">'smh'</span>,</span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>        <span class="st">'f'</span>,</span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>        <span class="st">'ofc'</span>,</span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>        <span class="st">'u'</span>,</span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>        <span class="st">'tf'</span>,</span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>        <span class="st">'nice'</span>,</span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>        <span class="st">'wtf'</span>,</span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>        <span class="st">'tbf'</span>,</span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>        <span class="st">'ngl'</span>,</span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>        <span class="st">'m'</span></span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rm_stopwords:</span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>        <span class="co"># remove gensim and custom stopwords</span></span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>        dataframe.loc[:, cleaned_col] <span class="op">=</span> (</span>
-<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>            dataframe[cleaned_col]</span>
-<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">apply</span>(gs.parsing.preprocessing.remove_stopwords)</span>
-<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">apply</span>(remove_custom_stopwords, args<span class="op">=</span>(custom_stopwords,))</span>
-<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">str</span>.strip()</span>
-<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">str</span>.replace(<span class="st">'</span><span class="ch">\\</span><span class="st">s{2,}'</span>, <span class="st">' '</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dataframe</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div id="c829d2a0" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import custom stopwords</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> modules.preprocessing <span class="im">import</span> custom_stopwords</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remove_custom_stopwords(document: <span class="bu">str</span>, stopwords: <span class="bu">list</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> word <span class="kw">in</span> stopwords:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        pattern <span class="op">=</span> <span class="vs">r'\b'</span><span class="op">+</span>word<span class="op">+</span><span class="vs">r'\b'</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        document <span class="op">=</span> re.sub(pattern, <span class="st">''</span>, document).replace(<span class="st">'  '</span>, <span class="st">' '</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> document</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lda_preprocess(dataframe: pd.DataFrame, content_col: <span class="bu">str</span>, cleaned_col: <span class="bu">str</span>, rm_stopwords: <span class="bu">bool</span><span class="op">=</span><span class="va">True</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    dataframe[cleaned_col] <span class="op">=</span> (</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        dataframe[content_col]</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.lower()</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.strip()</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.replace(<span class="st">'[^a-z</span><span class="ch">\\</span><span class="st">s]'</span>, <span class="st">''</span>, regex<span class="op">=</span><span class="va">True</span>) <span class="co"># remove anything that isn't text or spaces</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.replace(<span class="st">'</span><span class="ch">\\</span><span class="st">s{2,}'</span>, <span class="st">' '</span>, regex<span class="op">=</span><span class="va">True</span>) <span class="co"># replace 2+ spaces with single space</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    chat_actions <span class="op">=</span> [</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">'reacted to your message'</span>,</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">'https'</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># remove chat actions which aren't part of the conversation</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    dataframe <span class="op">=</span> dataframe[</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">~</span>dataframe[cleaned_col]</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.contains(</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">'|'</span>.join(chat_actions)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rm_stopwords:</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># remove gensim and custom stopwords</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        dataframe.loc[:, cleaned_col] <span class="op">=</span> (</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>            dataframe[cleaned_col]</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">apply</span>(gs.parsing.preprocessing.remove_stopwords)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">apply</span>(remove_custom_stopwords, args<span class="op">=</span>(custom_stopwords,))</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">str</span>.strip()</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>            .<span class="bu">str</span>.replace(<span class="st">'</span><span class="ch">\\</span><span class="st">s{2,}'</span>, <span class="st">' '</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dataframe</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can again look at the resulting dataframe.</p>
-<div id="a4e04cf4" class="cell" data-execution_count="6">
+<div id="75a3841f" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>chat_data <span class="op">=</span> lda_preprocess(chat_data, <span class="st">'content'</span>, <span class="st">'clean_content'</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>chat_data.head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="96">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 <div>
 
@@ -609,7 +554,7 @@ window.Quarto = {
 <li>Convert conversations from dataframe to list.</li>
 </ol>
 <p>This approach is implemented in the function below.</p>
-<div id="75a72ff3" class="cell" data-execution_count="7">
+<div id="fc00ccdd" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lda_getdocs(dataframe: pd.DataFrame, content_col: <span class="bu">str</span>, ts_col: <span class="bu">str</span>, conv_cutoff: <span class="bu">int</span><span class="op">=</span><span class="dv">600</span>):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate difference between each message</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    dataframe[<span class="st">'time_diff'</span>] <span class="op">=</span> (</span>
@@ -647,10 +592,10 @@ window.Quarto = {
 <span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> documents</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then apply the function to our dataset and view the new columns that were created in our dataframe.</p>
-<div id="1b4f5b9c" class="cell" data-execution_count="8">
+<div id="392bb587" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>documents <span class="op">=</span> lda_getdocs(chat_data, <span class="st">'clean_content'</span>, <span class="st">'timestamp'</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>chat_data.head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="98">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 <div>
 
@@ -707,13 +652,13 @@ window.Quarto = {
 </div>
 </div>
 <p>And view a our documents.</p>
-<div id="e085d97a" class="cell" data-execution_count="9">
+<div id="e03c7624" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> doc <span class="kw">in</span> documents[<span class="dv">0</span>:<span class="dv">3</span>]:</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(doc[<span class="dv">0</span>:<span class="dv">50</span>] <span class="op">+</span> <span class="st">'...'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>created group hoi hoi premium tech support named g...
 episodes grand tour season episode season episode ...
-cute dog looks sohails shitzoo pubg visited nepam ...</code></pre>
+cute dog sohails shitzoo pubg visited nepam wild a...</code></pre>
 </div>
 </div>
 </section>
@@ -761,13 +706,199 @@ f(x_1,...,x_K;\alpha)=\frac{\Gamma(\alpha K)}{\Gamma(\alpha)^K}\prod_{i=1}^{K}x_
 </section>
 <section id="training" class="level2">
 <h2 class="anchored" data-anchor-id="training">Training</h2>
+<p>The goal of model training is to find the <span class="math inline">\(K\)</span> word distributions and <span class="math inline">\(M\)</span> topic distributions which maximises the likelihood of the model generating the training data given the hyperparameters <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span> and <span class="math inline">\(K\)</span>. There are various methods to achieve this, we’ll be using <a href="https://radimrehurek.com/gensim/models/ldamodel.html"><code>gensim.models.ldamodel.LdaModel</code></a> which implements <a href="https://papers.neurips.cc/paper/2010/file/71f6278d140af599e06ad9bf1ba03cb0-Paper.pdf">online leaning</a>.</p>
+<section id="coherence-score" class="level3">
+<h3 class="anchored" data-anchor-id="coherence-score">Coherence Score</h3>
+<p>Next, to evaluate the performance of trained models we’ll use UMass coherence. The idea behind UMass coherence is that words that come from the same topic should appear together in documents more often than not, so we take each word pair from the top <span class="math inline">\(N\)</span> (<code>gensim</code> sets this as 20 by default) words of each topic and compare the probability of appearing together vs the probability of appearing by itself. UMass coherence for a topic is defined by the formula below.</p>
+<p><span class="math display">\[
+UMass=\frac{2}{N(N-1)}\sum_{i=1}^N\sum_{j=1}^{i-1}\text{log}(\frac{\text{P}(w_i,w_j)+\epsilon}{\text{P}(w_j)})
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\((w_i,w_j)\)</span> is a word pair.</li>
+<li><span class="math inline">\(\text{P}()\)</span> is the probability of the word/pair occurring calculated using the frequency observed in the training documents.</li>
+<li><span class="math inline">\(\epsilon=1\)</span> to avoid <span class="math inline">\(\text{log}(0)\)</span>.</li>
+</ul>
+</section>
+<section id="implementation" class="level3">
+<h3 class="anchored" data-anchor-id="implementation">Implementation</h3>
+<p>We can then create a class that uses <code>gensim</code> to train the model, show the discovered topics and calculate the coherence score as an evaluation metric. For simplicity, we’ll leave <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> as the default value in <code>LdaModel</code> which is <code>1/num_topics</code>, this leave us with only <code>num_topics</code> as a tunable hyperparameter.</p>
+<div id="bbb6db92" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> fbm_lda:</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, documents):</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.documents <span class="op">=</span> documents</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.texts <span class="op">=</span> [doc.split() <span class="cf">for</span> doc <span class="kw">in</span> documents]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dictionary <span class="op">=</span> gs.corpora.Dictionary(<span class="va">self</span>.texts)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.corpus <span class="op">=</span> [<span class="va">self</span>.dictionary.doc2bow(text) <span class="cf">for</span> text <span class="kw">in</span> <span class="va">self</span>.texts]</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> train_lda(<span class="va">self</span>, num_topics, passes<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">2687</span>):</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.num_topics <span class="op">=</span> num_topics</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.lda_model <span class="op">=</span> gs.models.ldamodel.LdaModel(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>            corpus<span class="op">=</span><span class="va">self</span>.corpus,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>            num_topics<span class="op">=</span>num_topics,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>            id2word<span class="op">=</span><span class="va">self</span>.dictionary,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>            passes<span class="op">=</span>passes,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>            random_state<span class="op">=</span>random_state</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.lda_model</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> print_topics(<span class="va">self</span>, num_words<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> topic <span class="kw">in</span> <span class="va">self</span>.lda_model.print_topics(num_topics<span class="op">=</span><span class="va">self</span>.num_topics, num_words<span class="op">=</span>num_words):</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(topic)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_coherence(<span class="va">self</span>, coherence_type<span class="op">=</span><span class="st">'u_mass'</span>):</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>        coherence <span class="op">=</span> gs.models.CoherenceModel(</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>            model<span class="op">=</span><span class="va">self</span>.lda_model,</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>            texts<span class="op">=</span><span class="va">self</span>.texts,</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>            dictionary<span class="op">=</span><span class="va">self</span>.dictionary,</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>            coherence<span class="op">=</span>coherence_type</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> coherence.get_coherence()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This allows us to train a LDA model using our documents given a number of topics and calculate its coherence score.</p>
+<div id="f8e92285" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> fbm_lda(documents)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>model.train_lda(<span class="dv">5</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>model.get_coherence()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>-2.206920240598983</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="hyperparameter-tuning" class="level2">
 <h2 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h2>
+<p>Naturally, the next step would be to test a range of values for <code>num_topics</code> to evaluate which ones gives the best UMass coherence score. This is easily done by extending the LDA class we created previously.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As someone who mainly uses R at work, extending a class with additional functionality like this is pretty neat.</p>
+</div>
+</div>
+<div id="e27df9df" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> tune_lda(fbm_lda):</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> tune(<span class="va">self</span>, n_start, n_stop, step, sort: <span class="bu">bool</span><span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        n_topics_values <span class="op">=</span> np.arange(n_start, n_stop, step)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        tuning_results <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>            columns<span class="op">=</span>[</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">'n_topics'</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'umass_coherence'</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> index <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(n_topics_values)):</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>            n_topics <span class="op">=</span> n_topics_values[index]</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.train_lda(num_topics<span class="op">=</span>n_topics)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>            umass_coherence <span class="op">=</span> <span class="va">self</span>.get_coherence()</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>            tuning_results.loc[index] <span class="op">=</span> (</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>                [n_topics] <span class="op">+</span> </span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>                [umass_coherence]</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> sort:</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>            tuning_results <span class="op">=</span> tuning_results.sort_values(<span class="st">'umass_coherence'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> tuning_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The new class can then easily be used to test values 2 to 20 for <code>num_topics</code>.</p>
+<div id="02f690a5" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tuning <span class="op">=</span> tune_lda(documents)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tuning_results <span class="op">=</span> tuning.tune(<span class="dv">2</span>, <span class="dv">21</span>, <span class="dv">1</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>tuning_results.plot(x<span class="op">=</span><span class="st">'n_topics'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c0e58b98" class="cell" data-execution_count="14">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-15-output-1.png" width="582" height="429" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
+<p>Based off the hyperparameter tuning plot, we can observe that the UMass coherence tends to decrease (lower performance) as the number of topics increases. While 2 to 4 topics results in the best performance as measures by UMass coherence, I found that 7 topics gives the most sensible topics based on my knowledge of the source data.</p>
+<div id="915b7b44" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model.train_lda(<span class="dv">7</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>model.print_topics(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0, '0.029*"play" + 0.018*"game" + 0.012*"playing" + 0.010*"dog" + 0.010*"pubg" + 0.008*"watch" + 0.006*"fun" + 0.006*"games" + 0.006*"unlucky" + 0.005*"movie"')
+(1, '0.016*"car" + 0.014*"buy" + 0.011*"house" + 0.011*"drive" + 0.010*"th" + 0.010*"money" + 0.008*"stonks" + 0.007*"rich" + 0.006*"dbd" + 0.005*"new"')
+(2, '0.023*"phone" + 0.023*"turn" + 0.022*"test" + 0.018*"laptop" + 0.015*"pc" + 0.012*"mac" + 0.010*"apple" + 0.009*"iphone" + 0.009*"gb" + 0.009*"windows"')
+(3, '0.009*"tennis" + 0.009*"play" + 0.007*"fat" + 0.007*"guy" + 0.007*"gym" + 0.006*"win" + 0.006*"eat" + 0.006*"beat" + 0.006*"team" + 0.005*"point"')
+(4, '0.011*"girls" + 0.010*"girl" + 0.007*"tell" + 0.006*"haram" + 0.006*"talk" + 0.005*"pic" + 0.005*"longer" + 0.005*"available" + 0.005*"mum" + 0.005*"shes"')
+(5, '0.014*"engineer" + 0.014*"group" + 0.013*"premium" + 0.013*"nickname" + 0.012*"windmill" + 0.012*"support" + 0.012*"scammer" + 0.011*"racquet" + 0.010*"tech" + 0.009*"changed"')
+(6, '0.013*"work" + 0.007*"uni" + 0.005*"data" + 0.005*"money" + 0.005*"job" + 0.005*"hard" + 0.004*"unit" + 0.003*"science" + 0.003*"long" + 0.003*"working"')</code></pre>
+</div>
+</div>
+<p>Based on the word distributions, the topics could be named as follows:</p>
+<ul>
+<li>Topic 0: Gaming</li>
+<li>Topic 1: Cars</li>
+<li>Topic 2: Technology</li>
+<li>Topic 3: Fitness</li>
+<li>Topic 4: Relationships</li>
+<li>Topic 5: Chat actions</li>
+<li>Topic 6: Study and work</li>
+</ul>
+<p>These topics are pretty unsurprising given the chat participants (18-23 year old dudes), however it’s reassuring that the results produced by LDA are as expected. As a final bit of analysis, we can plot the topic distributions over documents (conversations) to visualise how topics changed over time.</p>
+<div id="b4e703c5" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lda_plot_topics(model: fbm_lda):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    document_topics <span class="op">=</span> model.lda_model.get_document_topics(model.corpus, minimum_probability<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    topic_dist_df <span class="op">=</span> pd.DataFrame(document_topics)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    topic_dist_df <span class="op">=</span> topic_dist_df.<span class="bu">map</span>(<span class="kw">lambda</span> x: x[<span class="dv">1</span>])</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    topics <span class="op">=</span> [</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Gaming'</span>, </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Cars'</span>, </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Technology'</span>, </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Fitness'</span>, </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Relationships'</span>, </span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Chat actions'</span>, </span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Study and work'</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    plot <span class="op">=</span> (</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        topic_dist_df</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>        .plot(</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>            kind<span class="op">=</span><span class="st">'bar'</span>,</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>            xticks<span class="op">=</span>[],</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span>[<span class="st">''</span>, <span class="st">''</span>, <span class="st">''</span>, <span class="st">''</span>, <span class="st">''</span>, <span class="st">''</span>, <span class="st">''</span>],</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>            subplots<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>            sharey<span class="op">=</span><span class="va">True</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    plot <span class="op">=</span> plot.flat</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, p <span class="kw">in</span> <span class="bu">enumerate</span>(plot):</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>        p.legend([topics[i]], bbox_to_anchor<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> plot</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>lda_plot_topics(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-17-output-1.png" width="717" height="400" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 
 
 </section>
