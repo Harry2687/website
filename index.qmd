@@ -3,6 +3,7 @@ title: "Harry Zhong"
 image: profile.jpg
 toc: false
 about:
+  id: about-section
   template: trestles
   image-shape: round
   image-width: 15em
@@ -18,10 +19,16 @@ about:
     - text: Email
       icon: envelope
       href: mailto:h.zhong2687@gmail.com
+listing:
+  - id: recent-posts
+    contents: projects
+    max-items: 2
+    type: default
+    sort: "date desc"
 ---
 
+:::{#about-section}
 ### {{<fa user-tie>}} About Me
-
 Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, computers, and lifting weights.
 
 I made this website as a way to document various personal projects, software, and topics which I find interesting.
@@ -29,13 +36,16 @@ I made this website as a way to document various personal projects, software, an
 If you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!
 
 ### {{<fa briefcase>}} Experience
-
 **Commonwealth Bank** \| Analyst (Risk Analytics Strategic Initiatives) \| Aug 2024 - Present
 
 **EBM Insurance & Risk** \| Data Analyst \| Nov 2022 - Jul 2024
 
 ### {{<fa graduation-cap>}} Education
-
 **Actuaries Institute** \| Actuary Program \| Jul 2023 - Oct 2023
 
 **Curtin University** \| Bachelor of Science (Actuarial Science) (Honours) \| Feb 2019 - Jun 2023
+:::
+
+## Recent Projects
+:::{#recent-posts}
+:::
