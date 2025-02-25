@@ -67,7 +67,14 @@
     "href": "index.html",
     "title": "Harry Zhong",
     "section": "",
-    "text": "About Me\nHello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, computers, and lifting weights.\nI made this website as a way to document various personal projects, software, and topics which I find interesting.\nIf you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!\n\n\n Experience\nCommonwealth Bank | Analyst (Risk Analytics Strategic Initiatives) | Aug 2024 - Present\nEBM Insurance & Risk | Data Analyst | Nov 2022 - Jul 2024\n\n\n Education\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023"
+    "text": "LinkedIn\n  \n  \n    \n     Github\n  \n  \n    \n     Email\n  \n\n  \n  \n\n\nHello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, computers, and lifting weights.\nI made this website as a way to document various personal projects, software, and topics which I find interesting.\nIf you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!\n\n\n\nCommonwealth Bank | Analyst (Risk Analytics Strategic Initiatives) | Aug 2024 - Present\nEBM Insurance & Risk | Data Analyst | Nov 2022 - Jul 2024\n\n\n\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023"
+  },
+  {
+    "objectID": "index.html#recent-projects",
+    "href": "index.html#recent-projects",
+    "title": "Harry Zhong",
+    "section": "Recent Projects",
+    "text": "Recent Projects\n\n\n\n\n\n\n\n\n\n\nFacebook Messenger Data Part 1: Latent Dirichlet Allocation\n\n\n\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\n\n\nJan 5, 2025\n\n\nHarry Zhong\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\n\n\nMay 24, 2024\n\n\nHarry Zhong\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "projects.html",

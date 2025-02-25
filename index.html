@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.41">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -25,13 +25,15 @@ ul.task-list li input[type="checkbox"] {
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <link href="./logo.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-71390cc8b9bae10139428574d3aab2c6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-c37a40b267d3139d93432c283e34c257.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -53,6 +55,35 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script>
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-recent-posts .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-recent-posts'] = new List('listing-recent-posts', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SDG552HSPC"></script>
 
 <script type="text/javascript">
@@ -63,6 +94,35 @@ gtag('js', new Date());
 gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 </script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -122,6 +182,11 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 <!-- margin-sidebar -->
     
 <!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+
+
 <div class="quarto-about-trestles">
   <div class="about-entity">
     <img src="profile.jpg" class="about-image
@@ -148,7 +213,7 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
   </a>
 </div>
   </div>
-  <div class="about-contents"><main class="content" id="quarto-document-content">
+  <div class="about-contents"><div id="about-section">
 <section id="about-me" class="level3">
 <h3 data-anchor-id="about-me"><i class="fa-solid fa-user-tie" aria-label="user-tie"></i> About Me</h3>
 <p>Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, computers, and lifting weights.</p>
@@ -164,12 +229,82 @@ gtag('config', 'G-SDG552HSPC', { 'anonymize_ip': true});
 <h3 data-anchor-id="education"><i class="fa-solid fa-graduation-cap" aria-label="graduation-cap"></i> Education</h3>
 <p><strong>Actuaries Institute</strong> | Actuary Program | Jul 2023 - Oct 2023</p>
 <p><strong>Curtin University</strong> | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023</p>
+</section>
+</div></div>
+</div>
+
+<section id="recent-projects" class="level2">
+<h2 data-anchor-id="recent-projects">Recent Projects</h2>
+<div id="listing-recent-posts" class="quarto-listing quarto-listing-container-default">
+<div class="list quarto-listing-default">
+<div class="quarto-post image-right" data-index="0" data-categories="TERBJTJDUHl0aG9u" data-listing-date-sort="1736035200000" data-listing-file-modified-sort="1740446255861" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2990">
+<div class="thumbnail">
+<p><a href="./projects/fbm_part1_lda/index.html" class="no-external"></a></p><a href="./projects/fbm_part1_lda/index.html" class="no-external">
+<p><img loading="lazy" src="./projects/fbm_part1_lda/topic_chart.png" class="thumbnail-image"></p>
+</a><p><a href="./projects/fbm_part1_lda/index.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./projects/fbm_part1_lda/index.html" class="no-external">Facebook Messenger Data Part 1: Latent Dirichlet Allocation</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./projects/fbm_part1_lda/index.html" class="no-external"></a>
+</div>
+<div class="listing-description">
+<a href="./projects/fbm_part1_lda/index.html" class="no-external">Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./projects/fbm_part1_lda/index.html" class="no-external">
+<div class="listing-date">
+Jan 5, 2025
+</div>
+<div class="listing-author">
+Harry Zhong
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24lMkNOZXVyYWwlMjBOZXR3b3JrcyUyQ1B5dGhvbiUyQ1B5VG9yY2g=" data-listing-date-sort="1716508800000" data-listing-file-modified-sort="1740446255863" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3128">
+<div class="thumbnail">
+<p><a href="./projects/gender-nn/index.html" class="no-external"></a></p><a href="./projects/gender-nn/index.html" class="no-external">
+<p><img loading="lazy" src="./projects/gender-nn/cnn-layer.png" class="thumbnail-image"></p>
+</a><p><a href="./projects/gender-nn/index.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./projects/gender-nn/index.html" class="no-external">Gender Classification using PyTorch</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./projects/gender-nn/index.html" class="no-external"></a>
+</div>
+<div class="listing-description">
+<a href="./projects/gender-nn/index.html" class="no-external">Classification of faces into genders using a convolutional neural network with residual layers.</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./projects/gender-nn/index.html" class="no-external">
+<div class="listing-date">
+May 24, 2024
+</div>
+<div class="listing-author">
+Harry Zhong
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div>
+
+
 
 
 </section>
-</main></div>
-</div>
- <!-- /main -->
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
