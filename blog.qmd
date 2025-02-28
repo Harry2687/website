@@ -1,6 +1,6 @@
 ---
 title: "My Blog"
-description: "Here I will be posting about some of my experiences which aren't data science related."
+description: "Still a work in progress... One day I'll write my first post."
 listing: 
   contents: blog
   type: grid

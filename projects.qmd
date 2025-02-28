@@ -1,6 +1,5 @@
 ---
 title: "My Projects"
-description: "Here I will be posting about my projects, which will involve datasets and problems which I find interesting."
 listing: 
   contents: projects
   type: grid

@@ -11,6 +11,8 @@ website:
     left:
       - text: "{{<fa diagram-project>}} Projects"
         href: projects.qmd
+      - text: "{{<fa layer-group>}} Apps"
+        href: apps.qmd
       - text: "{{<fa newspaper>}} Blog"
         href: blog.qmd
     right:

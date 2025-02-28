@@ -1,0 +1,11 @@
+---
+title: "Web Apps"
+listing: 
+  contents:
+    - path: "https://harry2687-gender-cnn-demo.hf.space"
+      image: "projects/gender-nn/cnn-layer.png"
+      title: "Gender Classification CNN Demo"
+      description: "A demo Shiny app that predicts the gender of an image using my custom trained convolutional neural network."
+  type: grid
+  sort: false
+---
