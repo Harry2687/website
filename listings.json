@@ -4,6 +4,10 @@
     "items": []
   },
   {
+    "listing": "/apps.html",
+    "items": []
+  },
+  {
     "listing": "/index.html",
     "items": [
       "/projects/fbm_part1_lda/index.html",

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>My Projects – Harry Zhong</title>
+<title>Web Apps – Harry Zhong</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -66,9 +66,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-image','listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
+      searchColumns: ["listing-image","listing-title","listing-description"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -145,11 +145,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./projects.html" aria-current="page"> 
+    <a class="nav-link" href="./projects.html"> 
 <span class="menu-text"><i class="fa-solid fa-diagram-project" aria-label="diagram-project"></i> Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./apps.html"> 
+    <a class="nav-link active" href="./apps.html" aria-current="page"> 
 <span class="menu-text"><i class="fa-solid fa-layer-group" aria-label="layer-group"></i> Apps</span></a>
   </li>  
   <li class="nav-item">
@@ -185,15 +185,15 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(3)</span></div><div class="category" data-category="R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24=">Gender Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Sy1tZWFucw==">K-means <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TERB">LDA <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TmV1cmFsJTIwTmV0d29ya3M=">Neural Networks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHlUb3JjaA==">PyTorch <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHl0aG9u">Python <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(1)</span></div></div></div>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">My Projects</h1>
+<h1 class="title">Web Apps</h1>
 </div>
 
 
@@ -216,106 +216,18 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="TERBJTJDUHl0aG9u" data-listing-date-sort="1736035200000" data-listing-file-modified-sort="1740757285730" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2990">
-<a href="./projects/fbm_part1_lda/index.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="0">
+<a href="https://harry2687-gender-cnn-demo.hf.space" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
-<img loading="lazy" src="./projects/fbm_part1_lda/topic_chart.png" class="thumbnail-image card-img" style="height: 150px;">
+<img loading="lazy" src="projects/gender-nn/cnn-layer.png" class="thumbnail-image card-img" style="height: 150px;">
 </p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
-Facebook Messenger Data Part 1: Latent Dirichlet Allocation
+Gender Classification CNN Demo
 </h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('TERB'); return false;">
-LDA
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('UHl0aG9u'); return false;">
-Python
-</div>
-</div>
 <div class="card-text listing-description">
-Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-Jan 5, 2025
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24lMkNOZXVyYWwlMjBOZXR3b3JrcyUyQ1B5dGhvbiUyQ1B5VG9yY2g=" data-listing-date-sort="1716508800000" data-listing-file-modified-sort="1740757285731" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3128">
-<a href="./projects/gender-nn/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./projects/gender-nn/cnn-layer.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Gender Classification using PyTorch
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24='); return false;">
-Gender Classification
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('TmV1cmFsJTIwTmV0d29ya3M='); return false;">
-Neural Networks
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('UHl0aG9u'); return false;">
-Python
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('UHlUb3JjaA=='); return false;">
-PyTorch
-</div>
-</div>
-<div class="card-text listing-description">
-Classification of faces into genders using a convolutional neural network with residual layers.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-May 24, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="Sy1tZWFucyUyQ1I=" data-listing-date-sort="1711152000000" data-listing-file-modified-sort="1740757285855" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6170">
-<a href="./projects/spotify-analysis/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./projects/spotify-analysis/kmeans-preview.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Analysis of My Spotify Data
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('Sy1tZWFucw=='); return false;">
-K-means
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">
-R
-</div>
-</div>
-<div class="card-text listing-description">
-Categorisation of my Spotify listening history using k-means clustering.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Harry Zhong
-</div>
-<div class="listing-date">
-Mar 23, 2024
-</div>
+A demo Shiny app that predicts the gender of an image using my custom trained convolutional neural network.
 </div>
 </div>
 </div>
