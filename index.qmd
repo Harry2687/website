@@ -1,5 +1,5 @@
 ---
-title: "Harry Zhong"
+title: "{{< animate fadeIn 'Harry Zhong' >}}"
 image: profile.jpg
 toc: false
 about:
@@ -26,7 +26,7 @@ listing:
     type: default
     sort: "date desc"
 ---
-
+::::{.animate__animated .animate__fadeIn}
 :::{#about-section}
 ### {{<fa user-tie>}} About Me
 Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, computers, and lifting weights.
@@ -49,3 +49,4 @@ If you want to know more about me, feel free to contact me via email or connect 
 ## Recent Projects
 :::{#recent-posts}
 :::
+::::

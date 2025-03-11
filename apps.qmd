@@ -1,6 +1,7 @@
 ---
-title: "Web Apps"
-listing: 
+title: "{{< animate fadeIn 'Web Apps' >}}"
+listing:
+  id: apps
   contents:
     - path: "https://harry2687-gender-cnn-demo.hf.space"
       image: "projects/gender-nn/cnn-layer.png"
@@ -9,3 +10,6 @@ listing:
   type: grid
   sort: false
 ---
+
+:::{#apps .animate__animated .animate__fadeIn}
+:::

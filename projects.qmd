@@ -1,8 +1,12 @@
 ---
-title: "My Projects"
-listing: 
+title: "{{< animate fadeIn 'My Projects' >}}"
+listing:
+  id: projects
   contents: projects
   type: grid
-  sort: "date desc" 
-  categories: true 
+  sort: "date desc"
+  categories: true
 ---
+
+:::{#projects .animate__animated .animate__fadeIn}
+:::
