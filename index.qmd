@@ -29,11 +29,9 @@ listing:
 ::::{.animate__animated .animate__fadeIn}
 :::{#about-section}
 ### {{<fa user-tie>}} About Me
-Hello and welcome to my website! I’m Harry, an Actuary (AIAA) working as an Analyst at Commonwealth Bank. I enjoy spending my time learning about data science, computers, and lifting weights.
+I am an Actuary (AIAA) working as an Analyst at Commonwealth Bank where I implement capital and provisions models.
 
-I made this website as a way to document various personal projects, software, and topics which I find interesting.
-
-If you want to know more about me, feel free to contact me via email or connect with me on LinkedIn. Thanks for visiting!
+When I'm not studying for Fellowship exams, I code using Python and R. Sometimes I'll make something interesting and it ends up on here.
 
 ### {{<fa briefcase>}} Experience
 **Commonwealth Bank** \| Analyst (Risk Analytics Strategic Initiatives) \| Aug 2024 - Present
@@ -41,6 +39,8 @@ If you want to know more about me, feel free to contact me via email or connect 
 **EBM Insurance & Risk** \| Data Analyst \| Nov 2022 - Jul 2024
 
 ### {{<fa graduation-cap>}} Education
+**Actuaries Institute** \| Fellowship Program \| Jan 2025 - Present
+
 **Actuaries Institute** \| Actuary Program \| Jul 2023 - Oct 2023
 
 **Curtin University** \| Bachelor of Science (Actuarial Science) (Honours) \| Feb 2019 - Jun 2023
