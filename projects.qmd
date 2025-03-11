@@ -2,7 +2,15 @@
 title: "{{< animate fadeIn 'My Projects' >}}"
 listing:
   id: projects
-  contents: projects
+  contents: 
+    - projects
+    - title: "Honours Thesis: Stochastic Volatility"
+      description: "Research involving stochastic modelling to compare constant and stochastic volatility under geometric Brownian motion."
+      date: 2023-05-19
+      path: "https://www.researchgate.net/publication/372915363_Comparing_Stochastic_and_Constant_Volatility_Returns_Distributions_using_the_Heston_Model"
+      image: "https://www.researchgate.net/profile/Harry-Zhong-3/publication/372915363/figure/fig7/AS:11431281179522663@1691236827788/Observed-vs-Theoretical-CDFs-2008-2022_W640.jpg"
+      author: "Harry Zhong"
+      categories: [R]
   type: grid
   sort: "date desc"
   categories: true
