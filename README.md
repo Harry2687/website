@@ -1,7 +1,7 @@
-# My-Website
+# harryzhong.com
 
-Source code for Harry's [personal website](https://harryz.netlify.app/).
+Source code for my [website](https://harryzhong.com/).
 
 Made using [Quarto](https://quarto.org/), [R](https://www.r-project.org/), and [Python](https://www.python.org/).
 
-Deployed using [Netlify](https://www.netlify.com/).
+Deployed using [Cloudflare Pages](https://pages.cloudflare.com/) and [GitHub Actions](https://github.com/features/actions).
