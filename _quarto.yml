@@ -25,7 +25,7 @@ website:
 
 format:
   html:
-    title-prefix: ""
+    pagetitle: "Harry Zhong"
     theme: 
       dark: darkly
       light: flatly
