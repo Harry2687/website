@@ -25,6 +25,7 @@ website:
 
 format:
   html:
+    pagetitle: "{{< meta title >}}"
     theme: 
       dark: darkly
       light: flatly
