@@ -13,6 +13,5 @@
 **/._.DS_Store
 
 # Other
-.vscode
-/.quarto/
+.quarto
 _site
