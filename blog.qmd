@@ -1,6 +1,6 @@
 ---
-title: "{{< animate fadeIn 'My Blog' >}}"
-description: "{{< animate fadeIn 'Still a work in progress... One day I'll write my first post.' >}}"
+title: My Blog
+description: Still a work in progress... One day I'll write my first post.
 listing: 
   contents: blog
   type: grid

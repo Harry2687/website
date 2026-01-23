@@ -1,5 +1,5 @@
 ---
-title: "{{< animate fadeIn 'Harry Zhong' >}}"
+title: Harry Zhong
 image: profile.jpg
 toc: false
 about:
@@ -26,7 +26,6 @@ listing:
     type: default
     sort: "date desc"
 ---
-::::{.animate__animated .animate__fadeIn}
 :::{#about-section}
 ### {{<fa user-tie>}} About Me
 I am an Actuary (AIAA) working as an Analyst at Commonwealth Bank where I implement capital and provisions models. Sometimes I code using Python or R, if I make something interesting it'll end up on here.
@@ -37,7 +36,7 @@ I am an Actuary (AIAA) working as an Analyst at Commonwealth Bank where I implem
 **EBM Insurance & Risk** \| Data Analyst \| Nov 2022 - Jul 2024
 
 ### {{<fa graduation-cap>}} Education
-**Actuaries Institute** \| Fellowship Program (Banking)\| Jan 2025 - May 2025
+**Actuaries Institute** \| Fellowship Program (Banking) \| Jan 2025 - May 2025
 
 **Actuaries Institute** \| Actuary Program \| Jul 2023 - Oct 2023
 
@@ -47,4 +46,3 @@ I am an Actuary (AIAA) working as an Analyst at Commonwealth Bank where I implem
 ## Recent Projects
 :::{#recent-posts}
 :::
-::::

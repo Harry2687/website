@@ -1,5 +1,5 @@
 ---
-title: "{{< animate fadeIn 'Web Apps' >}}"
+title: Web Apps
 listing:
   id: apps
   contents:
@@ -10,6 +10,3 @@ listing:
   type: grid
   sort: false
 ---
-
-:::{#apps .animate__animated .animate__fadeIn}
-:::
