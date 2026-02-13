@@ -1,10 +1,52 @@
 [
   {
-    "objectID": "projects.html",
-    "href": "projects.html",
-    "title": "My Projects",
+    "objectID": "apps.html",
+    "href": "apps.html",
+    "title": "Web Apps",
     "section": "",
-    "text": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation\n\n\n\nLDA\n\nPython\n\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\nHarry Zhong\n\n\nJan 5, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n\nGender Classification\n\nNeural Networks\n\nPython\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\nHonours Thesis: Stochastic Volatility\n\n\n\nR\n\n\n\nResearch involving stochastic modelling to compare constant and stochastic volatility under geometric Brownian motion.\n\n\n\nHarry Zhong\n\n\nMay 19, 2023\n\n\n\n\n\n\nNo matching items"
+    "text": "Gender Classification CNN Demo\n\n\nA demo Shiny app that predicts the gender of an image using my custom trained convolutional neural network.\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html",
+    "href": "projects/gender-nn/index.html",
+    "title": "Gender Classification using PyTorch",
+    "section": "",
+    "text": "Neural networks are cool, they can take complex tasks that are usually pretty easy for humans to do and automate them, given you have sufficient training data and computing power. In this project, we will explore how to make our own neural network, and attempt to predict the gender of faces.\nTo get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown’s YouTube playlist on neural networks. As neural networks are slightly more complicated than most common machine learning algorithms, I won’t go through the basics in much detail here."
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#training",
+    "href": "projects/gender-nn/index.html#training",
+    "title": "Gender Classification using PyTorch",
+    "section": "Training",
+    "text": "Training\nFor this project, we’ll require a dataset containing a large number of labelled images of faces, which as you can imagine isn’t all that common. Luckily for us, the CelebA is a publicly available labelled dataset of around 200k faces. As it’s a well known dataset, there is a function in torch that automatically downloads the required files (sometimes, usually the Google drive link is down) and creates a dataset object for the CelebA.\n\nimsize = int(128/0.8)\nbatch_size = 10\nclasses = ('Female', 'Male')\n\nfivecrop_transform = transforms.Compose([\n    transforms.Resize([imsize, imsize]),\n    transforms.Grayscale(1),\n    transforms.FiveCrop(int(imsize*0.8)),\n    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops]))\n])\n\ntrain_dataset = datasets.CelebA(\n    root = './',\n    split='all',\n    target_type='attr',\n    transform=fivecrop_transform,\n    download=True\n)\n\ntrain_loader = DataLoader(\n    train_dataset,\n    batch_size=batch_size,\n    shuffle=True,\n    generator=torch.Generator(device=device)\n)\n\nWe can verify the number of training images using len.\n\nlen(train_dataset)\n\n202599\n\n\nNote that the set of transformations applied to the training dataset contains FiveCrop in addition to the standard resize and grayscale transformations, FiveCrop makes 5 cropped versions of each image (who would have guessed), one for each corner plus centered. This improves model performance and reduces overfitting to the training dataset. However, this also increases the computational resources required to train the model on this dataset by a factor of 5.\n\n\n\n\n\n\nNote\n\n\n\nThere is also a TenCrop function which applies the transformations from FiveCrop, plus a vertical flip. I would have liked to use TenCrop, but my old MacBook did not agree with that decision.\n\n\nWe can then access a few sample training images and their labels as we did previously.\n\ntrain_data = iter(train_loader)\ntrain_images, train_labels = next(train_data)\n\n# Index of Male label, as CelebA contains multiple labels.\nfactor = functions.attributes.index('Male')\n\nfunctions.imshow(torchvision.utils.make_grid(\n    torch.cat((\n        train_images[0],\n        train_images[1],\n        train_images[2]\n    )),\n    nrow=5\n))\n\nfor i in range(3):\n    print(classes[train_labels[:, factor][i]])\n\n\n\n\n\n\n\n\nMale\nMale\nFemale"
+  },
+  {
+    "objectID": "projects/gender-nn/index.html#testing",
+    "href": "projects/gender-nn/index.html#testing",
+    "title": "Gender Classification using PyTorch",
+    "section": "Testing",
+    "text": "Testing\nNext, we need a dataset to test the performance of our model on unseen data. The simple option would be to split CelebA into train and test partitions. However, I found achieving high test accuracy under this setup to be fairly simple, and resulted in poor performance on other image datasets.\nThus, we’ll use a Kaggle dataset of AI generated faces as the test dataset, which I found required a significantly more complicated model to achieve high accuracy in, but produced models with better performance when given a random selection of my own images.\n\ntest_transform = transforms.Compose([\n    transforms.Resize([int(imsize*0.8), int(imsize*0.8)]),\n    transforms.Grayscale(1),\n    transforms.ToTensor()\n])\n\ntest_dataset = datasets.ImageFolder(\n    root='ThisPersonDoesNotExist_resize/',\n    transform=test_transform\n)\n\ntest_loader = DataLoader(\n    test_dataset,\n    batch_size=batch_size,\n    shuffle=True,\n    generator=torch.Generator(device=device)\n)\n\nOnce again, we can get the number of images in the test dataset.\n\nlen(test_dataset)\n\n6873\n\n\n\n\n\n\n\n\nNote\n\n\n\nThis dataset was originally the training dataset, given significantly reduced number of images compared to CelebA, it’s unsurprising the initial models did not perform well.\n\n\nWe can then show a few images from the test dataset, along with their labels.\n\ntest_data = iter(test_loader)\ntest_images, test_labels = next(test_data)\n\nfunctions.imshow(torchvision.utils.make_grid(test_images, nrow=5))\n\nfor i in range(batch_size):\n    print(classes[test_labels[i]])\n\n\n\n\n\n\n\n\nFemale\nFemale\nMale\nFemale\nFemale\nFemale\nFemale\nFemale\nFemale\nMale"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Harry Zhong",
+    "section": "",
+    "text": "LinkedIn\n  \n  \n    \n     Github\n  \n  \n    \n     Email\n  \n\n  \n  \n\n\nI am an Actuary (AIAA) working at Commonwealth Bank where I implement capital and provisions models. Sometimes I code using Python or R, if I make something interesting it’ll end up on here.\n\n\n\nCommonwealth Bank | Senior Analyst | Dec 2025 - Present\nCommonwealth Bank | Data Scientist (Secondment) | Oct 2025 - Dec 2025\nCommonwealth Bank | Analyst | Aug 2024 - Nov 2025\nEBM Insurance & Risk | Data Analyst | Nov 2022 - Jul 2024\n\n\n\nActuaries Institute | Fellowship Program (Banking) | Jan 2025 - May 2025\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023"
+  },
+  {
+    "objectID": "index.html#recent-projects",
+    "href": "index.html#recent-projects",
+    "title": "Harry Zhong",
+    "section": "Recent Projects",
+    "text": "Recent Projects\n\n\n\n\n\n\n\n\n\n\nFacebook Messenger Data Part 1: Latent Dirichlet Allocation\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\n\n\nJan 5, 2025\n\n\nHarry Zhong\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\n\n\nMay 24, 2024\n\n\nHarry Zhong\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "My Blog",
+    "section": "",
+    "text": "No matching items"
   },
   {
     "objectID": "projects/spotify-analysis/index.html",
@@ -49,48 +91,6 @@
     "text": "Cluster Playlists\nJust for fun, and to see if our subjective interpretation of grouping songs together aligns at all with k-means and Spotify’s API, we can calculate the top 5 tracks by hours listened for each cluster in the highest performing k-means result.\n\n\nTop 5 Tracks Code\ncluster_top_tracks &lt;- kmeans_nfact_save %&gt;%\n  slice(1) %&gt;%\n  pull(km) %&gt;%\n  pluck(1) %&gt;%\n  pluck(\"cluster\") %&gt;%\n  as.data.frame() %&gt;%\n  rownames_to_column(\"track_artist\") %&gt;%\n  rename(cluster = 2) %&gt;% \n  mutate(cluster = paste0(\"Cluster \", cluster)) %&gt;%\n  left_join(\n    full_streaming_history %&gt;%\n      select(\n        track_name,\n        artist_name,\n        ms_played\n      ) %&gt;%\n      na.omit() %&gt;%\n      group_by(\n        track_name,\n        artist_name\n      ) %&gt;%\n      summarise(\n        hours_listened = sum(ms_played/(1000*60))\n      ) %&gt;%\n      mutate(\n        track_artist = paste(\n          track_name,\n          artist_name,\n          sep = \" - \"\n        )\n      ),\n      .,\n      by = \"track_artist\"\n    ) %&gt;%\n  select(-track_artist) %&gt;%\n  group_by(cluster) %&gt;%\n  slice_max(hours_listened, n = 5) %&gt;%\n  ungroup() %&gt;%\n  select(\n    cluster,\n    track_name,\n    artist_name\n  )\n\n\n\n\n\n\n\n\n\n\n\n\ncluster\ntrack_name\nartist_name\n\n\n\n\nCluster 1\ni &lt;3 u\nboy pablo\n\n\nCluster 1\nApocalypse\nCigarettes After Sex\n\n\nCluster 1\nNothing\nBruno Major\n\n\nCluster 1\nSunsetz\nCigarettes After Sex\n\n\nCluster 1\nWonder\nADOY\n\n\nCluster 2\nMay I Ask\nLuke Chiang\n\n\nCluster 2\ndrunk\nkeshi\n\n\nCluster 2\nis your bedroom ceiling bored? (feat. Rxseboy) - Fudasca Remix\nSody\n\n\nCluster 2\ndrivers license\nOlivia Rodrigo\n\n\nCluster 2\nLocation Unknown ◐\nHONNE\n\n\nCluster 3\nchange ur mind\nSarcastic Sounds\n\n\nCluster 3\nstay4ever (feat. Mounika.)\nPowfu\n\n\nCluster 3\naffection\nBETWEEN FRIENDS\n\n\nCluster 3\nboyfriend (with Social House)\nAriana Grande\n\n\nCluster 3\nnot ur friend\nJeremy Zucker\n\n\n\n\n\nThen, we can make some playlists:\n\nCluster 1 Playlist\n\n\n\nCluster 2 Playlist\n\n\n\nCluster 3 Playlist"
   },
   {
-    "objectID": "projects/gender-nn/index.html",
-    "href": "projects/gender-nn/index.html",
-    "title": "Gender Classification using PyTorch",
-    "section": "",
-    "text": "Neural networks are cool, they can take complex tasks that are usually pretty easy for humans to do and automate them, given you have sufficient training data and computing power. In this project, we will explore how to make our own neural network, and attempt to predict the gender of faces.\nTo get a basic understanding of how neural networks, I would recommend watching 3Blue1Brown’s YouTube playlist on neural networks. As neural networks are slightly more complicated than most common machine learning algorithms, I won’t go through the basics in much detail here."
-  },
-  {
-    "objectID": "projects/gender-nn/index.html#training",
-    "href": "projects/gender-nn/index.html#training",
-    "title": "Gender Classification using PyTorch",
-    "section": "Training",
-    "text": "Training\nFor this project, we’ll require a dataset containing a large number of labelled images of faces, which as you can imagine isn’t all that common. Luckily for us, the CelebA is a publicly available labelled dataset of around 200k faces. As it’s a well known dataset, there is a function in torch that automatically downloads the required files (sometimes, usually the Google drive link is down) and creates a dataset object for the CelebA.\n\nimsize = int(128/0.8)\nbatch_size = 10\nclasses = ('Female', 'Male')\n\nfivecrop_transform = transforms.Compose([\n    transforms.Resize([imsize, imsize]),\n    transforms.Grayscale(1),\n    transforms.FiveCrop(int(imsize*0.8)),\n    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops]))\n])\n\ntrain_dataset = datasets.CelebA(\n    root = './',\n    split='all',\n    target_type='attr',\n    transform=fivecrop_transform,\n    download=True\n)\n\ntrain_loader = DataLoader(\n    train_dataset,\n    batch_size=batch_size,\n    shuffle=True,\n    generator=torch.Generator(device=device)\n)\n\nWe can verify the number of training images using len.\n\nlen(train_dataset)\n\n202599\n\n\nNote that the set of transformations applied to the training dataset contains FiveCrop in addition to the standard resize and grayscale transformations, FiveCrop makes 5 cropped versions of each image (who would have guessed), one for each corner plus centered. This improves model performance and reduces overfitting to the training dataset. However, this also increases the computational resources required to train the model on this dataset by a factor of 5.\n\n\n\n\n\n\nNote\n\n\n\nThere is also a TenCrop function which applies the transformations from FiveCrop, plus a vertical flip. I would have liked to use TenCrop, but my old MacBook did not agree with that decision.\n\n\nWe can then access a few sample training images and their labels as we did previously.\n\ntrain_data = iter(train_loader)\ntrain_images, train_labels = next(train_data)\n\n# Index of Male label, as CelebA contains multiple labels.\nfactor = functions.attributes.index('Male')\n\nfunctions.imshow(torchvision.utils.make_grid(\n    torch.cat((\n        train_images[0],\n        train_images[1],\n        train_images[2]\n    )),\n    nrow=5\n))\n\nfor i in range(3):\n    print(classes[train_labels[:, factor][i]])\n\n\n\n\n\n\n\n\nMale\nMale\nFemale"
-  },
-  {
-    "objectID": "projects/gender-nn/index.html#testing",
-    "href": "projects/gender-nn/index.html#testing",
-    "title": "Gender Classification using PyTorch",
-    "section": "Testing",
-    "text": "Testing\nNext, we need a dataset to test the performance of our model on unseen data. The simple option would be to split CelebA into train and test partitions. However, I found achieving high test accuracy under this setup to be fairly simple, and resulted in poor performance on other image datasets.\nThus, we’ll use a Kaggle dataset of AI generated faces as the test dataset, which I found required a significantly more complicated model to achieve high accuracy in, but produced models with better performance when given a random selection of my own images.\n\ntest_transform = transforms.Compose([\n    transforms.Resize([int(imsize*0.8), int(imsize*0.8)]),\n    transforms.Grayscale(1),\n    transforms.ToTensor()\n])\n\ntest_dataset = datasets.ImageFolder(\n    root='ThisPersonDoesNotExist_resize/',\n    transform=test_transform\n)\n\ntest_loader = DataLoader(\n    test_dataset,\n    batch_size=batch_size,\n    shuffle=True,\n    generator=torch.Generator(device=device)\n)\n\nOnce again, we can get the number of images in the test dataset.\n\nlen(test_dataset)\n\n6873\n\n\n\n\n\n\n\n\nNote\n\n\n\nThis dataset was originally the training dataset, given significantly reduced number of images compared to CelebA, it’s unsurprising the initial models did not perform well.\n\n\nWe can then show a few images from the test dataset, along with their labels.\n\ntest_data = iter(test_loader)\ntest_images, test_labels = next(test_data)\n\nfunctions.imshow(torchvision.utils.make_grid(test_images, nrow=5))\n\nfor i in range(batch_size):\n    print(classes[test_labels[i]])\n\n\n\n\n\n\n\n\nFemale\nFemale\nMale\nFemale\nFemale\nFemale\nFemale\nFemale\nFemale\nMale"
-  },
-  {
-    "objectID": "blog.html",
-    "href": "blog.html",
-    "title": "My Blog",
-    "section": "",
-    "text": "No matching items"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Harry Zhong",
-    "section": "",
-    "text": "LinkedIn\n  \n  \n    \n     Github\n  \n  \n    \n     Email\n  \n\n  \n  \n\n\nI am an Actuary (AIAA) working as an Analyst at Commonwealth Bank where I implement capital and provisions models. Sometimes I code using Python or R, if I make something interesting it’ll end up on here.\n\n\n\nCommonwealth Bank | Analyst (Risk Analytics Strategic Initiatives) | Aug 2024 - Present\nEBM Insurance & Risk | Data Analyst | Nov 2022 - Jul 2024\n\n\n\nActuaries Institute | Fellowship Program (Banking)| Jan 2025 - May 2025\nActuaries Institute | Actuary Program | Jul 2023 - Oct 2023\nCurtin University | Bachelor of Science (Actuarial Science) (Honours) | Feb 2019 - Jun 2023\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\n\n\nJan 5, 2025\n\n\nHarry Zhong\n\n\n\n\n\n\n\n\n\n\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\n\n\nMay 24, 2024\n\n\nHarry Zhong\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "index.html#recent-projects",
-    "href": "index.html#recent-projects",
-    "title": "Harry Zhong",
-    "section": "",
-    "text": "Identification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\n\n\nJan 5, 2025\n\n\nHarry Zhong\n\n\n\n\n\n\n\n\n\n\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\n\n\nMay 24, 2024\n\n\nHarry Zhong\n\n\n\n\n\nNo matching items"
-  },
-  {
     "objectID": "projects/fbm_part1_lda/index.html",
     "href": "projects/fbm_part1_lda/index.html",
     "title": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation",
@@ -126,10 +126,10 @@
     "text": "Hyperparameter Tuning\nNaturally, the next step would be to test a range of values for num_topics to evaluate which ones gives the best UMass coherence score. This is easily done by extending the LDA class we created previously.\n\n\n\n\n\n\nNote\n\n\n\nAs someone who mainly uses R at work, extending a class with additional functionality like this is pretty neat.\n\n\n\nimport numpy as np\n\nclass tune_lda(fbm_lda):\n    def tune(self, n_start, n_stop, step, sort: bool=False):\n        n_topics_values = np.arange(n_start, n_stop, step)\n\n        tuning_results = pd.DataFrame(\n            columns=[\n                'n_topics',\n                'umass_coherence'\n            ]\n        )\n\n        for index in range(len(n_topics_values)):\n            n_topics = n_topics_values[index]\n            self.train_lda(num_topics=n_topics)\n            umass_coherence = self.get_coherence()\n\n            tuning_results.loc[index] = (\n                [n_topics] + \n                [umass_coherence]\n            )\n\n        if sort:\n            tuning_results = tuning_results.sort_values('umass_coherence', ascending=False)\n\n        return tuning_results\n\nThe new class can then easily be used to test values 2 to 20 for num_topics.\n\ntuning = tune_lda(documents)\ntuning_results = tuning.tune(2, 21, 1)\ntuning_results.plot(x='n_topics')"
   },
   {
-    "objectID": "apps.html",
-    "href": "apps.html",
-    "title": "Web Apps",
+    "objectID": "projects.html",
+    "href": "projects.html",
+    "title": "My Projects",
     "section": "",
-    "text": "Gender Classification CNN Demo\n\n\nA demo Shiny app that predicts the gender of an image using my custom trained convolutional neural network.\n\n\n\n\n\nNo matching items"
+    "text": "Facebook Messenger Data Part 1: Latent Dirichlet Allocation\n\n\n\nLDA\n\nPython\n\n\n\nIdentification and classification of topics in Facebook Messenger conversations using Latent Dirichlet Allocation (LDA).\n\n\n\nHarry Zhong\n\n\nJan 5, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nGender Classification using PyTorch\n\n\n\nGender Classification\n\nNeural Networks\n\nPython\n\nPyTorch\n\n\n\nClassification of faces into genders using a convolutional neural network with residual layers.\n\n\n\nHarry Zhong\n\n\nMay 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysis of My Spotify Data\n\n\n\nK-means\n\nR\n\n\n\nCategorisation of my Spotify listening history using k-means clustering.\n\n\n\nHarry Zhong\n\n\nMar 23, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\nHonours Thesis: Stochastic Volatility\n\n\n\nR\n\n\n\nResearch involving stochastic modelling to compare constant and stochastic volatility under geometric Brownian motion.\n\n\n\nHarry Zhong\n\n\nMay 19, 2023\n\n\n\n\n\n\nNo matching items"
   }
 ]

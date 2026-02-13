@@ -1,14 +1,6 @@
 [
   {
-    "listing": "/projects.html",
-    "items": [
-      "/projects/fbm_part1_lda/index.html",
-      "/projects/gender-nn/index.html",
-      "/projects/spotify-analysis/index.html"
-    ]
-  },
-  {
-    "listing": "/blog.html",
+    "listing": "/apps.html",
     "items": []
   },
   {
@@ -20,7 +12,15 @@
     ]
   },
   {
-    "listing": "/apps.html",
+    "listing": "/blog.html",
     "items": []
+  },
+  {
+    "listing": "/projects.html",
+    "items": [
+      "/projects/fbm_part1_lda/index.html",
+      "/projects/gender-nn/index.html",
+      "/projects/spotify-analysis/index.html"
+    ]
   }
 ]
