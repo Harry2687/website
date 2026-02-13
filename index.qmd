@@ -28,10 +28,14 @@ listing:
 ---
 :::{#about-section}
 ### {{<fa user-tie>}} About Me
-I am an Actuary (AIAA) working as an Analyst at Commonwealth Bank where I implement capital and provisions models. Sometimes I code using Python or R, if I make something interesting it'll end up on here.
+I am an Actuary (AIAA) working at Commonwealth Bank where I implement capital and provisions models. Sometimes I code using Python or R, if I make something interesting it'll end up on here.
 
 ### {{<fa briefcase>}} Experience
-**Commonwealth Bank** \| Analyst (Risk Analytics Strategic Initiatives) \| Aug 2024 - Present
+**Commonwealth Bank** \| Senior Analyst \| Dec 2025 - Present
+
+**Commonwealth Bank** \| Data Scientist (Secondment) \| Oct 2025 - Dec 2025
+
+**Commonwealth Bank** \| Analyst \| Aug 2024 - Nov 2025
 
 **EBM Insurance & Risk** \| Data Analyst \| Nov 2022 - Jul 2024
 
