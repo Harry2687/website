@@ -1,0 +1,99 @@
+/*-- scss:defaults --*/
+
+// Typography - Clean, modern stack
+$font-family-sans-serif: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !default;
+$headings-font-weight: 700 !default;
+$line-height-base: 1.7 !default; // Increased for "clean" feel
+
+// Navbar - Make it taller for minimal look
+$navbar-height: 70px !default;
+
+/*-- scss:rules --*/
+
+// Global Transitions for smooth theme switching
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// Minimal Navbar with Glassmorphism
+// We use $body-bg and $body-color which are available in the rules block from the base theme
+.navbar {
+    // Glass effect
+    background-color: rgba($body-bg, 0.75) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    // Border: derived from text color ($body-color) for guaranteed visibility in both modes
+    border-bottom: 1px solid rgba($body-color, 0.1);
+
+    box-shadow: none !important; // Remove default shadows for flatness
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    .navbar-brand {
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        font-size: 1.3rem;
+        color: $body-color !important;
+        opacity: 1;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+
+    .nav-link {
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: $body-color !important;
+        opacity: 1;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+}
+
+// Hero/Header Typography
+h1 {
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 1rem;
+}
+
+h2,
+h3 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+// Clean Cards (if used in projects)
+.card {
+    border: 1px solid rgba($body-color, 0.05);
+    background: transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        border-color: rgba($body-color, 0.15);
+    }
+}
+
+// Buttons (Minimal)
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.5rem 1.2rem;
+    transition: all 0.2s ease;
+}
+
+// Footer
+footer {
+    border-top: 1px solid rgba($body-color, 0.05);
+    margin-top: 5rem;
+    padding: 3rem 0;
+    opacity: 0.6;
+    font-size: 0.9rem;
+}

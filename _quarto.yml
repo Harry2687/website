@@ -27,9 +27,8 @@ format:
   html:
     pagetitle: "Harry Zhong"
     theme: 
-      dark: darkly
-      light: flatly
-    css: styles.css
+      dark: [darkly, custom.scss]
+      light: [flatly, custom.scss]
     toc: true
 
 editor: source
