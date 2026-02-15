@@ -1,26 +1,10 @@
 [
   {
-    "listing": "/apps.html",
-    "items": []
-  },
-  {
-    "listing": "/index.html",
+    "listing": "/the_lab.html",
     "items": [
-      "/projects/fbm_part1_lda/index.html",
-      "/projects/gender-nn/index.html",
-      "/projects/spotify-analysis/index.html"
-    ]
-  },
-  {
-    "listing": "/blog.html",
-    "items": []
-  },
-  {
-    "listing": "/projects.html",
-    "items": [
-      "/projects/fbm_part1_lda/index.html",
-      "/projects/gender-nn/index.html",
-      "/projects/spotify-analysis/index.html"
+      "/the_lab/fbm_part1_lda/index.html",
+      "/the_lab/gender-nn/index.html",
+      "/the_lab/spotify-analysis/index.html"
     ]
   }
 ]

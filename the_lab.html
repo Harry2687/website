@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="A collection of interesting things I’ve worked on outside of my professional work experience.">
 
 <title>Harry Zhong</title>
 <style>
@@ -61,7 +62,7 @@ ul.task-list li input[type="checkbox"] {
 <script>
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-projects .list');
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
       return; 
@@ -74,7 +75,7 @@ ul.task-list li input[type="checkbox"] {
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-projects'] = new List('listing-projects', options);
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -306,16 +307,8 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./projects.html" aria-current="page"> 
-<span class="menu-text"><i class="fa-solid fa-diagram-project" aria-label="diagram-project"></i> Projects</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./apps.html"> 
-<span class="menu-text"><i class="fa-solid fa-layer-group" aria-label="layer-group"></i> Apps</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
-<span class="menu-text"><i class="fa-solid fa-newspaper" aria-label="newspaper"></i> Blog</span></a>
+    <a class="nav-link active" href="./the_lab.html" aria-current="page"> 
+<span class="menu-text"><i class="fa-solid fa-microscope" aria-label="microscope"></i> The Lab</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
@@ -348,16 +341,21 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24=">Gender Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Sy1tZWFucw==">K-means <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TERB">LDA <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TmV1cmFsJTIwTmV0d29ya3M=">Neural Networks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHl0aG9u">Python <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UHlUb3JjaA==">PyTorch <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(2)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(5)</span></div><div class="category" data-category="R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24=">Gender Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Sy1tZWFucw==">K-means <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TERB">LDA <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TmV1cmFsJTIwTmV0d29ya3M=">Neural Networks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHl0aG9u">Python <span class="quarto-category-count">(3)</span></div><div class="category" data-category="UHlUb3JjaA==">PyTorch <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(2)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">My Projects</h1>
+<h1 class="title">The Lab</h1>
 </div>
 
+<div>
+  <div class="description">
+    A collection of interesting things I’ve worked on outside of my professional work experience.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -376,13 +374,42 @@ window.Quarto = {
 
 
 
-<div class="quarto-listing quarto-listing-container-grid" id="listing-projects">
+<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="TERBJTJDUHl0aG9u" data-listing-date-sort="1736035200000" data-listing-file-modified-sort="1770965968609" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2990">
-<a href="./projects/fbm_part1_lda/index.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="0" data-categories="UHl0aG9u" data-listing-date-sort="1740182400000">
+<a href="https://harry2687-gender-cnn-demo.hf.space" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
-<img loading="lazy" src="./projects/fbm_part1_lda/topic_chart.png" class="thumbnail-image card-img" style="height: 150px;">
+<img loading="lazy" src="projects/gender-nn/cnn-layer.png" class="thumbnail-image card-img" style="height: 150px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Gender Classification CNN Demo
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('UHl0aG9u'); return false;">Python</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>A demo Shiny app that predicts the gender of an image using my custom trained convolutional neural network.</p>
+</div>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Harry Zhong
+</div>
+<div class="listing-date">
+Feb 22, 2025
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="1" data-categories="TERBJTJDUHl0aG9u" data-listing-date-sort="1736035200000" data-listing-file-modified-sort="1771156371083" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2990">
+<a href="./the_lab/fbm_part1_lda/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="./the_lab/fbm_part1_lda/topic_chart.png" class="thumbnail-image card-img" style="height: 150px;">
 </p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
@@ -409,11 +436,11 @@ Jan 5, 2025
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="1" data-categories="R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24lMkNOZXVyYWwlMjBOZXR3b3JrcyUyQ1B5dGhvbiUyQ1B5VG9yY2g=" data-listing-date-sort="1716508800000" data-listing-file-modified-sort="1770965968610" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3128">
-<a href="./projects/gender-nn/index.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="2" data-categories="R2VuZGVyJTIwQ2xhc3NpZmljYXRpb24lMkNOZXVyYWwlMjBOZXR3b3JrcyUyQ1B5dGhvbiUyQ1B5VG9yY2g=" data-listing-date-sort="1716508800000" data-listing-file-modified-sort="1771156371085" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3128">
+<a href="./the_lab/gender-nn/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
-<img loading="lazy" src="./projects/gender-nn/cnn-layer.png" class="thumbnail-image card-img" style="height: 150px;">
+<img loading="lazy" src="./the_lab/gender-nn/cnn-layer.png" class="thumbnail-image card-img" style="height: 150px;">
 </p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
@@ -444,11 +471,11 @@ May 24, 2024
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="2" data-categories="Sy1tZWFucyUyQ1I=" data-listing-date-sort="1711152000000" data-listing-file-modified-sort="1770965968731" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6170">
-<a href="./projects/spotify-analysis/index.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="3" data-categories="Sy1tZWFucyUyQ1I=" data-listing-date-sort="1711152000000" data-listing-file-modified-sort="1771156371213" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6170">
+<a href="./the_lab/spotify-analysis/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
-<img loading="lazy" src="./projects/spotify-analysis/kmeans-preview.png" class="thumbnail-image card-img" style="height: 150px;">
+<img loading="lazy" src="./the_lab/spotify-analysis/kmeans-preview.png" class="thumbnail-image card-img" style="height: 150px;">
 </p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
@@ -475,7 +502,7 @@ Mar 23, 2024
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="3" data-categories="Ug==" data-listing-date-sort="1684454400000">
+<div class="g-col-1" data-index="4" data-categories="Ug==" data-listing-date-sort="1684454400000">
 <a href="https://www.researchgate.net/publication/372915363_Comparing_Stochastic_and_Constant_Volatility_Returns_Distributions_using_the_Heston_Model" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
