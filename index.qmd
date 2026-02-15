@@ -21,7 +21,7 @@ about:
       href: mailto:h.zhong2687@gmail.com
 listing:
   - id: recent-posts
-    contents: projects
+    contents: the_lab
     max-items: 2
     type: default
     sort: "date desc"
@@ -47,6 +47,6 @@ I am an Actuary (AIAA) working at Commonwealth Bank where I implement capital an
 **Curtin University** \| Bachelor of Science (Actuarial Science) (Honours) \| Feb 2019 - Jun 2023
 :::
 
-## Recent Projects
+## Recent Work
 :::{#recent-posts}
 :::

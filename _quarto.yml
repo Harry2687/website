@@ -9,12 +9,8 @@ website:
   navbar:
     pinned: true
     left:
-      - text: "{{<fa diagram-project>}} Projects"
-        href: projects.qmd
-      - text: "{{<fa layer-group>}} Apps"
-        href: apps.qmd
-      - text: "{{<fa newspaper>}} Blog"
-        href: blog.qmd
+      - text: "{{<fa microscope>}} The Lab"
+        href: the_lab.qmd
     right:
       - icon: linkedin
         href: https://www.linkedin.com/in/harry2687/
