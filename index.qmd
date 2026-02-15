@@ -4,7 +4,7 @@ image: profile.jpg
 toc: false
 about:
   id: about-section
-  template: trestles
+  template: jolla
   image-shape: round
   image-width: 15em
   links: 
