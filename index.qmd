@@ -34,9 +34,12 @@ I am an Actuary (AIAA) working at Commonwealth Bank where I implement capital an
 **EBM Insurance & Risk** \| Data Analyst \| Nov 2022 - Jul 2024
 
 ### {{<fa graduation-cap>}} Education
+
+**Curtin University** \| Bachelor of Science (Actuarial Science) (Honours) \| Feb 2019 - Jun 2023
+
+### {{<fa id-badge>}} Certifications
+
 **Actuaries Institute** \| Fellowship Program (Banking) \| Jan 2025 - May 2025
 
 **Actuaries Institute** \| Actuary Program \| Jul 2023 - Oct 2023
-
-**Curtin University** \| Bachelor of Science (Actuarial Science) (Honours) \| Feb 2019 - Jun 2023
 :::
