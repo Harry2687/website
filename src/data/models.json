@@ -1,0 +1,56 @@
+[
+  {
+    "id": "M01",
+    "system_name": "Enterprise GenAI Validation Suite",
+    "company": "Commonwealth Bank",
+    "domain": "GenAI Risk & Governance",
+    "architecture": "Parallel LLM Evaluation, Adversarial Testing, Bias & Hallucination Rubrics",
+    "status": "Production",
+    "metric": "Firm-wide Enterprise Model Risk Alignment"
+  },
+  {
+    "id": "M02",
+    "system_name": "7-Stage Conversation Evaluator",
+    "company": "Commonwealth Bank",
+    "domain": "LLM Evaluation",
+    "architecture": "Parallel LLM Inference, Multi-Turn Intent Classifier across 10 LoBs",
+    "status": "Production",
+    "metric": "92.95% Multi-Turn Accuracy (10,000+ Dialogues)"
+  },
+  {
+    "id": "M03",
+    "system_name": "Vectorized Basel III ASRF Engine",
+    "company": "Commonwealth Bank",
+    "domain": "Quantitative Credit Risk",
+    "architecture": "Vectorized NumPy / Python Implementation of Basel IRB Formula",
+    "status": "Production",
+    "metric": "High-speed portfolio sensitivity for capital optimization"
+  },
+  {
+    "id": "M04",
+    "system_name": "Serverless Retail Credit Pipeline",
+    "company": "Commonwealth Bank",
+    "domain": "MLOps & Cloud Infrastructure",
+    "architecture": "Amazon EMR Serverless, PySpark, Amazon SageMaker",
+    "status": "Production",
+    "metric": "100% Feature Consistency, Zero Drift between Dev & Prod"
+  },
+  {
+    "id": "M05",
+    "system_name": "Regulatory PD / LGD / EAD Suite",
+    "company": "Commonwealth Bank",
+    "domain": "Credit Risk Modeling",
+    "architecture": "PySpark, Scikit-Learn, APS220 / AASB9 / Basel III Compliance",
+    "status": "Production",
+    "metric": "$1.5B+ AUD RWA Impact via Model Enhancements"
+  },
+  {
+    "id": "M06",
+    "system_name": "Heston Stochastic Volatility Model",
+    "company": "Curtin University",
+    "domain": "Stochastic Calculus",
+    "architecture": "Geometric Brownian Motion vs Stochastic Volatility Calibration",
+    "status": "Research",
+    "metric": "Published Honours Research on ResearchGate"
+  }
+]
