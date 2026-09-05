@@ -16,3 +16,8 @@
 /.quarto/
 _site
 **/*.quarto_ipynb
+
+# Node & Astro
+node_modules/
+.astro/
+dist/
