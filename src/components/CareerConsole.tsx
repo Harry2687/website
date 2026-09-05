@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import aboutData from '../data/about.json';
 import careerData from '../data/career.json';
 import educationData from '../data/education.json';
-import projectsData from '../data/projects.json';
+import researchData from '../data/research.json';
 import skillsData from '../data/skills.json';
 
 type QueryMode = 'sql' | 'polars';
@@ -30,9 +30,9 @@ const PRESETS: QueryPreset[] = [
     polars: 'education.select(["qualification", "institution", "period", "details"])',
   },
   {
-    label: 'Projects & Thesis',
-    sql: 'SELECT name, domain, description, link FROM projects;',
-    polars: 'projects.select(["name", "domain", "description", "link"])',
+    label: 'Research',
+    sql: 'SELECT title, institution, year, domain, link FROM research;',
+    polars: 'research.select(["title", "institution", "year", "domain", "link"])',
   },
   {
     label: 'Skills',
@@ -46,7 +46,7 @@ export default function CareerConsole() {
   const [query, setQuery] = useState<string>(PRESETS[0].sql);
   const [resultRows, setResultRows] = useState<Record<string, any>[]>(aboutData);
   const [columns, setColumns] = useState<string[]>(Object.keys(aboutData[0]));
-  const [execTimeMs, setExecTimeMs] = useState<number | null>(0.6);
+  const [execTimeMs, setExecTimeMs] = useState<number | null>(0.5);
   const [statusText, setStatusText] = useState<string>('Ready');
   const [errorText, setErrorText] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'table' | 'polars_ascii' | 'schema'>('table');
@@ -89,8 +89,8 @@ export default function CareerConsole() {
         await db.registerFileText('education.json', JSON.stringify(educationData));
         await conn.query(`CREATE TABLE education AS SELECT * FROM read_json_auto('education.json')`);
 
-        await db.registerFileText('projects.json', JSON.stringify(projectsData));
-        await conn.query(`CREATE TABLE projects AS SELECT * FROM read_json_auto('projects.json')`);
+        await db.registerFileText('research.json', JSON.stringify(researchData));
+        await conn.query(`CREATE TABLE research AS SELECT * FROM read_json_auto('research.json')`);
 
         await db.registerFileText('skills.json', JSON.stringify(skillsData));
         await conn.query(`CREATE TABLE skills AS SELECT * FROM read_json_auto('skills.json')`);
@@ -172,12 +172,12 @@ export default function CareerConsole() {
         data = [...careerData];
       } else if (q.includes('education')) {
         data = [...educationData];
-      } else if (q.includes('projects') || q.includes('thesis')) {
-        data = [...projectsData];
+      } else if (q.includes('research') || q.includes('thesis')) {
+        data = [...researchData];
       } else if (q.includes('skills')) {
         data = [...skillsData];
       } else {
-        throw new Error('Table not found. Available tables: about, experience, education, projects, skills');
+        throw new Error('Table not found. Available tables: about, experience, education, research, skills');
       }
 
       const cols = data.length > 0 ? Object.keys(data[0]) : [];
@@ -237,12 +237,12 @@ export default function CareerConsole() {
         data = [...careerData];
       } else if (expr.startsWith('education')) {
         data = [...educationData];
-      } else if (expr.startsWith('projects')) {
-        data = [...projectsData];
+      } else if (expr.startsWith('research')) {
+        data = [...researchData];
       } else if (expr.startsWith('skills')) {
         data = [...skillsData];
       } else {
-        throw new Error('Unknown DataFrame. Use about, experience, education, projects, or skills.');
+        throw new Error('Unknown DataFrame. Use about, experience, education, research, or skills.');
       }
 
       // Parse .select(["col1", "col2"])
@@ -573,10 +573,10 @@ export default function CareerConsole() {
             </div>
 
             <div className="p-3 rounded-lg border border-[#232836] bg-[#0f121a]">
-              <div className="font-semibold text-sky-400 mb-1">projects</div>
-              <p className="text-slate-400 text-[11px] mb-2">Research thesis, GenAI eval, and quant modeling.</p>
+              <div className="font-semibold text-sky-400 mb-1">research</div>
+              <p className="text-slate-400 text-[11px] mb-2">Honours thesis publication and stochastic modeling.</p>
               <div className="flex flex-wrap gap-1 text-[11px]">
-                {['name: str', 'domain: str', 'description: str', 'link: str'].map((f) => (
+                {['title: str', 'institution: str', 'degree: str', 'year: str', 'domain: str', 'link: str'].map((f) => (
                   <span key={f} className="px-1.5 py-0.5 rounded bg-[#171b26] border border-[#272f44] text-slate-300">
                     {f}
                   </span>
