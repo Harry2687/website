@@ -1,0 +1,84 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CareerConsole from '../components/CareerConsole.tsx';
+
+import careerData from '../data/career.json';
+import educationData from '../data/education.json';
+---
+
+<Layout>
+  <Header />
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-10">
+    <!-- Centerpiece: The Interactive Database Terminal -->
+    <section class="w-full">
+      <CareerConsole client:load />
+    </section>
+
+    <!-- Plaintext Fallback & Fast Reference -->
+    <section class="border-t border-[#232836]/60 pt-6 space-y-8 text-xs font-mono">
+      <div>
+        <h2 class="uppercase tracking-wider text-slate-500 mb-3 text-[11px]">
+          Experience
+        </h2>
+        <div class="space-y-2">
+          {careerData.map((job) => (
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between py-1 border-b border-[#161a26]/80 text-slate-300">
+              <div>
+                <span class="font-semibold text-slate-100">{job.company}</span>
+                <span class="text-slate-600 mx-2">|</span>
+                <span class="text-slate-300">{job.role}</span>
+              </div>
+              <div class="text-slate-500 text-[11px] sm:text-xs">
+                {job.period}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <h2 class="uppercase tracking-wider text-slate-500 mb-3 text-[11px]">
+            Education & Certifications
+          </h2>
+          <div class="space-y-2">
+            {educationData.map((edu) => (
+              <div class="py-1 border-b border-[#161a26]/80 text-slate-300">
+                <div class="font-semibold text-slate-100">{edu.institution}</div>
+                <div class="text-slate-400 text-[11px] mt-0.5">{edu.qualification} ({edu.period})</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h2 class="uppercase tracking-wider text-slate-500 mb-3 text-[11px]">
+            Research & Thesis
+          </h2>
+          <div class="py-1 border-b border-[#161a26]/80 space-y-1">
+            <div class="font-semibold text-slate-100">Honours Thesis: Stochastic Volatility</div>
+            <p class="text-slate-400 text-[11px] leading-relaxed">
+              Comparing constant and stochastic volatility under geometric Brownian motion using the Heston model.
+            </p>
+            <div>
+              <a
+                href="https://www.researchgate.net/publication/372915363_Comparing_Stochastic_and_Constant_Volatility_Returns_Distributions_using_the_Heston_Model"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sky-400 hover:underline text-[11px] inline-flex items-center space-x-1 mt-1"
+              >
+                <span>View on ResearchGate</span>
+                <span>↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
