@@ -520,7 +520,7 @@ export default function CareerConsole() {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              SQL (DuckDB-WASM)
+              SQL
             </button>
             <button
               onClick={() => handleModeChange('polars')}
@@ -530,7 +530,7 @@ export default function CareerConsole() {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Polars (DataFrame)
+              Polars
             </button>
           </div>
 
