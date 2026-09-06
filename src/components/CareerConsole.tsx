@@ -538,9 +538,9 @@ export default function CareerConsole() {
           <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
             <div className="p-3 rounded-lg border border-[#232836] bg-[#0f121a]">
               <div className="font-semibold text-sky-400 mb-1">about</div>
-              <p className="text-slate-400 text-[11px] mb-2">Profile overview, role, and focus.</p>
+              <p className="text-slate-400 text-[11px] mb-2">Profile overview and contact.</p>
               <div className="flex flex-wrap gap-1 text-[11px]">
-                {['name: str', 'role: str', 'company: str', 'status: str', 'focus: str', 'location: str'].map((f) => (
+                {['name: str', 'location: str', 'contact: str'].map((f) => (
                   <span key={f} className="px-1.5 py-0.5 rounded bg-[#171b26] border border-[#272f44] text-slate-300">
                     {f}
                   </span>
@@ -562,7 +562,7 @@ export default function CareerConsole() {
 
             <div className="p-3 rounded-lg border border-[#232836] bg-[#0f121a]">
               <div className="font-semibold text-sky-400 mb-1">education</div>
-              <p className="text-slate-400 text-[11px] mb-2">Academic degrees and actuarial syllabus.</p>
+              <p className="text-slate-400 text-[11px] mb-2">Academic degrees.</p>
               <div className="flex flex-wrap gap-1 text-[11px]">
                 {['institution: str', 'qualification: str', 'period: str', 'details: str'].map((f) => (
                   <span key={f} className="px-1.5 py-0.5 rounded bg-[#171b26] border border-[#272f44] text-slate-300">
