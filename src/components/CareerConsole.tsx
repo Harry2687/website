@@ -44,9 +44,10 @@ const PRESETS: QueryPreset[] = [
 export default function CareerConsole() {
   const [mode, setMode] = useState<QueryMode>('sql');
   const [query, setQuery] = useState<string>(PRESETS[0].sql);
-  const [resultRows, setResultRows] = useState<Record<string, any>[]>(aboutData);
-  const [columns, setColumns] = useState<string[]>(Object.keys(aboutData[0]));
-  const [execTimeMs, setExecTimeMs] = useState<number | null>(0.5);
+  const [hasExecuted, setHasExecuted] = useState<boolean>(false);
+  const [resultRows, setResultRows] = useState<Record<string, any>[]>([]);
+  const [columns, setColumns] = useState<string[]>([]);
+  const [execTimeMs, setExecTimeMs] = useState<number | null>(null);
   const [statusText, setStatusText] = useState<string>('Ready');
   const [errorText, setErrorText] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'table' | 'polars_ascii' | 'schema'>('table');
@@ -56,13 +57,13 @@ export default function CareerConsole() {
   const duckDbRef = useRef<any>(null);
   const connRef = useRef<any>(null);
 
-  // Initialize DuckDB-WASM client-side
+  // Initialize DuckDB-WASM client-side without auto-running queries
   useEffect(() => {
     let isMounted = true;
 
     async function initDuckDB() {
       try {
-        setStatusText('Loading DuckDB-WASM engine...');
+        setStatusText('Initializing DuckDB-WASM...');
         const duckdb = await import('@duckdb/duckdb-wasm');
         const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
         const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
@@ -100,19 +101,16 @@ export default function CareerConsole() {
           connRef.current = conn;
           setDuckDbReady(true);
           setStatusText('DuckDB-WASM Active');
-          runSqlQuery(PRESETS[0].sql, conn);
         }
       } catch (err: any) {
         console.warn('DuckDB-WASM fallback to client engine:', err);
         if (isMounted) {
           setDuckDbReady(false);
           setStatusText('In-Memory Engine');
-          runFallbackQuery(PRESETS[0].sql);
         }
       }
     }
 
-    setAsciiTable(generatePolarsAscii(aboutData, Object.keys(aboutData[0])));
     initDuckDB();
 
     return () => {
@@ -183,6 +181,7 @@ export default function CareerConsole() {
       const cols = data.length > 0 ? Object.keys(data[0]) : [];
       const t1 = performance.now();
 
+      setHasExecuted(true);
       setResultRows(data);
       setColumns(cols);
       setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
@@ -210,6 +209,7 @@ export default function CareerConsole() {
       const cols = result.schema.fields.map((f: any) => f.name);
       const t1 = performance.now();
 
+      setHasExecuted(true);
       setResultRows(rows);
       setColumns(cols);
       setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
@@ -264,6 +264,7 @@ export default function CareerConsole() {
       }
 
       const t1 = performance.now();
+      setHasExecuted(true);
       setResultRows(data);
       setColumns(cols);
       setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
@@ -284,13 +285,8 @@ export default function CareerConsole() {
   }
 
   function handleSelectPreset(preset: QueryPreset) {
-    if (mode === 'sql') {
-      setQuery(preset.sql);
-      runSqlQuery(preset.sql);
-    } else {
-      setQuery(preset.polars);
-      runPolarsQuery(preset.polars);
-    }
+    const nextQuery = mode === 'sql' ? preset.sql : preset.polars;
+    setQuery(nextQuery);
   }
 
   function handleModeChange(newMode: QueryMode) {
@@ -299,13 +295,13 @@ export default function CareerConsole() {
       (p) => p.sql === query || p.polars === query
     ) || PRESETS[0];
 
-    if (newMode === 'sql') {
-      setQuery(matchingPreset.sql);
-      runSqlQuery(matchingPreset.sql);
-    } else {
-      setQuery(matchingPreset.polars);
-      runPolarsQuery(matchingPreset.polars);
-    }
+    const nextQuery = newMode === 'sql' ? matchingPreset.sql : matchingPreset.polars;
+    setQuery(nextQuery);
+  }
+
+  function handleReset() {
+    const def = PRESETS[0];
+    setQuery(mode === 'sql' ? def.sql : def.polars);
   }
 
   return (
@@ -400,12 +396,7 @@ export default function CareerConsole() {
           </div>
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => {
-                const def = PRESETS[0];
-                setQuery(mode === 'sql' ? def.sql : def.polars);
-                if (mode === 'sql') runSqlQuery(def.sql);
-                else runPolarsQuery(def.polars);
-              }}
+              onClick={handleReset}
               className="px-3 py-1 rounded text-xs font-mono text-slate-400 hover:text-slate-200 hover:bg-[#1a2030] transition-colors"
             >
               Reset
@@ -431,7 +422,7 @@ export default function CareerConsole() {
                 : 'text-slate-400 hover:text-slate-300'
             }`}
           >
-            Table View ({resultRows.length})
+            Table View {hasExecuted ? `(${resultRows.length})` : ''}
           </button>
           <button
             onClick={() => setActiveTab('polars_ascii')}
@@ -459,7 +450,7 @@ export default function CareerConsole() {
           {execTimeMs !== null && (
             <span className="text-emerald-400">{execTimeMs} ms</span>
           )}
-          <span className="text-slate-600">|</span>
+          {execTimeMs !== null && <span className="text-slate-600">|</span>}
           <span className="text-slate-400">{statusText}</span>
         </div>
       </div>
@@ -475,63 +466,81 @@ export default function CareerConsole() {
       )}
 
       {/* Viewport */}
-      <div className="min-h-[300px] max-h-[500px] overflow-auto bg-[#08090d] font-mono text-xs">
+      <div className="min-h-[280px] max-h-[500px] overflow-auto bg-[#08090d] font-mono text-xs">
         {activeTab === 'table' && (
-          resultRows.length > 0 ? (
-            <div className="w-full overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[#111520] border-b border-[#232836] sticky top-0">
-                    {columns.map((col, idx) => (
-                      <th
-                        key={idx}
-                        className="px-4 py-2.5 text-[11px] font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap"
-                      >
-                        {col}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1b202e]/60">
-                  {resultRows.map((row, rIdx) => (
-                    <tr key={rIdx} className="hover:bg-[#121624] transition-colors">
-                      {columns.map((col, cIdx) => {
-                        const val = row[col];
-                        const isLink = typeof val === 'string' && val.startsWith('http');
-                        return (
-                          <td key={cIdx} className="px-4 py-3 whitespace-nowrap text-slate-300">
-                            {isLink ? (
-                              <a
-                                href={val}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sky-400 hover:underline inline-flex items-center space-x-1"
-                              >
-                                <span>{val}</span>
-                                <span>↗</span>
-                              </a>
-                            ) : (
-                              String(val ?? '')
-                            )}
-                          </td>
-                        );
-                      })}
+          hasExecuted ? (
+            resultRows.length > 0 ? (
+              <div className="w-full overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#111520] border-b border-[#232836] sticky top-0">
+                      {columns.map((col, idx) => (
+                        <th
+                          key={idx}
+                          className="px-4 py-2.5 text-[11px] font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap"
+                        >
+                          {col}
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-[#1b202e]/60">
+                    {resultRows.map((row, rIdx) => (
+                      <tr key={rIdx} className="hover:bg-[#121624] transition-colors">
+                        {columns.map((col, cIdx) => {
+                          const val = row[col];
+                          const isLink = typeof val === 'string' && val.startsWith('http');
+                          return (
+                            <td key={cIdx} className="px-4 py-3 whitespace-nowrap text-slate-300">
+                              {isLink ? (
+                                <a
+                                  href={val}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sky-400 hover:underline inline-flex items-center space-x-1"
+                                >
+                                  <span>{val}</span>
+                                  <span>↗</span>
+                                </a>
+                              ) : (
+                                String(val ?? '')
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+                <p>No rows returned.</p>
+              </div>
+            )
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-slate-500">
-              <p>No rows returned.</p>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500 space-y-2">
+              <div className="text-xs font-mono text-slate-400">Query ready to execute.</div>
+              <div className="text-[11px] font-mono text-slate-500">
+                Click <span className="text-sky-400 font-semibold">Run Query</span> or press <kbd className="px-1.5 py-0.5 rounded bg-[#1c2233] text-slate-300 border border-[#2e3752]">⌘ + Enter</kbd> to view results
+              </div>
             </div>
           )
         )}
 
         {activeTab === 'polars_ascii' && (
-          <pre className="p-4 text-emerald-400/90 leading-tight font-mono text-[11px] whitespace-pre overflow-x-auto select-all">
-            {asciiTable}
-          </pre>
+          hasExecuted ? (
+            <pre className="p-4 text-emerald-400/90 leading-tight font-mono text-[11px] whitespace-pre overflow-x-auto select-all">
+              {asciiTable}
+            </pre>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500 space-y-2">
+              <div className="text-xs font-mono text-slate-400">Query ready to execute.</div>
+              <div className="text-[11px] font-mono text-slate-500">
+                Click <span className="text-emerald-400 font-semibold">Run Query</span> to format as Polars DataFrame
+              </div>
+            </div>
+          )
         )}
 
         {activeTab === 'schema' && (
