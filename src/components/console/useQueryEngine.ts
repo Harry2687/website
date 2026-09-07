@@ -169,6 +169,7 @@ export function useQueryEngine() {
         const parts = q.split(/\bfrom\b/i);
         const selectClause = parts[0]?.replace(/^select\s+/i, '').replace(/\([^)]*\)/g, '') || '';
         const wantsDob = q.includes('*') || /\bdate_of_birth\b/i.test(selectClause);
+        const wantsPhoto = q.includes('*') || /\bphoto\b/i.test(selectClause);
         const latestRole = [...careerData].sort((a, b) =>
           b.start_date > a.start_date ? 1 : -1
         )[0];
@@ -182,6 +183,7 @@ export function useQueryEngine() {
             };
             if (wantsDob) row.date_of_birth = a.date_of_birth;
             row.age = getAge(a.date_of_birth);
+            if (wantsPhoto) row.photo = a.photo || '/profile.jpg';
             return row;
           });
         } else {
@@ -190,6 +192,7 @@ export function useQueryEngine() {
             location: derivedLocation,
             contact: a.contact,
             ...(wantsDob ? { date_of_birth: a.date_of_birth } : {}),
+            ...(wantsPhoto ? { photo: a.photo || '/profile.jpg' } : {}),
           }));
         }
       } else if (
@@ -431,6 +434,7 @@ export function useQueryEngine() {
             contact: a.contact,
             date_of_birth: a.date_of_birth,
             age: getAge(a.date_of_birth),
+            photo: a.photo || '/profile.jpg',
           }));
         } else {
           data = aboutData.map((a: any) => ({
@@ -438,6 +442,7 @@ export function useQueryEngine() {
             location: derivedLocation,
             contact: a.contact,
             date_of_birth: a.date_of_birth,
+            photo: a.photo || '/profile.jpg',
           }));
         }
       } else if (expr.startsWith('experience')) {

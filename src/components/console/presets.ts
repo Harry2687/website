@@ -4,7 +4,7 @@ export const SCHEMA_TABLES: TableSchema[] = [
   {
     name: 'about',
     description: 'Profile overview and contact',
-    columns: ['name: str', 'contact: str', 'date_of_birth: date'],
+    columns: ['name: str', 'contact: str', 'date_of_birth: date', 'photo: str'],
   },
   {
     name: 'experience',
@@ -52,7 +52,8 @@ export const PRESETS: QueryPreset[] = [
   (SELECT location FROM experience ORDER BY start_date DESC LIMIT 1) AS location,
   contact, 
   DATEDIFF('year', date_of_birth, CURRENT_DATE) - 
-    CASE WHEN strftime(CURRENT_DATE, '%m%d') < strftime(date_of_birth, '%m%d') THEN 1 ELSE 0 END AS age
+    CASE WHEN strftime(CURRENT_DATE, '%m%d') < strftime(date_of_birth, '%m%d') THEN 1 ELSE 0 END AS age,
+  photo
 FROM about;`,
     polars: `about.join(
   experience.sort("start_date", descending=True).select(["location"]).head(1),
@@ -62,7 +63,7 @@ FROM about;`,
     pl.lit(date.today()).dt.year() - pl.col("date_of_birth").str.to_date().dt.year()
     - (pl.lit(date.today()).dt.strftime("%m%d") < pl.col("date_of_birth").str.to_date().dt.strftime("%m%d")).cast(pl.Int32)
   ).alias("age")
-]).select(["name", "location", "contact", "age"])`,
+]).select(["name", "location", "contact", "age", "photo"])`,
   },
   {
     label: 'Experience',

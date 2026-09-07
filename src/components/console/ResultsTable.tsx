@@ -77,7 +77,7 @@ export default function ResultsTable({
         {hasExecuted ? (
           resultRows.length > 0 ? (
             <div
-              className={`w-full overflow-x-auto transition-opacity duration-200 ${
+              className={`w-full min-h-full overflow-x-auto transition-opacity duration-200 ${
                 isExecuting ? 'opacity-35 pointer-events-none' : 'opacity-100'
               }`}
             >
@@ -99,6 +99,13 @@ export default function ResultsTable({
                     <tr key={rIdx} className="hover:bg-vsc-row-hover transition-colors">
                       {columns.map((col) => {
                         const val = row[col];
+                        const isImage =
+                          typeof val === 'string' &&
+                          val.length > 0 &&
+                          (/\.(jpg|jpeg|png|webp|svg|gif|avif)$/i.test(val) ||
+                            col.toLowerCase().includes('photo') ||
+                            col.toLowerCase().includes('avatar') ||
+                            col.toLowerCase().includes('image'));
                         const isLink = typeof val === 'string' && val.startsWith('http');
 
                         let formatted = val;
@@ -129,11 +136,32 @@ export default function ResultsTable({
                         return (
                           <td
                             key={col}
-                            className={`px-4 py-3 whitespace-nowrap ${
+                            className={`px-4 ${isImage ? 'py-2' : 'py-3'} whitespace-nowrap ${
                               val === null ? 'text-vsc-fg-subtle italic' : 'text-vsc-fg'
                             }`}
                           >
-                            {isLink ? (
+                            {isImage ? (
+                              <div className="flex items-center space-x-2.5">
+                                <div className="relative group/avatar shrink-0">
+                                  <img
+                                    src={val}
+                                    alt={String(col)}
+                                    className="w-7 h-7 rounded-full object-cover border border-vsc-border shadow-xs hover:border-vsc-blue transition-all"
+                                  />
+                                  <div className="absolute left-8 top-0 hidden group-hover/avatar:flex flex-col items-center z-30 pointer-events-none p-1.5 bg-vsc-card border border-vsc-border rounded-xl shadow-2xl animate-fadeIn">
+                                    <img
+                                      src={val}
+                                      alt={String(col)}
+                                      className="w-32 h-32 rounded-lg object-cover shadow-inner"
+                                    />
+                                    <span className="text-[10px] font-mono text-vsc-fg-muted mt-1 px-1 max-w-[140px] truncate">
+                                      {val}
+                                    </span>
+                                  </div>
+                                </div>
+                                <span className="text-vsc-fg-muted text-xs font-mono">{val}</span>
+                              </div>
+                            ) : isLink ? (
                               <a
                                 href={val}
                                 target="_blank"
