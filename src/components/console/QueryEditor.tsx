@@ -1,6 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { PRESETS } from './presets';
 import type { QueryMode, QueryPreset } from './types';
+import { useModifierKey } from './useModifierKey';
 
 interface QueryEditorProps {
   mode: QueryMode;
@@ -21,6 +22,7 @@ export default function QueryEditor({
   onReset,
   isExecuting = false,
 }: QueryEditorProps) {
+  const modifierKey = useModifierKey();
   return (
     <>
       {/* Preset Chips */}
@@ -68,7 +70,7 @@ export default function QueryEditor({
           <div className="text-[11px] font-mono text-slate-500">
             Press{' '}
             <kbd className="px-1.5 py-0.5 rounded bg-[#1c2233] text-slate-300 border border-[#2e3752]">
-              ⌘ + Enter
+              {modifierKey} + Enter
             </kbd>{' '}
             to execute
           </div>

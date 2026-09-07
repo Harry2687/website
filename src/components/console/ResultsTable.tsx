@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react';
+import { useModifierKey } from './useModifierKey';
 
 interface ResultsTableProps {
   hasExecuted: boolean;
@@ -23,6 +24,7 @@ export default function ResultsTable({
   isFullscreen,
   isExecuting = false,
 }: ResultsTableProps) {
+  const modifierKey = useModifierKey();
   return (
     <>
       {/* Results Status Header */}
@@ -167,7 +169,7 @@ export default function ResultsTable({
             <div className="text-[11px] font-mono text-slate-500">
               Click <span className="text-sky-400 font-semibold">Run Query</span> or press{' '}
               <kbd className="px-1.5 py-0.5 rounded bg-[#1c2233] text-slate-300 border border-[#2e3752]">
-                ⌘ + Enter
+                {modifierKey} + Enter
               </kbd>{' '}
               to view results
             </div>
