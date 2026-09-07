@@ -4,13 +4,12 @@ import { PRESETS } from './console/presets';
 import QueryEditor from './console/QueryEditor';
 import ResultsTable from './console/ResultsTable';
 import SchemaDrawer from './console/SchemaDrawer';
-import type { QueryMode, QueryPreset } from './console/types';
+import type { QueryPreset } from './console/types';
 import { useQueryEngine } from './console/useQueryEngine';
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export default function CareerConsole() {
-  const [mode, setMode] = useState<QueryMode>('sql');
   const [query, setQuery] = useState<string>(PRESETS[0].sql);
   const [isSchemaOpen, setIsSchemaOpen] = useState<boolean>(false);
   const [isClosed, setIsClosed] = useState<boolean>(false);
@@ -132,29 +131,19 @@ export default function CareerConsole() {
   }, [isFullscreen, handleToggleFullscreen]);
 
   function handleExecute() {
-    executeQuery(query, mode);
+    executeQuery(query);
   }
 
   function handleSelectPreset(preset: QueryPreset) {
-    const nextQuery = mode === 'sql' ? preset.sql : preset.polars;
-    setQuery(nextQuery);
+    setQuery(preset.sql);
   }
 
   function handleTableClick(tableName: string) {
-    const nextQuery = mode === 'sql' ? `SELECT * FROM ${tableName};` : tableName;
-    setQuery(nextQuery);
-  }
-
-  function handleModeChange(newMode: QueryMode) {
-    setMode(newMode);
-    const matchingPreset = PRESETS.find((p) => p.sql === query || p.polars === query) || PRESETS[0];
-    const nextQuery = newMode === 'sql' ? matchingPreset.sql : matchingPreset.polars;
-    setQuery(nextQuery);
+    setQuery(`SELECT * FROM ${tableName};`);
   }
 
   function handleReset() {
-    const def = PRESETS[0];
-    setQuery(mode === 'sql' ? def.sql : def.polars);
+    setQuery(PRESETS[0].sql);
   }
 
   function handleClose() {
@@ -246,8 +235,6 @@ export default function CareerConsole() {
         }`}
       >
         <ConsoleHeader
-          mode={mode}
-          onModeChange={handleModeChange}
           duckDbReady={duckDbReady}
           isMinimized={isMinimized}
           isFullscreen={isFullscreen}
@@ -278,7 +265,6 @@ export default function CareerConsole() {
 
               <div className="flex-1 flex flex-col min-w-0 bg-vsc-editor">
                 <QueryEditor
-                  mode={mode}
                   query={query}
                   onQueryChange={setQuery}
                   onExecute={handleExecute}

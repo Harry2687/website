@@ -1,10 +1,9 @@
 import { Loader2 } from 'lucide-react';
 import { PRESETS } from './presets';
-import type { QueryMode, QueryPreset } from './types';
+import type { QueryPreset } from './types';
 import { useModifierKey } from './useModifierKey';
 
 interface QueryEditorProps {
-  mode: QueryMode;
   query: string;
   onQueryChange: (query: string) => void;
   onExecute: () => void;
@@ -14,7 +13,6 @@ interface QueryEditorProps {
 }
 
 export default function QueryEditor({
-  mode,
   query,
   onQueryChange,
   onExecute,
@@ -61,7 +59,7 @@ export default function QueryEditor({
             }}
             rows={Math.min(Math.max(query.split('\n').length, 2), 8)}
             className="w-full font-mono text-xs text-vsc-code bg-transparent px-3 py-3 focus:outline-none resize-none leading-relaxed placeholder:text-vsc-fg-subtle"
-            placeholder={mode === 'sql' ? PRESETS[0].sql : PRESETS[0].polars}
+            placeholder={PRESETS[0].sql}
           />
         </div>
 

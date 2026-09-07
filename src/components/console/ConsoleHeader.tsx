@@ -1,8 +1,4 @@
-import type { QueryMode } from './types';
-
 interface ConsoleHeaderProps {
-  mode: QueryMode;
-  onModeChange: (mode: QueryMode) => void;
   duckDbReady: boolean;
   isMinimized: boolean;
   isFullscreen: boolean;
@@ -12,8 +8,6 @@ interface ConsoleHeaderProps {
 }
 
 export default function ConsoleHeader({
-  mode,
-  onModeChange,
   duckDbReady,
   isMinimized,
   isFullscreen,
@@ -111,32 +105,6 @@ export default function ConsoleHeader({
             (minimized · click to restore)
           </span>
         )}
-      </div>
-
-      {/* Mode Toggle */}
-      <div className="flex items-center bg-vsc-card p-1 rounded-lg border border-vsc-border">
-        <button
-          type="button"
-          onClick={() => onModeChange('sql')}
-          className={`px-3 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer ${
-            mode === 'sql'
-              ? 'bg-vsc-blue/15 text-vsc-blue border border-vsc-blue/30 font-semibold'
-              : 'text-vsc-fg-muted hover:text-vsc-fg-bright border border-transparent'
-          }`}
-        >
-          SQL
-        </button>
-        <button
-          type="button"
-          onClick={() => onModeChange('polars')}
-          className={`px-3 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer ${
-            mode === 'polars'
-              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-semibold'
-              : 'text-vsc-fg-muted hover:text-vsc-fg-bright border border-transparent'
-          }`}
-        >
-          Polars
-        </button>
       </div>
 
       {/* Engine Status & Fullscreen Hint */}

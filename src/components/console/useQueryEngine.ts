@@ -4,7 +4,6 @@ import careerData from '../../data/career.json';
 import educationData from '../../data/education.json';
 import researchData from '../../data/research.json';
 import { getAge, getInclusiveMonths } from './dateUtils';
-import type { QueryMode } from './types';
 
 export function useQueryEngine() {
   const [hasExecuted, setHasExecuted] = useState<boolean>(false);
@@ -353,180 +352,12 @@ export function useQueryEngine() {
     [runFallbackQuery]
   );
 
-  // Polars Method-Chaining Parser
-  const runPolarsQuery = useCallback(async (polarsExpr: string) => {
-    setIsExecuting(true);
-    isExecutingRef.current = true;
-    setErrorText(null);
-    setStatusText('Evaluating Polars expression plan...');
-
-    const t0 = performance.now();
-    const delayMs = Math.floor(300 + Math.random() * 150);
-    await new Promise((resolve) => setTimeout(resolve, delayMs));
-
-    try {
-      let data: Record<string, any>[] = [];
-      const expr = polarsExpr.trim();
-
-      if (expr.includes('concat')) {
-        const dob = aboutData[0]?.date_of_birth || '2001-06-25';
-        data = [
-          ...careerData.map((c) => ({
-            organization: c.company,
-            title: c.role,
-            location: c.location,
-            track: 'Industry',
-            start_date: c.start_date,
-            age_at_start: getAge(dob, c.start_date),
-            duration_months: getInclusiveMonths(c.start_date, c.end_date),
-          })),
-          ...educationData.map((e) => ({
-            organization: e.institution,
-            title: e.qualification,
-            location: e.location,
-            track: 'Academic',
-            start_date: e.start_date,
-            age_at_start: getAge(dob, e.start_date),
-            duration_months: getInclusiveMonths(e.start_date, e.end_date),
-          })),
-        ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
-      } else if (expr.includes('join') && !expr.startsWith('about')) {
-        data = educationData
-          .filter((e) => researchData.some((r) => r.institution === e.institution))
-          .map((e) => {
-            const r = researchData.find((res) => res.institution === e.institution);
-            return {
-              institution: e.institution,
-              qualification: e.qualification,
-              start_date: e.start_date,
-              end_date: e.end_date,
-              thesis_title: r ? r.title : '',
-              link: r ? r.link : '',
-            };
-          });
-      } else if (expr.includes('group_by')) {
-        const map: Record<string, { company: string; roles_held: number; total_months: number }> =
-          {};
-        for (const exp of careerData) {
-          if (!map[exp.company]) {
-            map[exp.company] = { company: exp.company, roles_held: 0, total_months: 0 };
-          }
-          map[exp.company].roles_held += 1;
-          map[exp.company].total_months += getInclusiveMonths(exp.start_date, exp.end_date);
-        }
-        data = Object.values(map)
-          .sort((a, b) => b.total_months - a.total_months)
-          .map((g) => ({
-            company: g.company,
-            roles_held: g.roles_held,
-            total_months: g.total_months,
-            total_years: Math.round((g.total_months / 12.0) * 10) / 10,
-          }));
-      } else if (expr.startsWith('about')) {
-        const latestRole = [...careerData].sort((a, b) =>
-          b.start_date > a.start_date ? 1 : -1
-        )[0];
-        const derivedLocation = latestRole?.location || 'Sydney, NSW';
-        if (expr.includes('age')) {
-          data = aboutData.map((a: any) => ({
-            name: a.name,
-            location: derivedLocation,
-            contact: a.contact,
-            date_of_birth: a.date_of_birth,
-            age: getAge(a.date_of_birth),
-            photo: a.photo || '/profile.jpg',
-          }));
-        } else {
-          data = aboutData.map((a: any) => ({
-            name: a.name,
-            location: derivedLocation,
-            contact: a.contact,
-            date_of_birth: a.date_of_birth,
-            photo: a.photo || '/profile.jpg',
-          }));
-        }
-      } else if (expr.startsWith('experience')) {
-        if (
-          expr.includes('with_columns') ||
-          (expr.includes('dt') && (expr.includes('months') || expr.includes('total_days')))
-        ) {
-          data = careerData.map((c) => {
-            const months = getInclusiveMonths(c.start_date, c.end_date);
-            const years = Math.round((months / 12.0) * 10) / 10;
-            return {
-              company: c.company,
-              role: c.role,
-              location: c.location,
-              start_date: c.start_date,
-              end_date: c.end_date ?? null,
-              months,
-              years,
-            };
-          });
-        } else {
-          data = careerData.map((c) => ({
-            role: c.role,
-            company: c.company,
-            location: c.location,
-            start_date: c.start_date,
-            end_date: c.end_date ?? null,
-            domain: c.domain,
-          }));
-        }
-      } else if (expr.startsWith('education')) {
-        data = [...educationData];
-      } else if (expr.startsWith('research')) {
-        data = [...researchData];
-      } else {
-        throw new Error('Unknown DataFrame. Use about, experience, education, or research.');
-      }
-
-      let cols = data.length > 0 ? Object.keys(data[0]) : [];
-
-      // Only parse trailing .select(["col1", "col2"]) on simple datasets
-      if (!expr.includes('concat') && !expr.includes('group_by')) {
-        const allSelectMatches = [...expr.matchAll(/\.select\(\[([^\]]+)\]\)/g)];
-        const selectMatch = allSelectMatches[allSelectMatches.length - 1];
-        if (selectMatch?.[1] && !selectMatch[1].includes('(')) {
-          const selectedCols = selectMatch[1].split(',').map((s) => s.trim().replace(/['"]/g, ''));
-          if (selectedCols.length > 0) {
-            cols = selectedCols;
-            data = data.map((row) => {
-              const newRow: Record<string, any> = {};
-              selectedCols.forEach((c) => {
-                if (c in row) newRow[c] = row[c];
-              });
-              return newRow;
-            });
-          }
-        }
-      }
-
-      const t1 = performance.now();
-      setHasExecuted(true);
-      setResultRows(data);
-      setColumns(cols);
-      setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
-      setStatusText(`Polars execution in ${Math.round((t1 - t0) * 10) / 10}ms`);
-    } catch (err: any) {
-      setErrorText(err.message || String(err));
-      setStatusText('Parse error');
-    } finally {
-      setIsExecuting(false);
-      isExecutingRef.current = false;
-    }
-  }, []);
-
   const executeQuery = useCallback(
-    async (query: string, mode: QueryMode) => {
+    async (query: string) => {
       if (isExecutingRef.current) return;
-      if (mode === 'sql') {
-        await runSqlQuery(query);
-      } else {
-        await runPolarsQuery(query);
-      }
+      await runSqlQuery(query);
     },
-    [runSqlQuery, runPolarsQuery]
+    [runSqlQuery]
   );
 
   return {

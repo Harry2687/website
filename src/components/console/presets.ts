@@ -55,21 +55,10 @@ export const PRESETS: QueryPreset[] = [
     CASE WHEN strftime(CURRENT_DATE, '%m%d') < strftime(date_of_birth, '%m%d') THEN 1 ELSE 0 END AS age,
   photo
 FROM about;`,
-    polars: `about.join(
-  experience.sort("start_date", descending=True).select(["location"]).head(1),
-  how="cross"
-).with_columns([
-  (
-    pl.lit(date.today()).dt.year() - pl.col("date_of_birth").str.to_date().dt.year()
-    - (pl.lit(date.today()).dt.strftime("%m%d") < pl.col("date_of_birth").str.to_date().dt.strftime("%m%d")).cast(pl.Int32)
-  ).alias("age")
-]).select(["name", "location", "contact", "age", "photo"])`,
   },
   {
     label: 'Experience',
     sql: 'SELECT role, company, location, start_date, end_date, domain FROM experience;',
-    polars:
-      'experience.select(["role", "company", "location", "start_date", "end_date", "domain"])',
   },
   {
     label: 'Tenure & Duration',
@@ -81,17 +70,6 @@ FROM about;`,
 FROM experience
 GROUP BY company
 ORDER BY total_months DESC;`,
-    polars: `experience.with_columns([
-  pl.col("start_date").str.to_date(),
-  pl.col("end_date").fill_null(pl.lit(date.today())).str.to_date(),
-]).with_columns([
-  ((pl.col("end_date").dt.year() - pl.col("start_date").dt.year()) * 12 + 
-   (pl.col("end_date").dt.month() - pl.col("start_date").dt.month()) + 1).alias("months"),
-]).group_by("company").agg([
-  pl.len().alias("roles_held"),
-  pl.col("months").sum().alias("total_months"),
-  (pl.col("months").sum() / 12.0).round(1).alias("total_years"),
-]).sort("total_months", descending=True)`,
   },
   {
     label: 'Education & Research',
@@ -105,14 +83,6 @@ ORDER BY total_months DESC;`,
 FROM education e
 INNER JOIN research r 
   ON e.institution = r.institution;`,
-    polars: `education.join(research, on="institution").select([
-  "institution",
-  "qualification",
-  "start_date",
-  "end_date",
-  pl.col("title").alias("thesis_title"),
-  "link",
-])`,
   },
   {
     label: 'Unified Timeline',
@@ -133,34 +103,5 @@ SELECT
 FROM timeline
 CROSS JOIN about
 ORDER BY start_date DESC;`,
-    polars: `pl.concat([
-  experience.select([
-    pl.col("company").alias("organization"),
-    pl.col("role").alias("title"),
-    "location",
-    pl.lit("Industry").alias("track"),
-    "start_date",
-    "end_date",
-  ]),
-  education.select([
-    pl.col("institution").alias("organization"),
-    pl.col("qualification").alias("title"),
-    "location",
-    pl.lit("Academic").alias("track"),
-    "start_date",
-    "end_date",
-  ]),
-]).join(
-  about.select(["date_of_birth"]), how="cross"
-).with_columns([
-  (
-    pl.col("start_date").str.to_date().dt.year() - pl.col("date_of_birth").str.to_date().dt.year()
-    - (pl.col("start_date").str.to_date().dt.strftime("%m%d") < pl.col("date_of_birth").str.to_date().dt.strftime("%m%d")).cast(pl.Int32)
-  ).alias("age_at_start"),
-  ((pl.col("end_date").fill_null(pl.lit(date.today())).str.to_date().dt.year() - pl.col("start_date").str.to_date().dt.year()) * 12 +
-   (pl.col("end_date").fill_null(pl.lit(date.today())).str.to_date().dt.month() - pl.col("start_date").str.to_date().dt.month()) + 1).alias("duration_months"),
-]).select([
-  "organization", "title", "location", "track", "start_date", "age_at_start", "duration_months"
-]).sort("start_date", descending=True)`,
   },
 ];
