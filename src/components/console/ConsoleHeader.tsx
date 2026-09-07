@@ -39,13 +39,20 @@ export default function ConsoleHeader({
             e.stopPropagation();
             onClose();
           }}
-          className="w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 border border-red-600/50 flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
+          className="relative w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] flex items-center justify-center transition-all duration-150 ease-out hover:scale-110 active:scale-95 hover:brightness-105 active:brightness-90 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 cursor-pointer"
           title="Close window"
           aria-label="Close window"
         >
-          <span className="text-[8px] font-bold text-red-950 opacity-0 group-hover/traffic:opacity-100 transition-opacity leading-none select-none">
-            ✕
-          </span>
+          <svg
+            viewBox="0 0 8 8"
+            className="w-1.5 h-1.5 text-[#4c0000] opacity-0 group-hover/traffic:opacity-100 transition-opacity duration-150 ease-out pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          >
+            <path d="M1.75 1.75L6.25 6.25M6.25 1.75L1.75 6.25" />
+          </svg>
         </button>
         <button
           type="button"
@@ -53,13 +60,20 @@ export default function ConsoleHeader({
             e.stopPropagation();
             onToggleMinimize();
           }}
-          className="w-3 h-3 rounded-full bg-yellow-500/80 hover:bg-yellow-500 border border-yellow-600/50 flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
+          className="relative w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] flex items-center justify-center transition-all duration-150 ease-out hover:scale-110 active:scale-95 hover:brightness-105 active:brightness-90 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/50 cursor-pointer"
           title={isMinimized ? 'Restore window' : 'Minimize window'}
           aria-label={isMinimized ? 'Restore window' : 'Minimize window'}
         >
-          <span className="text-[8px] font-bold text-yellow-950 opacity-0 group-hover/traffic:opacity-100 transition-opacity leading-none select-none">
-            −
-          </span>
+          <svg
+            viewBox="0 0 8 8"
+            className="w-1.5 h-1.5 text-[#5c3d00] opacity-0 group-hover/traffic:opacity-100 transition-opacity duration-150 ease-out pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          >
+            <path d="M1.5 4H6.5" />
+          </svg>
         </button>
         <button
           type="button"
@@ -67,19 +81,33 @@ export default function ConsoleHeader({
             e.stopPropagation();
             onToggleFullscreen();
           }}
-          className="w-3 h-3 rounded-full bg-emerald-500/80 hover:bg-emerald-500 border border-emerald-600/50 flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
+          className="relative w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] flex items-center justify-center transition-all duration-150 ease-out hover:scale-110 active:scale-95 hover:brightness-105 active:brightness-90 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 cursor-pointer"
           title={isFullscreen ? 'Exit Fullscreen (Esc)' : 'Fullscreen Studio'}
           aria-label={isFullscreen ? 'Exit Fullscreen (Esc)' : 'Fullscreen Studio'}
         >
-          <span className="text-[7px] font-bold text-emerald-950 opacity-0 group-hover/traffic:opacity-100 transition-opacity leading-none select-none">
-            {isFullscreen ? '⤦' : '⤢'}
-          </span>
+          <svg
+            viewBox="0 0 8 8"
+            className="w-1.5 h-1.5 text-[#004d11] opacity-0 group-hover/traffic:opacity-100 transition-opacity duration-150 ease-out pointer-events-none"
+            fill="currentColor"
+          >
+            {isFullscreen ? (
+              <>
+                <path d="M1.5 3.5L3.5 1.5L3.5 3.5L1.5 3.5Z" />
+                <path d="M6.5 4.5L4.5 6.5L4.5 4.5L6.5 4.5Z" />
+              </>
+            ) : (
+              <>
+                <path d="M1.5 1.5L4.5 1.5L1.5 4.5L1.5 1.5Z" />
+                <path d="M6.5 6.5L3.5 6.5L6.5 3.5L6.5 6.5Z" />
+              </>
+            )}
+          </svg>
         </button>
         <span className="text-xs font-mono text-slate-400 ml-2 font-medium">
           harry_zhong.duckdb
         </span>
         {isMinimized && (
-          <span className="text-[11px] font-mono text-slate-500 italic ml-1">
+          <span className="text-[11px] font-mono text-slate-500 italic ml-1 animate-pulse">
             (minimized · click to restore)
           </span>
         )}
