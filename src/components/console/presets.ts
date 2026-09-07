@@ -81,7 +81,7 @@ ORDER BY total_months DESC;`,
 ]).sort("total_months", descending=True)`,
   },
   {
-    label: 'Education × Research (Join)',
+    label: 'Education & Research',
     sql: `SELECT 
   e.institution,
   e.qualification,
@@ -102,7 +102,7 @@ INNER JOIN research r
 ])`,
   },
   {
-    label: 'Unified Timeline (Union)',
+    label: 'Unified Timeline',
     sql: `WITH timeline AS (
   SELECT company AS organization, role AS title, start_date, end_date, 'Industry' AS track FROM experience
   UNION ALL
