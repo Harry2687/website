@@ -1,23 +1,13 @@
-# R
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-
-# Python
-**/__pycache__
-**/.venv
-
-# Mac
-**/.DS_Store
-**/._.DS_Store
-
-# Other
-/.quarto/
-_site
-**/*.quarto_ipynb
-
-# Node & Astro
+# Dependencies & Build
 node_modules/
 .astro/
 dist/
+_site/
+
+# Environment & Python
+**/.venv
+**/__pycache__
+
+# OS
+**/.DS_Store
+**/._.DS_Store
