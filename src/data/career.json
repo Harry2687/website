@@ -2,25 +2,29 @@
   {
     "company": "Commonwealth Bank",
     "role": "Senior Quantitative Analyst",
-    "period": "Dec 2025 - Present",
+    "start_date": "2025-12-01",
+    "end_date": null,
     "domain": "Credit Models & Cloud MLOps"
   },
   {
     "company": "Commonwealth Bank",
     "role": "Data Scientist (Secondment)",
-    "period": "Oct 2025 - Dec 2025",
+    "start_date": "2025-10-01",
+    "end_date": "2025-12-31",
     "domain": "AI Model Risk Validation"
   },
   {
     "company": "Commonwealth Bank",
     "role": "Quantitative Analyst",
-    "period": "Aug 2024 - Nov 2025",
+    "start_date": "2024-08-01",
+    "end_date": "2025-11-30",
     "domain": "Credit Models"
   },
   {
     "company": "EBM Insurance & Risk",
     "role": "Data Analyst",
-    "period": "Nov 2022 - Jul 2024",
+    "start_date": "2022-11-01",
+    "end_date": "2024-07-31",
     "domain": "Finance & Analytics"
   }
 ]

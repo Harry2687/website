@@ -16,17 +16,17 @@ const SCHEMA_TABLES = [
   {
     name: 'about',
     description: 'Profile overview and contact',
-    columns: ['name: str', 'location: str', 'contact: str'],
+    columns: ['name: str', 'location: str', 'contact: str', 'date_of_birth: date'],
   },
   {
     name: 'experience',
     description: 'Employment timeline and domains',
-    columns: ['company: str', 'role: str', 'period: str', 'domain: str'],
+    columns: ['company: str', 'role: str', 'start_date: date', 'end_date: date', 'domain: str'],
   },
   {
     name: 'education',
     description: 'Degrees and qualifications',
-    columns: ['institution: str', 'qualification: str', 'period: str', 'details: str'],
+    columns: ['institution: str', 'qualification: str', 'start_date: date', 'end_date: date', 'details: str'],
   },
   {
     name: 'research',
@@ -38,50 +38,91 @@ const SCHEMA_TABLES = [
 const PRESETS: QueryPreset[] = [
   {
     label: 'About Me',
-    sql: 'SELECT name, location, contact FROM about;',
-    polars: 'about.select(["name", "location", "contact"])',
+    sql: `SELECT 
+  name, 
+  location, 
+  contact, 
+  DATEDIFF('year', date_of_birth, CURRENT_DATE) AS age
+FROM about;`,
+    polars: `about.with_columns(
+  (pl.lit(date.today()).dt.year() - pl.col("date_of_birth").str.to_date().dt.year()).alias("age")
+).select(["name", "location", "contact", "age"])`,
   },
   {
     label: 'Experience',
-    sql: 'SELECT role, company, period, domain FROM experience;',
-    polars: 'experience.select(["role", "company", "period", "domain"])',
+    sql: 'SELECT role, company, start_date, end_date, domain FROM experience;',
+    polars: 'experience.select(["role", "company", "start_date", "end_date", "domain"])',
+  },
+  {
+    label: 'Tenure & Duration',
+    sql: `SELECT 
+  company,
+  COUNT(*) AS roles_held,
+  SUM(DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1) AS total_months,
+  ROUND(SUM(DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1) / 12.0, 1) AS total_years
+FROM experience
+GROUP BY company
+ORDER BY total_months DESC;`,
+    polars: `experience.with_columns([
+  pl.col("start_date").str.to_date(),
+  pl.col("end_date").fill_null(pl.lit("2026-11-01")).str.to_date(),
+]).with_columns([
+  ((pl.col("end_date").dt.year() - pl.col("start_date").dt.year()) * 12 + 
+   (pl.col("end_date").dt.month() - pl.col("start_date").dt.month()) + 1).alias("months"),
+]).group_by("company").agg([
+  pl.len().alias("roles_held"),
+  pl.col("months").sum().alias("total_months"),
+  (pl.col("months").sum() / 12.0).round(1).alias("total_years"),
+]).sort("total_months", descending=True)`,
   },
   {
     label: 'Education × Research (Join)',
     sql: `SELECT 
   e.institution,
   e.qualification,
+  e.start_date,
+  e.end_date,
   r.title AS thesis_title,
   r.link
 FROM education e
 INNER JOIN research r 
   ON e.institution = r.institution;`,
     polars: `education.join(research, on="institution").select([
-  "institution", "qualification", "title", "link"
+  "institution", "qualification", "start_date", "end_date", "title", "link"
 ])`,
   },
   {
     label: 'Unified Timeline (Union)',
     sql: `WITH timeline AS (
-  SELECT company AS organization, role AS title, period, 'Industry' AS track FROM experience
+  SELECT company AS organization, role AS title, start_date, end_date, 'Industry' AS track FROM experience
   UNION ALL
-  SELECT institution AS organization, qualification AS title, period, 'Academic' AS track FROM education
+  SELECT institution AS organization, qualification AS title, start_date, end_date, 'Academic' AS track FROM education
 )
-SELECT * FROM timeline;`,
+SELECT 
+  organization,
+  title,
+  track,
+  start_date,
+  COALESCE(end_date, CURRENT_DATE) AS end_date,
+  DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1 AS duration_months
+FROM timeline
+ORDER BY start_date DESC;`,
     polars: `pl.concat([
   experience.select([
     pl.col("company").alias("organization"),
     pl.col("role").alias("title"),
-    "period",
+    "start_date",
+    "end_date",
     pl.lit("Industry").alias("track"),
   ]),
   education.select([
     pl.col("institution").alias("organization"),
     pl.col("qualification").alias("title"),
-    "period",
+    "start_date",
+    "end_date",
     pl.lit("Academic").alias("track"),
   ]),
-])`,
+]).sort("start_date", descending=True)`,
   },
 ];
 
@@ -158,6 +199,19 @@ export default function CareerConsole() {
         await db.registerFileText('research.json', JSON.stringify(researchData));
         await conn.query(`CREATE TABLE research AS SELECT * FROM read_json_auto('research.json')`);
 
+        // Preload ICU extension and warm up temporal functions
+        try {
+          await conn.query(`LOAD icu;`);
+        } catch {}
+        try {
+          await conn.query(`SELECT datediff('year', DATE '2000-01-01', CURRENT_DATE);`);
+        } catch {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          try {
+            await conn.query(`SELECT datediff('year', DATE '2000-01-01', CURRENT_DATE);`);
+          } catch {}
+        }
+
         if (isMounted) {
           duckDbRef.current = db;
           connRef.current = conn;
@@ -181,6 +235,36 @@ export default function CareerConsole() {
     };
   }, []);
 
+  // Helper for inclusive calendar month difference (+1 month)
+  function getInclusiveMonths(startDateStr: string, endDateStr?: string | null): number {
+    const [sYear, sMonth] = startDateStr.split('-').map(Number);
+    let eYear: number;
+    let eMonth: number;
+    if (endDateStr) {
+      const parts = endDateStr.split('-').map(Number);
+      eYear = parts[0];
+      eMonth = parts[1];
+    } else {
+      const now = new Date();
+      eYear = now.getFullYear();
+      eMonth = now.getMonth() + 1;
+    }
+    const months = (eYear - sYear) * 12 + (eMonth - sMonth) + 1;
+    return Math.max(1, months);
+  }
+
+  // Helper for age calculation from date of birth (YYYY-MM-DD)
+  function getAge(dobStr: string): number {
+    const [birthYear, birthMonth, birthDay] = dobStr.split('-').map(Number);
+    const today = new Date();
+    let age = today.getFullYear() - birthYear;
+    const monthDiff = today.getMonth() + 1 - birthMonth;
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDay)) {
+      age -= 1;
+    }
+    return age;
+  }
+
   // Fallback SQL runner
   function runFallbackQuery(sqlQuery: string) {
     const t0 = performance.now();
@@ -198,35 +282,82 @@ export default function CareerConsole() {
             return {
               institution: e.institution,
               qualification: e.qualification,
+              start_date: e.start_date,
+              end_date: e.end_date,
               thesis_title: r ? r.title : '',
               link: r ? r.link : '',
             };
           });
-      } else if (q.includes('group by') || q.includes('string_agg')) {
-        const map: Record<string, { company: string; roles_held: number; roles: string[] }> = {};
+      } else if (q.includes('group by') || q.includes('roles_held')) {
+        const map: Record<string, { company: string; roles_held: number; total_months: number }> = {};
         for (const exp of careerData) {
           if (!map[exp.company]) {
-            map[exp.company] = { company: exp.company, roles_held: 0, roles: [] };
+            map[exp.company] = { company: exp.company, roles_held: 0, total_months: 0 };
           }
           map[exp.company].roles_held += 1;
-          map[exp.company].roles.push(exp.role);
+          map[exp.company].total_months += getInclusiveMonths(exp.start_date, exp.end_date);
         }
         data = Object.values(map)
-          .sort((a, b) => b.roles_held - a.roles_held)
+          .sort((a, b) => b.total_months - a.total_months)
           .map((g) => ({
             company: g.company,
             roles_held: g.roles_held,
-            career_path: g.roles.join(' ← '),
+            total_months: g.total_months,
+            total_years: Math.round((g.total_months / 12.0) * 10) / 10,
           }));
+      } else if (q.includes('datediff') || q.includes('months') || q.includes('years') || q.includes('tenure') || q.includes('duration')) {
+        data = careerData.map((c) => {
+          const months = getInclusiveMonths(c.start_date, c.end_date);
+          const years = Math.round((months / 12.0) * 10) / 10;
+          return {
+            company: c.company,
+            role: c.role,
+            start_date: c.start_date,
+            end_date: c.end_date ?? new Date().toISOString().split('T')[0],
+            months,
+            years,
+          };
+        });
       } else if (q.includes('union') || q.includes('timeline')) {
         data = [
-          ...careerData.map((c) => ({ organization: c.company, title: c.role, period: c.period, track: 'Industry' })),
-          ...educationData.map((e) => ({ organization: e.institution, title: e.qualification, period: e.period, track: 'Academic' })),
-        ];
+          ...careerData.map((c) => ({
+            organization: c.company,
+            title: c.role,
+            track: 'Industry',
+            start_date: c.start_date,
+            end_date: c.end_date ?? new Date().toISOString().split('T')[0],
+            duration_months: getInclusiveMonths(c.start_date, c.end_date),
+          })),
+          ...educationData.map((e) => ({
+            organization: e.institution,
+            title: e.qualification,
+            track: 'Academic',
+            start_date: e.start_date,
+            end_date: e.end_date,
+            duration_months: getInclusiveMonths(e.start_date, e.end_date),
+          })),
+        ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
       } else if (q.includes('about')) {
-        data = [...aboutData];
+        const wantsDob = q.includes('*') || /select\s+[^;]*\bdate_of_birth\s*[,from]/i.test(q);
+        if (q.includes('age')) {
+          data = aboutData.map((a: any) => {
+            const row: Record<string, any> = {
+              name: a.name,
+              location: a.location,
+              contact: a.contact,
+            };
+            if (wantsDob) row.date_of_birth = a.date_of_birth;
+            row.age = getAge(a.date_of_birth);
+            return row;
+          });
+        } else {
+          data = [...aboutData];
+        }
       } else if (q.includes('experience') || q.includes('career')) {
-        data = [...careerData];
+        data = careerData.map((c) => ({
+          ...c,
+          end_date: c.end_date ?? null,
+        }));
       } else if (q.includes('education')) {
         data = [...educationData];
       } else if (q.includes('research') || q.includes('thesis')) {
@@ -260,9 +391,54 @@ export default function CareerConsole() {
     setErrorText(null);
 
     try {
-      const result = await activeConn.query(sqlQuery);
-      const rows = result.toArray().map((row: any) => row.toJSON());
-      const cols = result.schema.fields.map((f: any) => f.name);
+      let result: any;
+      try {
+        result = await activeConn.query(sqlQuery);
+      } catch (firstErr: any) {
+        const msg = String(firstErr?.message || firstErr);
+        if (msg.includes('No function matches') || msg.includes('datediff') || msg.includes('date_diff')) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          result = await activeConn.query(sqlQuery);
+        } else {
+          throw firstErr;
+        }
+      }
+
+      const fields = result.schema.fields;
+      const dateFieldNames = new Set(
+        fields
+          .filter((f: any) => {
+            const typeStr = String(f.type || '').toLowerCase();
+            const typeId = f.type?.typeId;
+            return typeId === 8 || typeId === 10 || typeStr.includes('date') || typeStr.includes('timestamp');
+          })
+          .map((f: any) => f.name)
+      );
+
+      const rows = result.toArray().map((row: any) => {
+        const obj = typeof row.toJSON === 'function' ? row.toJSON() : { ...row };
+        for (const [key, val] of Object.entries(obj)) {
+          if (val === null || val === undefined) continue;
+          if (dateFieldNames.has(key) || key.toLowerCase().includes('date')) {
+            if (val instanceof Date) {
+              obj[key] = val.toISOString().split('T')[0];
+            } else if (typeof val === 'number') {
+              const ms = val > 100000000 ? val : val * 86400000;
+              const d = new Date(ms);
+              if (!isNaN(d.getTime())) {
+                obj[key] = d.toISOString().split('T')[0];
+              }
+            } else if (typeof val === 'string' && val.includes('T')) {
+              obj[key] = val.split('T')[0];
+            }
+          } else if (typeof val === 'bigint') {
+            obj[key] = Number(val);
+          }
+        }
+        return obj;
+      });
+
+      const cols = fields.map((f: any) => f.name);
       const t1 = performance.now();
 
       setHasExecuted(true);
@@ -271,9 +447,13 @@ export default function CareerConsole() {
       setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
       setStatusText(`Query executed in ${Math.round((t1 - t0) * 10) / 10}ms`);
     } catch (err: any) {
-      console.warn('DuckDB query error:', err);
-      setErrorText(err.message || String(err));
-      setStatusText('Execution failed');
+      console.warn('DuckDB query error, falling back to in-memory engine:', err);
+      try {
+        runFallbackQuery(sqlQuery);
+      } catch {
+        setErrorText(err.message || String(err));
+        setStatusText('Execution failed');
+      }
     }
   }
 
@@ -294,45 +474,73 @@ export default function CareerConsole() {
             return {
               institution: e.institution,
               qualification: e.qualification,
+              start_date: e.start_date,
+              end_date: e.end_date,
               title: r ? r.title : '',
               link: r ? r.link : '',
             };
           });
       } else if (expr.includes('group_by')) {
-        const map: Record<string, { company: string; roles_held: number; roles: string[] }> = {};
+        const map: Record<string, { company: string; roles_held: number; total_months: number }> = {};
         for (const exp of careerData) {
           if (!map[exp.company]) {
-            map[exp.company] = { company: exp.company, roles_held: 0, roles: [] };
+            map[exp.company] = { company: exp.company, roles_held: 0, total_months: 0 };
           }
           map[exp.company].roles_held += 1;
-          map[exp.company].roles.push(exp.role);
+          map[exp.company].total_months += getInclusiveMonths(exp.start_date, exp.end_date);
         }
         data = Object.values(map)
-          .sort((a, b) => b.roles_held - a.roles_held)
+          .sort((a, b) => b.total_months - a.total_months)
           .map((g) => ({
             company: g.company,
             roles_held: g.roles_held,
-            career_path: g.roles.join(' ← '),
+            total_months: g.total_months,
+            total_years: Math.round((g.total_months / 12.0) * 10) / 10,
           }));
+      } else if (expr.includes('with_columns') || (expr.includes('dt') && (expr.includes('months') || expr.includes('total_days')))) {
+        data = careerData.map((c) => {
+          const months = getInclusiveMonths(c.start_date, c.end_date);
+          const years = Math.round((months / 12.0) * 10) / 10;
+          return {
+            company: c.company,
+            role: c.role,
+            start_date: c.start_date,
+            end_date: c.end_date ?? 'Present',
+            months,
+            years,
+          };
+        });
       } else if (expr.includes('concat')) {
         data = [
           ...careerData.map((c) => ({
             organization: c.company,
             title: c.role,
-            period: c.period,
+            start_date: c.start_date,
+            end_date: c.end_date ?? 'Present',
             track: 'Industry',
           })),
           ...educationData.map((e) => ({
             organization: e.institution,
             title: e.qualification,
-            period: e.period,
+            start_date: e.start_date,
+            end_date: e.end_date,
             track: 'Academic',
           })),
-        ];
+        ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
       } else if (expr.startsWith('about')) {
-        data = [...aboutData];
+        if (expr.includes('age')) {
+          data = aboutData.map((a: any) => ({
+            ...a,
+            age: getAge(a.date_of_birth),
+          }));
+        } else {
+          data = [...aboutData];
+        }
       } else if (expr.startsWith('experience')) {
-        data = [...careerData];
+        data = careerData.map((c) => ({
+          ...c,
+          end_date: c.end_date ?? 'Present',
+        }));
       } else if (expr.startsWith('education')) {
         data = [...educationData];
       } else if (expr.startsWith('research')) {
@@ -729,7 +937,7 @@ export default function CareerConsole() {
                 }}
                 rows={Math.min(Math.max(query.split('\n').length, 2), 8)}
                 className="w-full font-mono text-xs text-emerald-300 bg-transparent px-3 py-3 focus:outline-none resize-none leading-relaxed"
-                placeholder={mode === 'sql' ? 'SELECT name, location, contact FROM about;' : 'about.select(["name", "location", "contact"])'}
+                placeholder={mode === 'sql' ? PRESETS[0].sql : PRESETS[0].polars}
               />
             </div>
 
@@ -808,8 +1016,31 @@ export default function CareerConsole() {
                           {columns.map((col, cIdx) => {
                             const val = row[col];
                             const isLink = typeof val === 'string' && val.startsWith('http');
+
+                            let formatted = val;
+                            if (val === null || val === undefined) {
+                              formatted = 'null';
+                            } else if (typeof val === 'bigint') {
+                              formatted = val.toString();
+                            } else if (val instanceof Date) {
+                              formatted = isNaN(val.getTime()) ? '' : val.toISOString().split('T')[0];
+                            } else if (col.toLowerCase().includes('date') && typeof val === 'number') {
+                              const ms = val > 100000000 ? val : val * 86400000;
+                              const d = new Date(ms);
+                              formatted = !isNaN(d.getTime()) ? d.toISOString().split('T')[0] : String(val);
+                            } else if (col.toLowerCase().includes('date') && typeof val === 'string' && val.includes('T')) {
+                              formatted = val.split('T')[0];
+                            } else {
+                              formatted = String(val);
+                            }
+
                             return (
-                              <td key={cIdx} className="px-4 py-3 whitespace-nowrap text-slate-300">
+                              <td
+                                key={cIdx}
+                                className={`px-4 py-3 whitespace-nowrap ${
+                                  val === null ? 'text-slate-500 italic' : 'text-slate-300'
+                                }`}
+                              >
                                 {isLink ? (
                                   <a
                                     href={val}
@@ -821,7 +1052,7 @@ export default function CareerConsole() {
                                     <span>↗</span>
                                   </a>
                                 ) : (
-                                  String(val ?? '')
+                                  formatted
                                 )}
                               </td>
                             );
