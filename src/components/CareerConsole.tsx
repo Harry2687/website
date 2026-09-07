@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import type { QueryMode, QueryPreset } from './console/types';
-import { PRESETS } from './console/presets';
-import { useQueryEngine } from './console/useQueryEngine';
+import { useEffect, useState } from 'react';
 import ConsoleHeader from './console/ConsoleHeader';
-import SchemaDrawer from './console/SchemaDrawer';
+import { PRESETS } from './console/presets';
 import QueryEditor from './console/QueryEditor';
 import ResultsTable from './console/ResultsTable';
+import SchemaDrawer from './console/SchemaDrawer';
+import type { QueryMode, QueryPreset } from './console/types';
+import { useQueryEngine } from './console/useQueryEngine';
 
 export default function CareerConsole() {
   const [mode, setMode] = useState<QueryMode>('sql');
@@ -62,8 +62,7 @@ export default function CareerConsole() {
 
   function handleModeChange(newMode: QueryMode) {
     setMode(newMode);
-    const matchingPreset =
-      PRESETS.find((p) => p.sql === query || p.polars === query) || PRESETS[0];
+    const matchingPreset = PRESETS.find((p) => p.sql === query || p.polars === query) || PRESETS[0];
     const nextQuery = newMode === 'sql' ? matchingPreset.sql : matchingPreset.polars;
     setQuery(nextQuery);
   }
@@ -79,13 +78,17 @@ export default function CareerConsole() {
         <div className="w-full max-w-md rounded-2xl border border-[#232836] bg-[#0c0e14] p-6 shadow-2xl text-center space-y-4">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
-            <span className="text-xs font-mono text-slate-400 font-medium">Terminal session closed</span>
+            <span className="text-xs font-mono text-slate-400 font-medium">
+              Terminal session closed
+            </span>
           </div>
           <p className="text-xs text-slate-500 font-mono leading-relaxed">
-            Process exited with code 0. Reconnect to launch DuckDB-WASM and restore interactive session.
+            Process exited with code 0. Reconnect to launch DuckDB-WASM and restore interactive
+            session.
           </p>
           <div className="pt-2">
             <button
+              type="button"
               onClick={() => setIsClosed(false)}
               className="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono text-xs font-semibold shadow-md shadow-sky-500/10 transition-all inline-flex items-center space-x-2 cursor-pointer"
             >
@@ -136,7 +139,9 @@ export default function CareerConsole() {
         />
 
         {!isMinimized && (
-          <div className={`flex flex-col md:flex-row ${isFullscreen ? 'flex-1 min-h-0' : 'min-h-[440px]'}`}>
+          <div
+            className={`flex flex-col md:flex-row ${isFullscreen ? 'flex-1 min-h-0' : 'min-h-[440px]'}`}
+          >
             <SchemaDrawer
               isOpen={isSchemaOpen}
               onToggle={() => setIsSchemaOpen(!isSchemaOpen)}

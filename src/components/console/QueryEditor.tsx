@@ -1,6 +1,5 @@
-import React from 'react';
-import type { QueryMode, QueryPreset } from './types';
 import { PRESETS } from './presets';
+import type { QueryMode, QueryPreset } from './types';
 
 interface QueryEditorProps {
   mode: QueryMode;
@@ -26,9 +25,10 @@ export default function QueryEditor({
         <span className="text-slate-500 font-mono text-[11px] uppercase tracking-wider whitespace-nowrap">
           Presets:
         </span>
-        {PRESETS.map((preset, idx) => (
+        {PRESETS.map((preset) => (
           <button
-            key={idx}
+            key={preset.label}
+            type="button"
             onClick={() => onSelectPreset(preset)}
             className="px-2.5 py-1 rounded-md bg-[#161a26] hover:bg-[#1f2436] text-slate-300 hover:text-white border border-[#272f44] whitespace-nowrap transition-colors font-mono text-[11px] cursor-pointer"
           >
@@ -61,16 +61,22 @@ export default function QueryEditor({
         {/* Action Bar */}
         <div className="flex items-center justify-between px-4 py-2 bg-[#0d1017] border-t border-[#232836]/40">
           <div className="text-[11px] font-mono text-slate-500">
-            Press <kbd className="px-1.5 py-0.5 rounded bg-[#1c2233] text-slate-300 border border-[#2e3752]">⌘ + Enter</kbd> to execute
+            Press{' '}
+            <kbd className="px-1.5 py-0.5 rounded bg-[#1c2233] text-slate-300 border border-[#2e3752]">
+              ⌘ + Enter
+            </kbd>{' '}
+            to execute
           </div>
           <div className="flex items-center space-x-2">
             <button
+              type="button"
               onClick={onReset}
               className="px-3 py-1 rounded text-xs font-mono text-slate-400 hover:text-slate-200 hover:bg-[#1a2030] transition-colors cursor-pointer"
             >
               Reset
             </button>
             <button
+              type="button"
               onClick={onExecute}
               className="px-4 py-1.5 rounded-md bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono text-xs font-semibold shadow-md shadow-sky-500/10 transition-all cursor-pointer"
             >

@@ -1,4 +1,3 @@
-import React from 'react';
 import { SCHEMA_TABLES } from './presets';
 
 interface SchemaDrawerProps {
@@ -13,14 +12,19 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
       {/* Mobile Schema Accordion Header */}
       <div className="md:hidden border-b border-[#232836] bg-[#0b0d13]">
         <button
+          type="button"
           onClick={onToggle}
           className="w-full flex items-center justify-between px-4 py-2 text-xs font-mono text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
         >
           <span className="flex items-center space-x-2">
-            <span className={`text-[10px] text-sky-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}>
+            <span
+              className={`text-[10px] text-sky-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+            >
               ▶
             </span>
-            <span className="font-medium uppercase tracking-wider text-[11px] text-slate-300">Schema Catalog</span>
+            <span className="font-medium uppercase tracking-wider text-[11px] text-slate-300">
+              Schema Catalog
+            </span>
           </span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#161a26] text-slate-400 border border-[#272f44]">
             {SCHEMA_TABLES.length} tables
@@ -35,6 +39,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
             {SCHEMA_TABLES.map((tbl) => (
               <div key={tbl.name}>
                 <button
+                  type="button"
                   onClick={() => onTableClick(tbl.name)}
                   className="text-left font-mono text-xs font-medium text-sky-400 hover:text-sky-300 mb-1 cursor-pointer"
                 >
@@ -69,15 +74,23 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
           }`}
         >
           <button
+            type="button"
             onClick={onToggle}
             className="p-1.5 rounded hover:bg-[#161a26] text-slate-400 hover:text-sky-400 transition-colors cursor-pointer"
             title="Expand Schema Catalog"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              aria-hidden="true"
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
           <button
+            type="button"
             onClick={onToggle}
             className="mt-6 text-slate-500 hover:text-slate-300 font-mono text-[10px] uppercase tracking-widest [writing-mode:vertical-rl] rotate-180 py-2 transition-colors cursor-pointer"
             title="Expand Schema Catalog"
@@ -102,12 +115,24 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
                   {SCHEMA_TABLES.length} tables
                 </span>
                 <button
+                  type="button"
                   onClick={onToggle}
                   className="p-1 rounded hover:bg-[#161a26] text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
                   title="Collapse Schema Catalog"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                  <svg
+                    aria-hidden="true"
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                 </button>
               </div>
@@ -117,6 +142,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
               {SCHEMA_TABLES.map((tbl) => (
                 <div key={tbl.name} className="group">
                   <button
+                    type="button"
                     onClick={() => onTableClick(tbl.name)}
                     className="w-full text-left flex items-center justify-between px-2 py-1 rounded hover:bg-[#151926] text-sky-400 hover:text-sky-300 font-mono text-xs font-medium transition-colors cursor-pointer"
                     title={`Click to query ${tbl.name}`}

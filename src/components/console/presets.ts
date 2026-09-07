@@ -14,12 +14,25 @@ export const SCHEMA_TABLES: TableSchema[] = [
   {
     name: 'education',
     description: 'Degrees and qualifications',
-    columns: ['institution: str', 'qualification: str', 'start_date: date', 'end_date: date', 'details: str'],
+    columns: [
+      'institution: str',
+      'qualification: str',
+      'start_date: date',
+      'end_date: date',
+      'details: str',
+    ],
   },
   {
     name: 'research',
     description: 'Academic thesis and papers',
-    columns: ['title: str', 'institution: str', 'degree: str', 'year: str', 'domain: str', 'link: str'],
+    columns: [
+      'title: str',
+      'institution: str',
+      'degree: str',
+      'year: str',
+      'domain: str',
+      'link: str',
+    ],
   },
 ];
 

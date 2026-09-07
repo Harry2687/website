@@ -1,4 +1,3 @@
-import React from 'react';
 import type { QueryMode } from './types';
 
 interface ConsoleHeaderProps {
@@ -35,6 +34,7 @@ export default function ConsoleHeader({
     >
       <div className="group/traffic flex items-center space-x-2 py-0.5">
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onClose();
@@ -48,6 +48,7 @@ export default function ConsoleHeader({
           </span>
         </button>
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onToggleMinimize();
@@ -61,6 +62,7 @@ export default function ConsoleHeader({
           </span>
         </button>
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onToggleFullscreen();
@@ -73,15 +75,20 @@ export default function ConsoleHeader({
             {isFullscreen ? '⤦' : '⤢'}
           </span>
         </button>
-        <span className="text-xs font-mono text-slate-400 ml-2 font-medium">harry_zhong.duckdb</span>
+        <span className="text-xs font-mono text-slate-400 ml-2 font-medium">
+          harry_zhong.duckdb
+        </span>
         {isMinimized && (
-          <span className="text-[11px] font-mono text-slate-500 italic ml-1">(minimized · click to restore)</span>
+          <span className="text-[11px] font-mono text-slate-500 italic ml-1">
+            (minimized · click to restore)
+          </span>
         )}
       </div>
 
       {/* Mode Toggle */}
       <div className="flex items-center bg-[#080a0f] p-1 rounded-lg border border-[#232836]">
         <button
+          type="button"
           onClick={() => onModeChange('sql')}
           className={`px-3 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer ${
             mode === 'sql'
@@ -92,6 +99,7 @@ export default function ConsoleHeader({
           SQL
         </button>
         <button
+          type="button"
           onClick={() => onModeChange('polars')}
           className={`px-3 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer ${
             mode === 'polars'
@@ -107,11 +115,17 @@ export default function ConsoleHeader({
       <div className="flex items-center space-x-3">
         {isFullscreen && (
           <span className="hidden sm:inline-block text-[11px] font-mono text-slate-500">
-            Press <kbd className="px-1 py-0.5 rounded bg-[#161a26] text-slate-300 border border-[#272f44]">Esc</kbd> to exit
+            Press{' '}
+            <kbd className="px-1 py-0.5 rounded bg-[#161a26] text-slate-300 border border-[#272f44]">
+              Esc
+            </kbd>{' '}
+            to exit
           </span>
         )}
         <div className="flex items-center space-x-2">
-          <span className={`inline-block w-2 h-2 rounded-full ${duckDbReady ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+          <span
+            className={`inline-block w-2 h-2 rounded-full ${duckDbReady ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}
+          ></span>
           <span className="text-xs font-mono text-slate-400">
             {duckDbReady ? 'DuckDB-WASM Active' : 'In-Memory Engine'}
           </span>

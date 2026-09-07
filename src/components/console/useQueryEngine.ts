@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import type { QueryMode } from './types';
-import { getInclusiveMonths, getAge } from './dateUtils';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import aboutData from '../../data/about.json';
 import careerData from '../../data/career.json';
 import educationData from '../../data/education.json';
 import researchData from '../../data/research.json';
+import { getAge, getInclusiveMonths } from './dateUtils';
+import type { QueryMode } from './types';
 
 export function useQueryEngine() {
   const [hasExecuted, setHasExecuted] = useState<boolean>(false);
@@ -46,10 +46,14 @@ export function useQueryEngine() {
         await conn.query(`CREATE TABLE about AS SELECT * FROM read_json_auto('about.json')`);
 
         await db.registerFileText('experience.json', JSON.stringify(careerData));
-        await conn.query(`CREATE TABLE experience AS SELECT * FROM read_json_auto('experience.json')`);
+        await conn.query(
+          `CREATE TABLE experience AS SELECT * FROM read_json_auto('experience.json')`
+        );
 
         await db.registerFileText('education.json', JSON.stringify(educationData));
-        await conn.query(`CREATE TABLE education AS SELECT * FROM read_json_auto('education.json')`);
+        await conn.query(
+          `CREATE TABLE education AS SELECT * FROM read_json_auto('education.json')`
+        );
 
         await db.registerFileText('research.json', JSON.stringify(researchData));
         await conn.query(`CREATE TABLE research AS SELECT * FROM read_json_auto('research.json')`);
@@ -114,7 +118,8 @@ export function useQueryEngine() {
             };
           });
       } else if (q.includes('group by') || q.includes('roles_held')) {
-        const map: Record<string, { company: string; roles_held: number; total_months: number }> = {};
+        const map: Record<string, { company: string; roles_held: number; total_months: number }> =
+          {};
         for (const exp of careerData) {
           if (!map[exp.company]) {
             map[exp.company] = { company: exp.company, roles_held: 0, total_months: 0 };
@@ -130,7 +135,13 @@ export function useQueryEngine() {
             total_months: g.total_months,
             total_years: Math.round((g.total_months / 12.0) * 10) / 10,
           }));
-      } else if (q.includes('datediff') || q.includes('months') || q.includes('years') || q.includes('tenure') || q.includes('duration')) {
+      } else if (
+        q.includes('datediff') ||
+        q.includes('months') ||
+        q.includes('years') ||
+        q.includes('tenure') ||
+        q.includes('duration')
+      ) {
         data = careerData.map((c) => {
           const months = getInclusiveMonths(c.start_date, c.end_date);
           const years = Math.round((months / 12.0) * 10) / 10;
@@ -188,7 +199,9 @@ export function useQueryEngine() {
       } else if (q.includes('research') || q.includes('thesis')) {
         data = [...researchData];
       } else {
-        throw new Error('Table not found. Available tables: about, experience, education, research');
+        throw new Error(
+          'Table not found. Available tables: about, experience, education, research'
+        );
       }
 
       const cols = data.length > 0 ? Object.keys(data[0]) : [];
@@ -206,82 +219,94 @@ export function useQueryEngine() {
   }, []);
 
   // True DuckDB-WASM query execution
-  const runSqlQuery = useCallback(async (sqlQuery: string) => {
-    const activeConn = connRef.current;
-    if (!activeConn) {
-      runFallbackQuery(sqlQuery);
-      return;
-    }
-
-    const t0 = performance.now();
-    setErrorText(null);
-
-    try {
-      let result: any;
-      try {
-        result = await activeConn.query(sqlQuery);
-      } catch (firstErr: any) {
-        const msg = String(firstErr?.message || firstErr);
-        if (msg.includes('No function matches') || msg.includes('datediff') || msg.includes('date_diff')) {
-          await new Promise((resolve) => setTimeout(resolve, 200));
-          result = await activeConn.query(sqlQuery);
-        } else {
-          throw firstErr;
-        }
+  const runSqlQuery = useCallback(
+    async (sqlQuery: string) => {
+      const activeConn = connRef.current;
+      if (!activeConn) {
+        runFallbackQuery(sqlQuery);
+        return;
       }
 
-      const fields = result.schema.fields;
-      const dateFieldNames = new Set(
-        fields
-          .filter((f: any) => {
-            const typeStr = String(f.type || '').toLowerCase();
-            const typeId = f.type?.typeId;
-            return typeId === 8 || typeId === 10 || typeStr.includes('date') || typeStr.includes('timestamp');
-          })
-          .map((f: any) => f.name)
-      );
+      const t0 = performance.now();
+      setErrorText(null);
 
-      const rows = result.toArray().map((row: any) => {
-        const obj = typeof row.toJSON === 'function' ? row.toJSON() : { ...row };
-        for (const [key, val] of Object.entries(obj)) {
-          if (val === null || val === undefined) continue;
-          if (dateFieldNames.has(key) || key.toLowerCase().includes('date')) {
-            if (val instanceof Date) {
-              obj[key] = val.toISOString().split('T')[0];
-            } else if (typeof val === 'number') {
-              const ms = val > 100000000 ? val : val * 86400000;
-              const d = new Date(ms);
-              if (!isNaN(d.getTime())) {
-                obj[key] = d.toISOString().split('T')[0];
-              }
-            } else if (typeof val === 'string' && val.includes('T')) {
-              obj[key] = val.split('T')[0];
-            }
-          } else if (typeof val === 'bigint') {
-            obj[key] = Number(val);
+      try {
+        let result: any;
+        try {
+          result = await activeConn.query(sqlQuery);
+        } catch (firstErr: any) {
+          const msg = String(firstErr?.message || firstErr);
+          if (
+            msg.includes('No function matches') ||
+            msg.includes('datediff') ||
+            msg.includes('date_diff')
+          ) {
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            result = await activeConn.query(sqlQuery);
+          } else {
+            throw firstErr;
           }
         }
-        return obj;
-      });
 
-      const cols = fields.map((f: any) => f.name);
-      const t1 = performance.now();
+        const fields = result.schema.fields;
+        const dateFieldNames = new Set(
+          fields
+            .filter((f: any) => {
+              const typeStr = String(f.type || '').toLowerCase();
+              const typeId = f.type?.typeId;
+              return (
+                typeId === 8 ||
+                typeId === 10 ||
+                typeStr.includes('date') ||
+                typeStr.includes('timestamp')
+              );
+            })
+            .map((f: any) => f.name)
+        );
 
-      setHasExecuted(true);
-      setResultRows(rows);
-      setColumns(cols);
-      setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
-      setStatusText(`Query executed in ${Math.round((t1 - t0) * 10) / 10}ms`);
-    } catch (err: any) {
-      console.warn('DuckDB query error, falling back to in-memory engine:', err);
-      try {
-        runFallbackQuery(sqlQuery);
-      } catch {
-        setErrorText(err.message || String(err));
-        setStatusText('Execution failed');
+        const rows = result.toArray().map((row: any) => {
+          const obj = typeof row.toJSON === 'function' ? row.toJSON() : { ...row };
+          for (const [key, val] of Object.entries(obj)) {
+            if (val === null || val === undefined) continue;
+            if (dateFieldNames.has(key) || key.toLowerCase().includes('date')) {
+              if (val instanceof Date) {
+                obj[key] = val.toISOString().split('T')[0];
+              } else if (typeof val === 'number') {
+                const ms = val > 100000000 ? val : val * 86400000;
+                const d = new Date(ms);
+                if (!Number.isNaN(d.getTime())) {
+                  obj[key] = d.toISOString().split('T')[0];
+                }
+              } else if (typeof val === 'string' && val.includes('T')) {
+                obj[key] = val.split('T')[0];
+              }
+            } else if (typeof val === 'bigint') {
+              obj[key] = Number(val);
+            }
+          }
+          return obj;
+        });
+
+        const cols = fields.map((f: any) => f.name);
+        const t1 = performance.now();
+
+        setHasExecuted(true);
+        setResultRows(rows);
+        setColumns(cols);
+        setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
+        setStatusText(`Query executed in ${Math.round((t1 - t0) * 10) / 10}ms`);
+      } catch (err: any) {
+        console.warn('DuckDB query error, falling back to in-memory engine:', err);
+        try {
+          runFallbackQuery(sqlQuery);
+        } catch {
+          setErrorText(err.message || String(err));
+          setStatusText('Execution failed');
+        }
       }
-    }
-  }, [runFallbackQuery]);
+    },
+    [runFallbackQuery]
+  );
 
   // Polars Method-Chaining Parser
   const runPolarsQuery = useCallback((polarsExpr: string) => {
@@ -307,7 +332,8 @@ export function useQueryEngine() {
             };
           });
       } else if (expr.includes('group_by')) {
-        const map: Record<string, { company: string; roles_held: number; total_months: number }> = {};
+        const map: Record<string, { company: string; roles_held: number; total_months: number }> =
+          {};
         for (const exp of careerData) {
           if (!map[exp.company]) {
             map[exp.company] = { company: exp.company, roles_held: 0, total_months: 0 };
@@ -323,7 +349,10 @@ export function useQueryEngine() {
             total_months: g.total_months,
             total_years: Math.round((g.total_months / 12.0) * 10) / 10,
           }));
-      } else if (expr.includes('with_columns') || (expr.includes('dt') && (expr.includes('months') || expr.includes('total_days')))) {
+      } else if (
+        expr.includes('with_columns') ||
+        (expr.includes('dt') && (expr.includes('months') || expr.includes('total_days')))
+      ) {
         data = careerData.map((c) => {
           const months = getInclusiveMonths(c.start_date, c.end_date);
           const years = Math.round((months / 12.0) * 10) / 10;
@@ -380,10 +409,8 @@ export function useQueryEngine() {
       // Only parse trailing .select(["col1", "col2"]) on simple datasets
       if (!expr.includes('concat') && !expr.includes('group_by')) {
         const selectMatch = expr.match(/\.select\(\[([^\]]+)\]\)$/);
-        if (selectMatch && selectMatch[1] && !selectMatch[1].includes('(')) {
-          const selectedCols = selectMatch[1]
-            .split(',')
-            .map((s) => s.trim().replace(/['"]/g, ''));
+        if (selectMatch?.[1] && !selectMatch[1].includes('(')) {
+          const selectedCols = selectMatch[1].split(',').map((s) => s.trim().replace(/['"]/g, ''));
           if (selectedCols.length > 0) {
             cols = selectedCols;
             data = data.map((row) => {
@@ -409,13 +436,16 @@ export function useQueryEngine() {
     }
   }, []);
 
-  const executeQuery = useCallback((query: string, mode: QueryMode) => {
-    if (mode === 'sql') {
-      runSqlQuery(query);
-    } else {
-      runPolarsQuery(query);
-    }
-  }, [runSqlQuery, runPolarsQuery]);
+  const executeQuery = useCallback(
+    (query: string, mode: QueryMode) => {
+      if (mode === 'sql') {
+        runSqlQuery(query);
+      } else {
+        runPolarsQuery(query);
+      }
+    },
+    [runSqlQuery, runPolarsQuery]
+  );
 
   return {
     duckDbReady,
