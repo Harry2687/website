@@ -111,7 +111,27 @@ export function useQueryEngine() {
       const q = sqlQuery.toLowerCase().trim();
       let data: Record<string, any>[] = [];
 
-      if (q.includes('join')) {
+      if (q.includes('union') || q.includes('timeline')) {
+        const dob = aboutData[0]?.date_of_birth || '2001-06-25';
+        data = [
+          ...careerData.map((c) => ({
+            organization: c.company,
+            title: c.role,
+            track: 'Industry',
+            start_date: c.start_date,
+            age_at_start: getAge(dob, c.start_date),
+            duration_months: getInclusiveMonths(c.start_date, c.end_date),
+          })),
+          ...educationData.map((e) => ({
+            organization: e.institution,
+            title: e.qualification,
+            track: 'Academic',
+            start_date: e.start_date,
+            age_at_start: getAge(dob, e.start_date),
+            duration_months: getInclusiveMonths(e.start_date, e.end_date),
+          })),
+        ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
+      } else if (q.includes('join')) {
         data = educationData
           .filter((e) => researchData.some((r) => r.institution === e.institution))
           .map((e) => {
@@ -143,6 +163,24 @@ export function useQueryEngine() {
             total_months: g.total_months,
             total_years: Math.round((g.total_months / 12.0) * 10) / 10,
           }));
+      } else if (q.includes('about')) {
+        const parts = q.split(/\bfrom\b/i);
+        const selectClause = parts[0]?.replace(/^select\s+/i, '').replace(/\([^)]*\)/g, '') || '';
+        const wantsDob = q.includes('*') || /\bdate_of_birth\b/i.test(selectClause);
+        if (q.includes('age')) {
+          data = aboutData.map((a: any) => {
+            const row: Record<string, any> = {
+              name: a.name,
+              location: a.location,
+              contact: a.contact,
+            };
+            if (wantsDob) row.date_of_birth = a.date_of_birth;
+            row.age = getAge(a.date_of_birth);
+            return row;
+          });
+        } else {
+          data = [...aboutData];
+        }
       } else if (
         q.includes('datediff') ||
         q.includes('months') ||
@@ -162,45 +200,13 @@ export function useQueryEngine() {
             years,
           };
         });
-      } else if (q.includes('union') || q.includes('timeline')) {
-        data = [
-          ...careerData.map((c) => ({
-            organization: c.company,
-            title: c.role,
-            track: 'Industry',
-            start_date: c.start_date,
-            end_date: c.end_date ?? new Date().toISOString().split('T')[0],
-            duration_months: getInclusiveMonths(c.start_date, c.end_date),
-          })),
-          ...educationData.map((e) => ({
-            organization: e.institution,
-            title: e.qualification,
-            track: 'Academic',
-            start_date: e.start_date,
-            end_date: e.end_date,
-            duration_months: getInclusiveMonths(e.start_date, e.end_date),
-          })),
-        ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
-      } else if (q.includes('about')) {
-        const wantsDob = q.includes('*') || /select\s+[^;]*\bdate_of_birth\s*[,from]/i.test(q);
-        if (q.includes('age')) {
-          data = aboutData.map((a: any) => {
-            const row: Record<string, any> = {
-              name: a.name,
-              location: a.location,
-              contact: a.contact,
-            };
-            if (wantsDob) row.date_of_birth = a.date_of_birth;
-            row.age = getAge(a.date_of_birth);
-            return row;
-          });
-        } else {
-          data = [...aboutData];
-        }
       } else if (q.includes('experience') || q.includes('career')) {
         data = careerData.map((c) => ({
-          ...c,
+          role: c.role,
+          company: c.company,
+          start_date: c.start_date,
           end_date: c.end_date ?? null,
+          domain: c.domain,
         }));
       } else if (q.includes('education')) {
         data = [...educationData];
@@ -346,7 +352,27 @@ export function useQueryEngine() {
       let data: Record<string, any>[] = [];
       const expr = polarsExpr.trim();
 
-      if (expr.includes('join')) {
+      if (expr.includes('concat')) {
+        const dob = aboutData[0]?.date_of_birth || '2001-06-25';
+        data = [
+          ...careerData.map((c) => ({
+            organization: c.company,
+            title: c.role,
+            track: 'Industry',
+            start_date: c.start_date,
+            age_at_start: getAge(dob, c.start_date),
+            duration_months: getInclusiveMonths(c.start_date, c.end_date),
+          })),
+          ...educationData.map((e) => ({
+            organization: e.institution,
+            title: e.qualification,
+            track: 'Academic',
+            start_date: e.start_date,
+            age_at_start: getAge(dob, e.start_date),
+            duration_months: getInclusiveMonths(e.start_date, e.end_date),
+          })),
+        ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
+      } else if (expr.includes('join')) {
         data = educationData
           .filter((e) => researchData.some((r) => r.institution === e.institution))
           .map((e) => {
@@ -356,7 +382,7 @@ export function useQueryEngine() {
               qualification: e.qualification,
               start_date: e.start_date,
               end_date: e.end_date,
-              title: r ? r.title : '',
+              thesis_title: r ? r.title : '',
               link: r ? r.link : '',
             };
           });
@@ -378,39 +404,6 @@ export function useQueryEngine() {
             total_months: g.total_months,
             total_years: Math.round((g.total_months / 12.0) * 10) / 10,
           }));
-      } else if (
-        expr.includes('with_columns') ||
-        (expr.includes('dt') && (expr.includes('months') || expr.includes('total_days')))
-      ) {
-        data = careerData.map((c) => {
-          const months = getInclusiveMonths(c.start_date, c.end_date);
-          const years = Math.round((months / 12.0) * 10) / 10;
-          return {
-            company: c.company,
-            role: c.role,
-            start_date: c.start_date,
-            end_date: c.end_date ?? 'Present',
-            months,
-            years,
-          };
-        });
-      } else if (expr.includes('concat')) {
-        data = [
-          ...careerData.map((c) => ({
-            organization: c.company,
-            title: c.role,
-            start_date: c.start_date,
-            end_date: c.end_date ?? 'Present',
-            track: 'Industry',
-          })),
-          ...educationData.map((e) => ({
-            organization: e.institution,
-            title: e.qualification,
-            start_date: e.start_date,
-            end_date: e.end_date,
-            track: 'Academic',
-          })),
-        ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
       } else if (expr.startsWith('about')) {
         if (expr.includes('age')) {
           data = aboutData.map((a: any) => ({
@@ -421,10 +414,28 @@ export function useQueryEngine() {
           data = [...aboutData];
         }
       } else if (expr.startsWith('experience')) {
-        data = careerData.map((c) => ({
-          ...c,
-          end_date: c.end_date ?? 'Present',
-        }));
+        if (
+          expr.includes('with_columns') ||
+          (expr.includes('dt') && (expr.includes('months') || expr.includes('total_days')))
+        ) {
+          data = careerData.map((c) => {
+            const months = getInclusiveMonths(c.start_date, c.end_date);
+            const years = Math.round((months / 12.0) * 10) / 10;
+            return {
+              company: c.company,
+              role: c.role,
+              start_date: c.start_date,
+              end_date: c.end_date ?? null,
+              months,
+              years,
+            };
+          });
+        } else {
+          data = careerData.map((c) => ({
+            ...c,
+            end_date: c.end_date ?? null,
+          }));
+        }
       } else if (expr.startsWith('education')) {
         data = [...educationData];
       } else if (expr.startsWith('research')) {
@@ -437,7 +448,7 @@ export function useQueryEngine() {
 
       // Only parse trailing .select(["col1", "col2"]) on simple datasets
       if (!expr.includes('concat') && !expr.includes('group_by')) {
-        const selectMatch = expr.match(/\.select\(\[([^\]]+)\]\)$/);
+        const selectMatch = expr.match(/\.select\(\[([^\]]+)\]\)/);
         if (selectMatch?.[1] && !selectMatch[1].includes('(')) {
           const selectedCols = selectMatch[1].split(',').map((s) => s.trim().replace(/['"]/g, ''));
           if (selectedCols.length > 0) {
