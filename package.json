@@ -2,6 +2,7 @@
   "name": "harryzhong-portfolio",
   "type": "module",
   "version": "1.0.0",
+  "packageManager": "bun@1.2.15",
   "scripts": {
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "start": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
@@ -15,7 +16,6 @@
   },
   "dependencies": {
     "@astrojs/react": "^6.0.5",
-    "@astrojs/tailwind": "^6.0.2",
     "@duckdb/duckdb-wasm": "^1.33.1-dev57.0",
     "@tailwindcss/vite": "^4.3.3",
     "apache-arrow": "^21.2.0",
