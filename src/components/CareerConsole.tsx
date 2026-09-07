@@ -24,6 +24,7 @@ export default function CareerConsole() {
     resultRows,
     columns,
     execTimeMs,
+    isExecuting,
     executeQuery,
   } = useQueryEngine();
 
@@ -156,6 +157,7 @@ export default function CareerConsole() {
                 onExecute={handleExecute}
                 onSelectPreset={handleSelectPreset}
                 onReset={handleReset}
+                isExecuting={isExecuting}
               />
 
               <ResultsTable
@@ -167,6 +169,7 @@ export default function CareerConsole() {
                 errorText={errorText}
                 onErrorDismiss={() => setErrorText(null)}
                 isFullscreen={isFullscreen}
+                isExecuting={isExecuting}
               />
             </div>
           </div>

@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import { PRESETS } from './presets';
 import type { QueryMode, QueryPreset } from './types';
 
@@ -8,6 +9,7 @@ interface QueryEditorProps {
   onExecute: () => void;
   onSelectPreset: (preset: QueryPreset) => void;
   onReset: () => void;
+  isExecuting?: boolean;
 }
 
 export default function QueryEditor({
@@ -17,6 +19,7 @@ export default function QueryEditor({
   onExecute,
   onSelectPreset,
   onReset,
+  isExecuting = false,
 }: QueryEditorProps) {
   return (
     <>
@@ -49,7 +52,9 @@ export default function QueryEditor({
             onKeyDown={(e) => {
               if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
                 e.preventDefault();
-                onExecute();
+                if (!isExecuting) {
+                  onExecute();
+                }
               }
             }}
             rows={Math.min(Math.max(query.split('\n').length, 2), 8)}
@@ -71,16 +76,29 @@ export default function QueryEditor({
             <button
               type="button"
               onClick={onReset}
-              className="px-3 py-1 rounded text-xs font-mono text-slate-400 hover:text-slate-200 hover:bg-[#1a2030] transition-colors cursor-pointer"
+              disabled={isExecuting}
+              className="px-3 py-1 rounded text-xs font-mono text-slate-400 hover:text-slate-200 hover:bg-[#1a2030] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Reset
             </button>
             <button
               type="button"
               onClick={onExecute}
-              className="px-4 py-1.5 rounded-md bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono text-xs font-semibold shadow-md shadow-sky-500/10 transition-all cursor-pointer"
+              disabled={isExecuting}
+              className={`px-4 py-1.5 rounded-md font-mono text-xs font-semibold shadow-md transition-all flex items-center space-x-1.5 ${
+                isExecuting
+                  ? 'bg-sky-600/60 text-slate-300 cursor-not-allowed shadow-none'
+                  : 'bg-sky-500 hover:bg-sky-400 text-slate-950 shadow-sky-500/10 cursor-pointer'
+              }`}
             >
-              Run Query
+              {isExecuting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Running...</span>
+                </>
+              ) : (
+                <span>Run Query</span>
+              )}
             </button>
           </div>
         </div>

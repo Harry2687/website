@@ -14,9 +14,11 @@ export function useQueryEngine() {
   const [statusText, setStatusText] = useState<string>('Ready');
   const [errorText, setErrorText] = useState<string | null>(null);
   const [duckDbReady, setDuckDbReady] = useState<boolean>(false);
+  const [isExecuting, setIsExecuting] = useState<boolean>(false);
 
   const duckDbRef = useRef<any>(null);
   const connRef = useRef<any>(null);
+  const isExecutingRef = useRef<boolean>(false);
 
   // Initialize DuckDB-WASM client-side
   useEffect(() => {
@@ -95,9 +97,15 @@ export function useQueryEngine() {
   }, []);
 
   // Fallback SQL runner
-  const runFallbackQuery = useCallback((sqlQuery: string) => {
-    const t0 = performance.now();
+  const runFallbackQuery = useCallback(async (sqlQuery: string) => {
+    setIsExecuting(true);
+    isExecutingRef.current = true;
     setErrorText(null);
+    setStatusText('Executing SQL query...');
+
+    const t0 = performance.now();
+    const delayMs = Math.floor(320 + Math.random() * 160);
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
 
     try {
       const q = sqlQuery.toLowerCase().trim();
@@ -211,10 +219,13 @@ export function useQueryEngine() {
       setResultRows(data);
       setColumns(cols);
       setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
-      setStatusText('Executed');
+      setStatusText(`Query executed in ${Math.round((t1 - t0) * 10) / 10}ms`);
     } catch (err: any) {
       setErrorText(err.message || String(err));
       setStatusText('Query error');
+    } finally {
+      setIsExecuting(false);
+      isExecutingRef.current = false;
     }
   }, []);
 
@@ -223,17 +234,26 @@ export function useQueryEngine() {
     async (sqlQuery: string) => {
       const activeConn = connRef.current;
       if (!activeConn) {
-        runFallbackQuery(sqlQuery);
+        await runFallbackQuery(sqlQuery);
         return;
       }
 
-      const t0 = performance.now();
+      setIsExecuting(true);
+      isExecutingRef.current = true;
       setErrorText(null);
+      setStatusText('Planning & executing DuckDB query...');
+
+      const t0 = performance.now();
+      const delayMs = Math.floor(320 + Math.random() * 160);
 
       try {
         let result: any;
         try {
-          result = await activeConn.query(sqlQuery);
+          const [res] = await Promise.all([
+            activeConn.query(sqlQuery),
+            new Promise((resolve) => setTimeout(resolve, delayMs)),
+          ]);
+          result = res;
         } catch (firstErr: any) {
           const msg = String(firstErr?.message || firstErr);
           if (
@@ -298,20 +318,29 @@ export function useQueryEngine() {
       } catch (err: any) {
         console.warn('DuckDB query error, falling back to in-memory engine:', err);
         try {
-          runFallbackQuery(sqlQuery);
+          await runFallbackQuery(sqlQuery);
         } catch {
           setErrorText(err.message || String(err));
           setStatusText('Execution failed');
         }
+      } finally {
+        setIsExecuting(false);
+        isExecutingRef.current = false;
       }
     },
     [runFallbackQuery]
   );
 
   // Polars Method-Chaining Parser
-  const runPolarsQuery = useCallback((polarsExpr: string) => {
-    const t0 = performance.now();
+  const runPolarsQuery = useCallback(async (polarsExpr: string) => {
+    setIsExecuting(true);
+    isExecutingRef.current = true;
     setErrorText(null);
+    setStatusText('Evaluating Polars expression plan...');
+
+    const t0 = performance.now();
+    const delayMs = Math.floor(300 + Math.random() * 150);
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
 
     try {
       let data: Record<string, any>[] = [];
@@ -433,15 +462,19 @@ export function useQueryEngine() {
     } catch (err: any) {
       setErrorText(err.message || String(err));
       setStatusText('Parse error');
+    } finally {
+      setIsExecuting(false);
+      isExecutingRef.current = false;
     }
   }, []);
 
   const executeQuery = useCallback(
-    (query: string, mode: QueryMode) => {
+    async (query: string, mode: QueryMode) => {
+      if (isExecutingRef.current) return;
       if (mode === 'sql') {
-        runSqlQuery(query);
+        await runSqlQuery(query);
       } else {
-        runPolarsQuery(query);
+        await runPolarsQuery(query);
       }
     },
     [runSqlQuery, runPolarsQuery]
@@ -456,6 +489,7 @@ export function useQueryEngine() {
     resultRows,
     columns,
     execTimeMs,
+    isExecuting,
     executeQuery,
   };
 }

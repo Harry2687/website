@@ -1,3 +1,5 @@
+import { Loader2 } from 'lucide-react';
+
 interface ResultsTableProps {
   hasExecuted: boolean;
   resultRows: Record<string, any>[];
@@ -7,6 +9,7 @@ interface ResultsTableProps {
   errorText: string | null;
   onErrorDismiss: () => void;
   isFullscreen: boolean;
+  isExecuting?: boolean;
 }
 
 export default function ResultsTable({
@@ -18,6 +21,7 @@ export default function ResultsTable({
   errorText,
   onErrorDismiss,
   isFullscreen,
+  isExecuting = false,
 }: ResultsTableProps) {
   return (
     <>
@@ -25,13 +29,24 @@ export default function ResultsTable({
       <div className="flex items-center justify-between border-b border-[#232836] bg-[#0e111a] px-4 py-2 text-xs font-mono">
         <span className="text-slate-300 font-medium">
           Results{' '}
-          {hasExecuted ? `(${resultRows.length} ${resultRows.length === 1 ? 'row' : 'rows'})` : ''}
+          {hasExecuted && !isExecuting
+            ? `(${resultRows.length} ${resultRows.length === 1 ? 'row' : 'rows'})`
+            : ''}
         </span>
 
         <div className="flex items-center space-x-3 text-slate-400">
-          {execTimeMs !== null && <span className="text-emerald-400">{execTimeMs} ms</span>}
-          {execTimeMs !== null && <span className="text-slate-600">|</span>}
-          <span className="text-slate-400">{statusText}</span>
+          {isExecuting ? (
+            <span className="flex items-center space-x-1.5 text-sky-400 font-medium">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>{statusText}</span>
+            </span>
+          ) : (
+            <>
+              {execTimeMs !== null && <span className="text-emerald-400">{execTimeMs} ms</span>}
+              {execTimeMs !== null && <span className="text-slate-600">|</span>}
+              <span className="text-slate-400">{statusText}</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -57,7 +72,11 @@ export default function ResultsTable({
       >
         {hasExecuted ? (
           resultRows.length > 0 ? (
-            <div className="w-full overflow-x-auto">
+            <div
+              className={`w-full overflow-x-auto transition-opacity duration-200 ${
+                isExecuting ? 'opacity-35 pointer-events-none' : 'opacity-100'
+              }`}
+            >
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-[#111520] border-b border-[#232836] sticky top-0 z-10">
@@ -136,6 +155,12 @@ export default function ResultsTable({
               <p>No rows returned.</p>
             </div>
           )
+        ) : isExecuting ? (
+          <div className="flex flex-col items-center justify-center py-20 text-slate-500 space-y-3">
+            <Loader2 className="w-6 h-6 text-sky-400 animate-spin" />
+            <div className="text-xs font-mono text-slate-300">Processing query plan...</div>
+            <div className="text-[11px] font-mono text-slate-500">{statusText}</div>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-slate-500 space-y-2">
             <div className="text-xs font-mono text-slate-400">Query ready to execute.</div>
