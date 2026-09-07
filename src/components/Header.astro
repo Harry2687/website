@@ -1,0 +1,157 @@
+---
+import aboutData from '../data/about.json';
+import careerData from '../data/career.json';
+
+const profile = aboutData[0] ?? {
+  name: 'Harry Zhong',
+  photo: '/profile.jpg',
+  contact: 'h.zhong2687@gmail.com',
+};
+
+const latestRole = [...careerData].sort((a, b) => (b.start_date > a.start_date ? 1 : -1))[0];
+
+const role = latestRole?.role ?? 'Senior Quantitative Analyst';
+const company = latestRole?.company ?? 'Commonwealth Bank';
+const location = latestRole?.location ?? 'Perth, WA';
+---
+
+<header class="sticky top-0 z-50 backdrop-blur-md bg-vsc-header/90 border-b border-vsc-border transition-colors duration-150">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
+    <div class="relative group/profile flex items-center">
+      <a href="#" class="flex items-center min-w-0 py-1">
+        <span class="font-bold text-vsc-fg-bright tracking-tight text-sm group-hover/profile:text-vsc-blue transition-colors truncate">{profile.name}</span>
+      </a>
+
+      <!-- Profile Hover Card -->
+      <div
+        class="absolute left-0 top-full pt-2 w-64 max-w-[calc(100vw-2rem)] opacity-0 invisible group-hover/profile:opacity-100 group-hover/profile:visible transition-all duration-200 z-50 pointer-events-auto"
+        role="tooltip"
+      >
+        <div class="p-3.5 rounded-xl bg-vsc-card/95 backdrop-blur-md border border-vsc-border shadow-2xl shadow-black/20 animate-fadeIn">
+          <div class="flex items-start space-x-3">
+            <img
+              src={profile.photo}
+              alt={profile.name}
+              class="w-12 h-12 rounded-full object-cover border border-vsc-border shadow-xs shrink-0"
+            />
+            <div class="min-w-0 flex-1">
+              <span class="font-bold text-sm text-vsc-fg-bright tracking-tight block truncate">{profile.name}</span>
+              <p class="text-xs text-vsc-blue font-mono font-medium mt-0.5">{role}</p>
+              <p class="text-[11px] text-vsc-fg-muted font-mono mt-0.5 truncate">{company}</p>
+              <div class="flex items-center space-x-1 text-[11px] text-vsc-fg-subtle font-mono mt-1">
+                <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>{location}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-2 sm:space-x-3 text-xs font-mono shrink-0">
+      <a
+        href="https://github.com/Harry2687"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
+      >
+        GitHub
+      </a>
+      <a
+        href="https://www.linkedin.com/in/harry2687/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
+      >
+        LinkedIn
+      </a>
+      <a
+        href={`mailto:${profile.contact ?? 'h.zhong2687@gmail.com'}`}
+        class="px-2.5 py-1 rounded bg-vsc-blue hover:bg-vsc-blue-hover text-white font-semibold transition-all shadow-sm"
+      >
+        Email
+      </a>
+
+      <!-- Theme Mode Segmented Toggle (Light, System default, Dark) -->
+      <div
+        id="theme-toggle"
+        class="flex items-center bg-vsc-card p-0.5 rounded-lg border border-vsc-border ml-1"
+        role="group"
+        aria-label="Color theme selection"
+      >
+        <button
+          type="button"
+          data-theme-val="light"
+          class="theme-toggle-btn p-1.5 rounded-md transition-all cursor-pointer text-vsc-fg-muted hover:text-vsc-fg-bright"
+          title="Light mode"
+          aria-label="Light mode"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-theme-val="system"
+          class="theme-toggle-btn p-1.5 rounded-md transition-all cursor-pointer text-vsc-fg-muted hover:text-vsc-fg-bright"
+          title="System preference (default)"
+          aria-label="System preference (default)"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-theme-val="dark"
+          class="theme-toggle-btn p-1.5 rounded-md transition-all cursor-pointer text-vsc-fg-muted hover:text-vsc-fg-bright"
+          title="Dark mode"
+          aria-label="Dark mode"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (function() {
+    function updateActiveButton() {
+      const current = window.__getTheme ? window.__getTheme() : 'system';
+      const buttons = document.querySelectorAll('.theme-toggle-btn');
+      buttons.forEach(function(btn) {
+        const val = btn.getAttribute('data-theme-val');
+        if (val === current) {
+          btn.classList.add('bg-vsc-hover', 'text-vsc-blue', 'shadow-xs');
+          btn.classList.remove('text-vsc-fg-muted');
+          btn.setAttribute('aria-pressed', 'true');
+        } else {
+          btn.classList.remove('bg-vsc-hover', 'text-vsc-blue', 'shadow-xs');
+          btn.classList.add('text-vsc-fg-muted');
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+    }
+
+    document.querySelectorAll('.theme-toggle-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const target = btn.getAttribute('data-theme-val');
+        if (window.__setTheme) {
+          window.__setTheme(target);
+        }
+        updateActiveButton();
+      });
+    });
+
+    window.addEventListener('theme-changed', updateActiveButton);
+    updateActiveButton();
+  })();
+</script>
