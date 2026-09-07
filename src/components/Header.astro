@@ -1,22 +1,22 @@
 ---
 ---
 
-<header class="sticky top-0 z-50 backdrop-blur-md bg-[#090a0f]/90 border-b border-[#232836]/60">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-    <a href="#" class="flex items-center space-x-3 group">
-      <img src="/logo.png" alt="Logo" class="w-7 h-7 rounded-lg border border-[#272f44] group-hover:border-sky-500/50 transition-colors" />
-      <div class="flex items-center space-x-2">
-        <span class="font-bold text-slate-100 tracking-tight text-sm group-hover:text-sky-400 transition-colors">Harry Zhong</span>
-        <span class="text-xs font-mono text-slate-400">· Data Scientist</span>
+<header class="sticky top-0 z-50 backdrop-blur-md bg-vsc-header/90 border-b border-vsc-border transition-colors duration-150">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
+    <a href="#" class="flex items-center space-x-2.5 sm:space-x-3 group min-w-0">
+      <img src="/logo.png" alt="Logo" class="w-7 h-7 rounded-lg border border-vsc-border group-hover:border-vsc-blue transition-colors shrink-0" />
+      <div class="flex items-center space-x-2 min-w-0">
+        <span class="font-bold text-vsc-fg-bright tracking-tight text-sm group-hover:text-vsc-blue transition-colors truncate">Harry Zhong</span>
+        <span class="text-xs font-mono text-vsc-fg-muted hidden sm:inline truncate">· Data Scientist</span>
       </div>
     </a>
 
-    <div class="flex items-center space-x-3 text-xs font-mono">
+    <div class="flex items-center space-x-2 sm:space-x-3 text-xs font-mono shrink-0">
       <a
         href="https://github.com/Harry2687"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-slate-400 hover:text-slate-200 transition-colors px-2 py-1"
+        class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
       >
         GitHub
       </a>
@@ -24,16 +24,94 @@
         href="https://www.linkedin.com/in/harry2687/"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-slate-400 hover:text-slate-200 transition-colors px-2 py-1"
+        class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
       >
         LinkedIn
       </a>
       <a
         href="mailto:h.zhong2687@gmail.com"
-        class="px-2.5 py-1 rounded bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold transition-all shadow-sm"
+        class="px-2.5 py-1 rounded bg-vsc-blue hover:bg-vsc-blue-hover text-white font-semibold transition-all shadow-sm"
       >
         Email
       </a>
+
+      <!-- Theme Mode Segmented Toggle (Light, System default, Dark) -->
+      <div
+        id="theme-toggle"
+        class="flex items-center bg-vsc-card p-0.5 rounded-lg border border-vsc-border ml-1"
+        role="group"
+        aria-label="Color theme selection"
+      >
+        <button
+          type="button"
+          data-theme-val="light"
+          class="theme-toggle-btn p-1.5 rounded-md transition-all cursor-pointer text-vsc-fg-muted hover:text-vsc-fg-bright"
+          title="Light mode"
+          aria-label="Light mode"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-theme-val="system"
+          class="theme-toggle-btn p-1.5 rounded-md transition-all cursor-pointer text-vsc-fg-muted hover:text-vsc-fg-bright"
+          title="System preference (default)"
+          aria-label="System preference (default)"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-theme-val="dark"
+          class="theme-toggle-btn p-1.5 rounded-md transition-all cursor-pointer text-vsc-fg-muted hover:text-vsc-fg-bright"
+          title="Dark mode"
+          aria-label="Dark mode"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </header>
+
+<script is:inline>
+  (function() {
+    function updateActiveButton() {
+      const current = window.__getTheme ? window.__getTheme() : 'system';
+      const buttons = document.querySelectorAll('.theme-toggle-btn');
+      buttons.forEach(function(btn) {
+        const val = btn.getAttribute('data-theme-val');
+        if (val === current) {
+          btn.classList.add('bg-vsc-hover', 'text-vsc-blue', 'shadow-xs');
+          btn.classList.remove('text-vsc-fg-muted');
+          btn.setAttribute('aria-pressed', 'true');
+        } else {
+          btn.classList.remove('bg-vsc-hover', 'text-vsc-blue', 'shadow-xs');
+          btn.classList.add('text-vsc-fg-muted');
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+    }
+
+    document.querySelectorAll('.theme-toggle-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const target = btn.getAttribute('data-theme-val');
+        if (window.__setTheme) {
+          window.__setTheme(target);
+        }
+        updateActiveButton();
+      });
+    });
+
+    window.addEventListener('theme-changed', updateActiveButton);
+    updateActiveButton();
+  })();
+</script>

@@ -10,29 +10,29 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
   return (
     <>
       {/* Mobile Schema Accordion Header */}
-      <div className="md:hidden border-b border-[#232836] bg-[#0b0d13]">
+      <div className="md:hidden border-b border-vsc-border bg-vsc-sidebar">
         <button
           type="button"
           onClick={onToggle}
-          className="w-full flex items-center justify-between px-4 py-2 text-xs font-mono text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-between px-4 py-2 text-xs font-mono text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors cursor-pointer"
         >
           <span className="flex items-center space-x-2">
             <span
-              className={`text-[10px] text-sky-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+              className={`text-[10px] text-vsc-blue transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
             >
               ▶
             </span>
-            <span className="font-medium uppercase tracking-wider text-[11px] text-slate-300">
+            <span className="font-medium uppercase tracking-wider text-[11px] text-vsc-fg">
               Schema Catalog
             </span>
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#161a26] text-slate-400 border border-[#272f44]">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-vsc-chip-bg text-vsc-chip-text border border-vsc-chip-border">
             {SCHEMA_TABLES.length} tables
           </span>
         </button>
         <div
           className={`overflow-hidden transition-all duration-200 ease-in-out ${
-            isOpen ? 'max-h-96 p-3 border-t border-[#1c2233]' : 'max-h-0'
+            isOpen ? 'max-h-96 p-3 border-t border-vsc-border' : 'max-h-0'
           }`}
         >
           <div className="space-y-3">
@@ -41,7 +41,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
                 <button
                   type="button"
                   onClick={() => onTableClick(tbl.name)}
-                  className="text-left font-mono text-xs font-medium text-sky-400 hover:text-sky-300 mb-1 cursor-pointer"
+                  className="text-left font-mono text-xs font-medium text-vsc-blue hover:underline mb-1 cursor-pointer"
                 >
                   ▶ {tbl.name}
                 </button>
@@ -49,7 +49,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
                   {tbl.columns.map((col) => (
                     <span
                       key={col}
-                      className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#161a26] border border-[#272f44] text-slate-400"
+                      className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-vsc-chip-bg border border-vsc-chip-border text-vsc-fg-muted"
                     >
                       {col}
                     </span>
@@ -63,7 +63,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
 
       {/* Desktop Schema Catalog Sidebar (Smooth Symmetrical Collapse/Expand) */}
       <aside
-        className={`hidden md:flex flex-col justify-between shrink-0 border-r border-[#232836] bg-[#0b0d13] transition-[width] duration-200 ease-in-out overflow-hidden relative ${
+        className={`hidden md:flex flex-col justify-between shrink-0 border-r border-vsc-border bg-vsc-sidebar transition-[width] duration-200 ease-in-out overflow-hidden relative h-full ${
           isOpen ? 'w-60' : 'w-10'
         }`}
       >
@@ -76,7 +76,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
           <button
             type="button"
             onClick={onToggle}
-            className="p-1.5 rounded hover:bg-[#161a26] text-slate-400 hover:text-sky-400 transition-colors cursor-pointer"
+            className="p-1.5 rounded hover:bg-vsc-hover text-vsc-fg-muted hover:text-vsc-blue transition-colors cursor-pointer"
             title="Expand Schema Catalog"
           >
             <svg
@@ -92,7 +92,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
           <button
             type="button"
             onClick={onToggle}
-            className="mt-6 text-slate-500 hover:text-slate-300 font-mono text-[10px] uppercase tracking-widest [writing-mode:vertical-rl] rotate-180 py-2 transition-colors cursor-pointer"
+            className="mt-6 text-vsc-fg-subtle hover:text-vsc-fg font-mono text-[10px] uppercase tracking-widest [writing-mode:vertical-rl] rotate-180 py-2 transition-colors cursor-pointer"
             title="Expand Schema Catalog"
           >
             Schema ({SCHEMA_TABLES.length})
@@ -107,17 +107,17 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
         >
           <div>
             <div className="flex items-center justify-between px-2 py-1 mb-2">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-vsc-fg-muted font-semibold">
                 Schema Catalog
               </span>
               <div className="flex items-center space-x-1.5">
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#161a26] text-slate-400 border border-[#272f44]">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-vsc-chip-bg text-vsc-chip-text border border-vsc-chip-border">
                   {SCHEMA_TABLES.length} tables
                 </span>
                 <button
                   type="button"
                   onClick={onToggle}
-                  className="p-1 rounded hover:bg-[#161a26] text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+                  className="p-1 rounded hover:bg-vsc-hover text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors cursor-pointer"
                   title="Collapse Schema Catalog"
                 >
                   <svg
@@ -144,14 +144,14 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
                   <button
                     type="button"
                     onClick={() => onTableClick(tbl.name)}
-                    className="w-full text-left flex items-center justify-between px-2 py-1 rounded hover:bg-[#151926] text-sky-400 hover:text-sky-300 font-mono text-xs font-medium transition-colors cursor-pointer"
+                    className="w-full text-left flex items-center justify-between px-2 py-1 rounded hover:bg-vsc-hover text-vsc-blue font-mono text-xs font-medium transition-colors cursor-pointer"
                     title={`Click to query ${tbl.name}`}
                   >
                     <span className="flex items-center space-x-1.5">
-                      <span className="text-slate-500 text-[10px]">▶</span>
+                      <span className="text-vsc-fg-subtle text-[10px]">▶</span>
                       <span>{tbl.name}</span>
                     </span>
-                    <span className="text-[10px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] text-vsc-fg-subtle opacity-0 group-hover:opacity-100 transition-opacity">
                       select
                     </span>
                   </button>
@@ -160,7 +160,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
                     {tbl.columns.map((col) => (
                       <div
                         key={col}
-                        className="text-[11px] font-mono text-slate-400 hover:text-slate-200 transition-colors truncate"
+                        className="text-[11px] font-mono text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors truncate"
                       >
                         {col}
                       </div>
@@ -171,7 +171,7 @@ export default function SchemaDrawer({ isOpen, onToggle, onTableClick }: SchemaD
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#1c2233] px-2 text-[10px] font-mono text-slate-500">
+          <div className="pt-3 border-t border-vsc-border px-2 text-[10px] font-mono text-vsc-fg-subtle">
             Click table to load query
           </div>
         </div>

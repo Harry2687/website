@@ -26,8 +26,8 @@ export default function QueryEditor({
   return (
     <>
       {/* Preset Chips */}
-      <div className="px-4 py-2.5 bg-[#0e111a] border-b border-[#232836]/60 flex items-center gap-2 overflow-x-auto text-xs">
-        <span className="text-slate-500 font-mono text-[11px] uppercase tracking-wider whitespace-nowrap">
+      <div className="px-4 py-2.5 bg-vsc-bar border-b border-vsc-border flex items-center gap-2 overflow-x-auto text-xs">
+        <span className="text-vsc-fg-subtle font-mono text-[11px] uppercase tracking-wider whitespace-nowrap">
           Presets:
         </span>
         {PRESETS.map((preset) => (
@@ -35,7 +35,7 @@ export default function QueryEditor({
             key={preset.label}
             type="button"
             onClick={() => onSelectPreset(preset)}
-            className="px-2.5 py-1 rounded-md bg-[#161a26] hover:bg-[#1f2436] text-slate-300 hover:text-white border border-[#272f44] whitespace-nowrap transition-colors font-mono text-[11px] cursor-pointer"
+            className="px-2.5 py-1 rounded-md bg-vsc-chip-bg hover:bg-vsc-chip-hover text-vsc-chip-text border border-vsc-chip-border whitespace-nowrap transition-colors font-mono text-[11px] cursor-pointer"
           >
             {preset.label}
           </button>
@@ -43,9 +43,9 @@ export default function QueryEditor({
       </div>
 
       {/* Query Code Editor Area */}
-      <div className="relative border-b border-[#232836] bg-[#090b10]">
-        <div className="flex items-start">
-          <div className="select-none font-mono text-xs text-slate-600 px-3.5 py-3 text-right bg-[#0b0d13] border-r border-[#232836]/40">
+      <div className="relative border-b border-vsc-border bg-vsc-editor">
+        <div className="flex">
+          <div className="select-none font-mono text-xs text-vsc-fg-subtle px-3.5 py-3 text-right bg-vsc-gutter border-r border-vsc-border shrink-0">
             &gt;
           </div>
           <textarea
@@ -60,16 +60,16 @@ export default function QueryEditor({
               }
             }}
             rows={Math.min(Math.max(query.split('\n').length, 2), 8)}
-            className="w-full font-mono text-xs text-emerald-300 bg-transparent px-3 py-3 focus:outline-none resize-none leading-relaxed"
+            className="w-full font-mono text-xs text-vsc-code bg-transparent px-3 py-3 focus:outline-none resize-none leading-relaxed placeholder:text-vsc-fg-subtle"
             placeholder={mode === 'sql' ? PRESETS[0].sql : PRESETS[0].polars}
           />
         </div>
 
         {/* Action Bar */}
-        <div className="flex items-center justify-between px-4 py-2 bg-[#0d1017] border-t border-[#232836]/40">
-          <div className="text-[11px] font-mono text-slate-500">
+        <div className="flex items-center justify-between px-4 py-2 bg-vsc-bar border-t border-vsc-border">
+          <div className="text-[11px] font-mono text-vsc-fg-subtle">
             Press{' '}
-            <kbd className="px-1.5 py-0.5 rounded bg-[#1c2233] text-slate-300 border border-[#2e3752]">
+            <kbd className="px-1.5 py-0.5 rounded bg-vsc-kbd-bg text-vsc-kbd-text border border-vsc-kbd-border">
               {modifierKey} + Enter
             </kbd>{' '}
             to execute
@@ -79,7 +79,7 @@ export default function QueryEditor({
               type="button"
               onClick={onReset}
               disabled={isExecuting}
-              className="px-3 py-1 rounded text-xs font-mono text-slate-400 hover:text-slate-200 hover:bg-[#1a2030] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1 rounded text-xs font-mono text-vsc-fg-muted hover:text-vsc-fg-bright hover:bg-vsc-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Reset
             </button>
@@ -89,8 +89,8 @@ export default function QueryEditor({
               disabled={isExecuting}
               className={`px-4 py-1.5 rounded-md font-mono text-xs font-semibold shadow-md transition-all flex items-center space-x-1.5 ${
                 isExecuting
-                  ? 'bg-sky-600/60 text-slate-300 cursor-not-allowed shadow-none'
-                  : 'bg-sky-500 hover:bg-sky-400 text-slate-950 shadow-sky-500/10 cursor-pointer'
+                  ? 'bg-vsc-blue/50 text-white/70 cursor-not-allowed shadow-none'
+                  : 'bg-vsc-blue hover:bg-vsc-blue-hover text-white shadow-vsc-blue/20 cursor-pointer'
               }`}
             >
               {isExecuting ? (

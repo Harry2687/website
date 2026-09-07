@@ -188,7 +188,7 @@ export default function CareerConsole() {
         className="w-full min-h-[440px] flex flex-col items-center justify-center py-12 px-4"
       >
         <div
-          className={`w-full max-w-md rounded-2xl border border-[#232836] bg-[#0c0e14] p-6 shadow-2xl text-center space-y-4 ${
+          className={`w-full max-w-md rounded-2xl border border-vsc-border bg-vsc-card p-6 shadow-2xl text-center space-y-4 ${
             isReopening
               ? 'opacity-0 scale-95 transition-all duration-150 ease-out'
               : 'animate-fadeIn'
@@ -196,11 +196,11 @@ export default function CareerConsole() {
         >
           <div className="flex items-center justify-center space-x-2">
             <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
-            <span className="text-xs font-mono text-slate-400 font-medium">
+            <span className="text-xs font-mono text-vsc-fg font-medium">
               Terminal session closed
             </span>
           </div>
-          <p className="text-xs text-slate-500 font-mono leading-relaxed">
+          <p className="text-xs text-vsc-fg-muted font-mono leading-relaxed">
             Process exited with code 0. Reconnect to launch DuckDB-WASM and restore interactive
             session.
           </p>
@@ -208,7 +208,7 @@ export default function CareerConsole() {
             <button
               type="button"
               onClick={handleReopen}
-              className="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-mono text-xs font-semibold shadow-md shadow-sky-500/10 transition-all inline-flex items-center space-x-2 cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-vsc-blue hover:bg-vsc-blue-hover active:scale-95 text-white font-mono text-xs font-semibold shadow-md shadow-vsc-blue/20 transition-all inline-flex items-center space-x-2 cursor-pointer"
             >
               <span>Reopen Session</span>
               <span>↵</span>
@@ -223,7 +223,7 @@ export default function CareerConsole() {
     <>
       {isBackdropActive && (
         <div
-          className={`fixed inset-0 bg-black/80 backdrop-blur-sm z-40 transition-opacity duration-300 ease-out ${
+          className={`fixed inset-0 bg-vsc-bg/75 backdrop-blur-md z-40 transition-opacity duration-300 ease-out ${
             isFullscreen ? 'opacity-100 animate-fadeIn' : 'opacity-0'
           }`}
           onClick={handleToggleFullscreen}
@@ -239,8 +239,8 @@ export default function CareerConsole() {
         ref={windowRef}
         className={`${
           isFullscreen
-            ? 'fixed inset-3 md:inset-6 z-50 rounded-2xl border border-[#2e3752] bg-[#0c0e14] shadow-2xl overflow-hidden flex flex-col'
-            : 'w-full rounded-2xl border border-[#232836] bg-[#0c0e14] shadow-2xl overflow-hidden'
+            ? 'fixed inset-3 md:inset-6 z-50 rounded-2xl border border-vsc-border bg-vsc-window shadow-2xl overflow-hidden flex flex-col'
+            : 'w-full rounded-2xl border border-vsc-border bg-vsc-window shadow-2xl overflow-hidden'
         } ${isClosing ? 'scale-95 opacity-0 transition-all duration-200 ease-out' : ''} ${
           animateEntrance ? 'animate-windowOpen' : ''
         }`}
@@ -264,11 +264,11 @@ export default function CareerConsole() {
             isMinimized
               ? 'grid-rows-[0fr] opacity-0 pointer-events-none'
               : 'grid-rows-[1fr] opacity-100'
-          }`}
+          } ${isFullscreen ? 'flex-1 min-h-0' : ''}`}
         >
-          <div className="overflow-hidden">
+          <div className={`overflow-hidden ${isFullscreen ? 'h-full flex flex-col min-h-0' : ''}`}>
             <div
-              className={`flex flex-col md:flex-row ${isFullscreen ? 'h-full min-h-0' : 'min-h-[440px]'}`}
+              className={`flex flex-col md:flex-row ${isFullscreen ? 'flex-1 h-full min-h-0' : 'min-h-[440px]'}`}
             >
               <SchemaDrawer
                 isOpen={isSchemaOpen}
@@ -276,7 +276,7 @@ export default function CareerConsole() {
                 onTableClick={handleTableClick}
               />
 
-              <div className="flex-1 flex flex-col min-w-0 bg-[#0c0e14]">
+              <div className="flex-1 flex flex-col min-w-0 bg-vsc-editor">
                 <QueryEditor
                   mode={mode}
                   query={query}

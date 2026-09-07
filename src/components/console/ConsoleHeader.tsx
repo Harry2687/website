@@ -23,8 +23,8 @@ export default function ConsoleHeader({
 }: ConsoleHeaderProps) {
   return (
     <div
-      className={`flex flex-wrap items-center justify-between border-b border-[#232836] bg-[#11141d] px-4 py-3 gap-3 ${
-        isMinimized ? 'cursor-pointer hover:bg-[#151924] transition-colors' : ''
+      className={`flex flex-wrap items-center justify-between border-b border-vsc-border bg-vsc-header px-4 py-3 gap-3 ${
+        isMinimized ? 'cursor-pointer hover:bg-vsc-hover transition-colors' : ''
       }`}
       onClick={(e) => {
         if (isMinimized && (e.target as HTMLElement).tagName !== 'BUTTON') {
@@ -103,25 +103,25 @@ export default function ConsoleHeader({
             )}
           </svg>
         </button>
-        <span className="text-xs font-mono text-slate-400 ml-2 font-medium">
+        <span className="text-xs font-mono text-vsc-fg-muted ml-2 font-medium">
           harry_zhong.duckdb
         </span>
         {isMinimized && (
-          <span className="text-[11px] font-mono text-slate-500 italic ml-1 animate-pulse">
+          <span className="text-[11px] font-mono text-vsc-fg-subtle italic ml-1 animate-pulse">
             (minimized · click to restore)
           </span>
         )}
       </div>
 
       {/* Mode Toggle */}
-      <div className="flex items-center bg-[#080a0f] p-1 rounded-lg border border-[#232836]">
+      <div className="flex items-center bg-vsc-card p-1 rounded-lg border border-vsc-border">
         <button
           type="button"
           onClick={() => onModeChange('sql')}
           className={`px-3 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer ${
             mode === 'sql'
-              ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-vsc-blue/15 text-vsc-blue border border-vsc-blue/30 font-semibold'
+              : 'text-vsc-fg-muted hover:text-vsc-fg-bright border border-transparent'
           }`}
         >
           SQL
@@ -131,8 +131,8 @@ export default function ConsoleHeader({
           onClick={() => onModeChange('polars')}
           className={`px-3 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer ${
             mode === 'polars'
-              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-semibold'
+              : 'text-vsc-fg-muted hover:text-vsc-fg-bright border border-transparent'
           }`}
         >
           Polars
@@ -142,9 +142,9 @@ export default function ConsoleHeader({
       {/* Engine Status & Fullscreen Hint */}
       <div className="flex items-center space-x-3">
         {isFullscreen && (
-          <span className="hidden sm:inline-block text-[11px] font-mono text-slate-500">
+          <span className="hidden sm:inline-block text-[11px] font-mono text-vsc-fg-subtle">
             Press{' '}
-            <kbd className="px-1 py-0.5 rounded bg-[#161a26] text-slate-300 border border-[#272f44]">
+            <kbd className="px-1 py-0.5 rounded bg-vsc-kbd-bg text-vsc-kbd-text border border-vsc-kbd-border">
               Esc
             </kbd>{' '}
             to exit
@@ -152,9 +152,9 @@ export default function ConsoleHeader({
         )}
         <div className="flex items-center space-x-2">
           <span
-            className={`inline-block w-2 h-2 rounded-full ${duckDbReady ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}
+            className={`inline-block w-2 h-2 rounded-full ${duckDbReady ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}
           ></span>
-          <span className="text-xs font-mono text-slate-400">
+          <span className="text-xs font-mono text-vsc-fg-muted">
             {duckDbReady ? 'DuckDB-WASM Active' : 'In-Memory Engine'}
           </span>
         </div>

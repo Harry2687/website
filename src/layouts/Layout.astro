@@ -13,16 +13,87 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" class="dark scroll-smooth bg-[#090a0f] text-slate-100" style="color-scheme: dark; background-color: #090a0f;">
+<html lang="en" class="scroll-smooth bg-vsc-bg text-vsc-fg">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#090a0f" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#181818" id="meta-theme-color" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <!-- Theme Detection, Preference Storage, & Real-time Sync with System Settings -->
+    <script is:inline>
+      (function() {
+        const mql = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function getStoredPreference() {
+          try {
+            return localStorage.getItem('theme');
+          } catch (_) {
+            return null;
+          }
+        }
+
+        function getEffectiveTheme() {
+          const pref = getStoredPreference();
+          if (pref === 'dark' || pref === 'light') {
+            return pref;
+          }
+          return mql.matches ? 'dark' : 'light';
+        }
+
+        function applyTheme() {
+          const effective = getEffectiveTheme();
+          const root = document.documentElement;
+          if (effective === 'dark') {
+            root.classList.add('dark');
+            root.classList.remove('light');
+          } else {
+            root.classList.add('light');
+            root.classList.remove('dark');
+          }
+          const meta = document.getElementById('meta-theme-color');
+          if (meta) {
+            meta.setAttribute('content', effective === 'dark' ? '#181818' : '#f8f8f8');
+          }
+        }
+
+        applyTheme();
+
+        function onSystemChange() {
+          const pref = getStoredPreference();
+          if (!pref || pref === 'system') {
+            applyTheme();
+            window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: 'system' } }));
+          }
+        }
+
+        try {
+          mql.addEventListener('change', onSystemChange);
+        } catch (_) {
+          mql.addListener(onSystemChange);
+        }
+
+        window.__setTheme = function(theme) {
+          try {
+            if (theme === 'system') {
+              localStorage.removeItem('theme');
+            } else {
+              localStorage.setItem('theme', theme);
+            }
+          } catch (_) {}
+          applyTheme();
+          window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: theme } }));
+        };
+
+        window.__getTheme = function() {
+          return getStoredPreference() || 'system';
+        };
+      })();
+    </script>
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
@@ -40,7 +111,7 @@ const {
       gtag('config', 'G-SDG552HSPC');
     </script>
   </head>
-  <body class="bg-[#090a0f] text-slate-100 min-h-screen flex flex-col selection:bg-sky-500/20 selection:text-sky-300">
+  <body class="bg-vsc-bg text-vsc-fg min-h-screen flex flex-col selection:bg-vsc-blue selection:text-white transition-colors duration-150">
     <slot />
   </body>
 </html>
