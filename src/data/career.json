@@ -2,6 +2,7 @@
   {
     "company": "Commonwealth Bank",
     "role": "Senior Quantitative Analyst",
+    "location": "Perth, WA",
     "start_date": "2025-12-01",
     "end_date": null,
     "domain": "Credit Models & Cloud MLOps"
@@ -9,6 +10,7 @@
   {
     "company": "Commonwealth Bank",
     "role": "Data Scientist (Secondment)",
+    "location": "Perth, WA",
     "start_date": "2025-10-01",
     "end_date": "2025-12-31",
     "domain": "AI Model Risk Validation"
@@ -16,6 +18,7 @@
   {
     "company": "Commonwealth Bank",
     "role": "Quantitative Analyst",
+    "location": "Perth, WA",
     "start_date": "2024-08-01",
     "end_date": "2025-11-30",
     "domain": "Credit Models"
@@ -23,6 +26,7 @@
   {
     "company": "EBM Insurance & Risk",
     "role": "Data Analyst",
+    "location": "Perth, WA",
     "start_date": "2022-11-01",
     "end_date": "2024-07-31",
     "domain": "Finance & Analytics"

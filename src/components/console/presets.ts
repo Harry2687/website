@@ -4,12 +4,19 @@ export const SCHEMA_TABLES: TableSchema[] = [
   {
     name: 'about',
     description: 'Profile overview and contact',
-    columns: ['name: str', 'location: str', 'contact: str', 'date_of_birth: date'],
+    columns: ['name: str', 'contact: str', 'date_of_birth: date'],
   },
   {
     name: 'experience',
     description: 'Employment timeline and domains',
-    columns: ['company: str', 'role: str', 'start_date: date', 'end_date: date', 'domain: str'],
+    columns: [
+      'company: str',
+      'role: str',
+      'location: str',
+      'start_date: date',
+      'end_date: date',
+      'domain: str',
+    ],
   },
   {
     name: 'education',
@@ -17,6 +24,7 @@ export const SCHEMA_TABLES: TableSchema[] = [
     columns: [
       'institution: str',
       'qualification: str',
+      'location: str',
       'start_date: date',
       'end_date: date',
       'details: str',
@@ -41,22 +49,26 @@ export const PRESETS: QueryPreset[] = [
     label: 'About Me',
     sql: `SELECT 
   name, 
-  location, 
+  (SELECT location FROM experience ORDER BY start_date DESC LIMIT 1) AS location,
   contact, 
   DATEDIFF('year', date_of_birth, CURRENT_DATE) - 
     CASE WHEN strftime(CURRENT_DATE, '%m%d') < strftime(date_of_birth, '%m%d') THEN 1 ELSE 0 END AS age
 FROM about;`,
-    polars: `about.with_columns(
+    polars: `about.join(
+  experience.sort("start_date", descending=True).select(["location"]).head(1),
+  how="cross"
+).with_columns([
   (
     pl.lit(date.today()).dt.year() - pl.col("date_of_birth").str.to_date().dt.year()
     - (pl.lit(date.today()).dt.strftime("%m%d") < pl.col("date_of_birth").str.to_date().dt.strftime("%m%d")).cast(pl.Int32)
   ).alias("age")
-).select(["name", "location", "contact", "age"])`,
+]).select(["name", "location", "contact", "age"])`,
   },
   {
     label: 'Experience',
-    sql: 'SELECT role, company, start_date, end_date, domain FROM experience;',
-    polars: 'experience.select(["role", "company", "start_date", "end_date", "domain"])',
+    sql: 'SELECT role, company, location, start_date, end_date, domain FROM experience;',
+    polars:
+      'experience.select(["role", "company", "location", "start_date", "end_date", "domain"])',
   },
   {
     label: 'Tenure & Duration',
@@ -104,13 +116,14 @@ INNER JOIN research r
   {
     label: 'Unified Timeline',
     sql: `WITH timeline AS (
-  SELECT company AS organization, role AS title, start_date, end_date, 'Industry' AS track FROM experience
+  SELECT company AS organization, role AS title, location, start_date, end_date, 'Industry' AS track FROM experience
   UNION ALL
-  SELECT institution AS organization, qualification AS title, start_date, end_date, 'Academic' AS track FROM education
+  SELECT institution AS organization, qualification AS title, location, start_date, end_date, 'Academic' AS track FROM education
 )
 SELECT 
   organization,
   title,
+  location,
   track,
   start_date,
   DATEDIFF('year', date_of_birth, start_date) - 
@@ -123,6 +136,7 @@ ORDER BY start_date DESC;`,
   experience.select([
     pl.col("company").alias("organization"),
     pl.col("role").alias("title"),
+    "location",
     pl.lit("Industry").alias("track"),
     "start_date",
     "end_date",
@@ -130,6 +144,7 @@ ORDER BY start_date DESC;`,
   education.select([
     pl.col("institution").alias("organization"),
     pl.col("qualification").alias("title"),
+    "location",
     pl.lit("Academic").alias("track"),
     "start_date",
     "end_date",
@@ -144,7 +159,7 @@ ORDER BY start_date DESC;`,
   ((pl.col("end_date").fill_null(pl.lit(date.today())).str.to_date().dt.year() - pl.col("start_date").str.to_date().dt.year()) * 12 +
    (pl.col("end_date").fill_null(pl.lit(date.today())).str.to_date().dt.month() - pl.col("start_date").str.to_date().dt.month()) + 1).alias("duration_months"),
 ]).select([
-  "organization", "title", "track", "start_date", "age_at_start", "duration_months"
+  "organization", "title", "location", "track", "start_date", "age_at_start", "duration_months"
 ]).sort("start_date", descending=True)`,
   },
 ];
