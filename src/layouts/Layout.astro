@@ -95,12 +95,23 @@ const {
       })();
     </script>
 
-    <!-- Open Graph -->
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://harryzhong.com" />
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://harryzhong.com" />
-    <meta property="og:image" content="/profile.jpg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://harryzhong.com/profile.jpg" />
+    <meta property="og:site_name" content="Harry Zhong" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://harryzhong.com" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://harryzhong.com/profile.jpg" />
 
     <!-- Google Analytics (preserved from original site) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SDG552HSPC"></script>
