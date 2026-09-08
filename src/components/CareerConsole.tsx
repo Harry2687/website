@@ -26,6 +26,7 @@ export default function CareerConsole() {
 
   const {
     duckDbReady,
+    engineReady,
     statusText,
     errorText,
     setErrorText,
@@ -36,6 +37,17 @@ export default function CareerConsole() {
     isExecuting,
     executeQuery,
   } = useQueryEngine();
+
+  const hasAutoRunRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (!hasAutoRunRef.current && engineReady) {
+      hasAutoRunRef.current = true;
+      executeQuery(query);
+    }
+  }, [engineReady, executeQuery, query]);
+
+  const isInitializing = !engineReady && !hasExecuted;
 
   const handleToggleFullscreen = useCallback(() => {
     if (isMinimized) setIsMinimized(false);
@@ -270,7 +282,7 @@ export default function CareerConsole() {
                   onExecute={handleExecute}
                   onSelectPreset={handleSelectPreset}
                   onReset={handleReset}
-                  isExecuting={isExecuting}
+                  isExecuting={isExecuting || isInitializing}
                 />
 
                 <ResultsTable
@@ -283,6 +295,7 @@ export default function CareerConsole() {
                   onErrorDismiss={() => setErrorText(null)}
                   isFullscreen={isFullscreen}
                   isExecuting={isExecuting}
+                  isInitializing={isInitializing}
                 />
               </div>
             </div>

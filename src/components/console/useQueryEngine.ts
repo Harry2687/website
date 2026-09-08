@@ -10,9 +10,10 @@ export function useQueryEngine() {
   const [resultRows, setResultRows] = useState<Record<string, any>[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [execTimeMs, setExecTimeMs] = useState<number | null>(null);
-  const [statusText, setStatusText] = useState<string>('Ready');
+  const [statusText, setStatusText] = useState<string>('Initializing DuckDB-WASM...');
   const [errorText, setErrorText] = useState<string | null>(null);
   const [duckDbReady, setDuckDbReady] = useState<boolean>(false);
+  const [engineReady, setEngineReady] = useState<boolean>(false);
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
 
   const duckDbRef = useRef<any>(null);
@@ -76,12 +77,14 @@ export function useQueryEngine() {
           duckDbRef.current = db;
           connRef.current = conn;
           setDuckDbReady(true);
+          setEngineReady(true);
           setStatusText('DuckDB-WASM Active');
         }
       } catch (err: any) {
         console.warn('DuckDB-WASM fallback to client engine:', err);
         if (isMounted) {
           setDuckDbReady(false);
+          setEngineReady(true);
           setStatusText('In-Memory Engine');
         }
       }
@@ -362,6 +365,7 @@ export function useQueryEngine() {
 
   return {
     duckDbReady,
+    engineReady,
     statusText,
     errorText,
     setErrorText,
