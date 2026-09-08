@@ -11,6 +11,7 @@ interface ResultsTableProps {
   onErrorDismiss: () => void;
   isFullscreen: boolean;
   isExecuting?: boolean;
+  isInitializing?: boolean;
 }
 
 export default function ResultsTable({
@@ -23,6 +24,7 @@ export default function ResultsTable({
   onErrorDismiss,
   isFullscreen,
   isExecuting = false,
+  isInitializing = false,
 }: ResultsTableProps) {
   const modifierKey = useModifierKey();
   return (
@@ -37,7 +39,7 @@ export default function ResultsTable({
         </span>
 
         <div className="flex items-center space-x-3 text-vsc-fg-muted">
-          {isExecuting ? (
+          {isExecuting || isInitializing ? (
             <span className="flex items-center space-x-1.5 text-vsc-blue font-medium">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               <span>{statusText}</span>
@@ -187,10 +189,12 @@ export default function ResultsTable({
               <p>No rows returned.</p>
             </div>
           )
-        ) : isExecuting ? (
+        ) : isExecuting || isInitializing ? (
           <div className="flex flex-col items-center justify-center py-20 text-vsc-fg-muted space-y-3">
             <Loader2 className="w-6 h-6 text-vsc-blue animate-spin" />
-            <div className="text-xs font-mono text-vsc-fg">Processing query plan...</div>
+            <div className="text-xs font-mono text-vsc-fg">
+              {isInitializing ? 'Connecting to DuckDB-WASM...' : 'Processing query plan...'}
+            </div>
             <div className="text-[11px] font-mono text-vsc-fg-subtle">{statusText}</div>
           </div>
         ) : (
