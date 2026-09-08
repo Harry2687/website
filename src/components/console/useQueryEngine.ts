@@ -4,11 +4,76 @@ import careerData from '../../data/career.json';
 import educationData from '../../data/education.json';
 import researchData from '../../data/research.json';
 import { getAge, getInclusiveMonths } from './dateUtils';
+import { SCHEMA_TABLES } from './presets';
+import type { TableSchema } from './types';
+
+function formatDuckDbType(dataType: string): string {
+  const dt = dataType.toUpperCase();
+  if (dt.includes('VARCHAR') || dt.includes('TEXT') || dt.includes('CHAR')) return 'str';
+  if (dt.includes('INT')) return 'int';
+  if (dt.includes('FLOAT') || dt.includes('DOUBLE') || dt.includes('DECIMAL')) return 'float';
+  if (dt.includes('DATE') || dt.includes('TIMESTAMP')) return 'date';
+  if (dt.includes('BOOL')) return 'bool';
+  return dataType.toLowerCase();
+}
+
+const TABLE_PRIORITY: Record<string, number> = {
+  about: 1,
+  experience: 2,
+  education: 3,
+  research: 4,
+};
+
+const TABLE_DESCRIPTIONS: Record<string, string> = {
+  about: 'Profile overview and contact',
+  experience: 'Employment timeline and domains',
+  education: 'Degrees and qualifications',
+  research: 'Academic thesis and papers',
+};
+
+async function fetchDynamicSchemas(conn: any): Promise<TableSchema[]> {
+  const res = await conn.query(`
+    SELECT table_name, column_name, data_type 
+    FROM information_schema.columns 
+    WHERE table_schema = 'main' 
+    ORDER BY table_name, ordinal_position;
+  `);
+
+  const rows = res
+    .toArray()
+    .map((r: any) => (typeof r.toJSON === 'function' ? r.toJSON() : { ...r }));
+  const tableMap = new Map<string, { name: string; columns: string[] }>();
+
+  for (const row of rows) {
+    const tblName = String(row.table_name);
+    const colName = String(row.column_name);
+    const colType = formatDuckDbType(String(row.data_type || ''));
+
+    if (!tableMap.has(tblName)) {
+      tableMap.set(tblName, { name: tblName, columns: [] });
+    }
+    tableMap.get(tblName)!.columns.push(`${colName}: ${colType}`);
+  }
+
+  return Array.from(tableMap.values())
+    .sort((a, b) => {
+      const pA = TABLE_PRIORITY[a.name] ?? 99;
+      const pB = TABLE_PRIORITY[b.name] ?? 99;
+      if (pA !== pB) return pA - pB;
+      return a.name.localeCompare(b.name);
+    })
+    .map((tbl) => ({
+      name: tbl.name,
+      description: TABLE_DESCRIPTIONS[tbl.name] || 'Custom table',
+      columns: tbl.columns,
+    }));
+}
 
 export function useQueryEngine() {
   const [hasExecuted, setHasExecuted] = useState<boolean>(false);
   const [resultRows, setResultRows] = useState<Record<string, any>[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
+  const [tableSchemas, setTableSchemas] = useState<TableSchema[]>(SCHEMA_TABLES);
   const [execTimeMs, setExecTimeMs] = useState<number | null>(null);
   const [statusText, setStatusText] = useState<string>('Initializing DuckDB-WASM...');
   const [errorText, setErrorText] = useState<string | null>(null);
@@ -76,6 +141,14 @@ export function useQueryEngine() {
         if (isMounted) {
           duckDbRef.current = db;
           connRef.current = conn;
+          try {
+            const dynamicSchemas = await fetchDynamicSchemas(conn);
+            if (dynamicSchemas.length > 0) {
+              setTableSchemas(dynamicSchemas);
+            }
+          } catch (schemaErr) {
+            console.warn('Failed to fetch dynamic schemas:', schemaErr);
+          }
           setDuckDbReady(true);
           setEngineReady(true);
           setStatusText('DuckDB-WASM Active');
@@ -343,6 +416,16 @@ export function useQueryEngine() {
         setColumns(cols);
         setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
         setStatusText(`Query executed in ${Math.round((t1 - t0) * 10) / 10}ms`);
+
+        // Refresh schema catalog if DDL statement was executed (create, drop, alter)
+        if (/\b(create|drop|alter)\b/i.test(sqlQuery) && activeConn) {
+          try {
+            const updatedSchemas = await fetchDynamicSchemas(activeConn);
+            setTableSchemas(updatedSchemas);
+          } catch (schemaErr) {
+            console.warn('Failed to refresh dynamic schema:', schemaErr);
+          }
+        }
       } catch (err: any) {
         console.warn('DuckDB query error:', err);
         const rawMsg = err?.message || String(err);
@@ -380,6 +463,7 @@ export function useQueryEngine() {
     columns,
     execTimeMs,
     isExecuting,
+    tableSchemas,
     executeQuery,
   };
 }
