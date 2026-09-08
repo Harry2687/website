@@ -247,6 +247,10 @@ export function useQueryEngine() {
     } catch (err: any) {
       setErrorText(err.message || String(err));
       setStatusText('Query error');
+      setHasExecuted(false);
+      setResultRows([]);
+      setColumns([]);
+      setExecTimeMs(null);
     } finally {
       setIsExecuting(false);
       isExecutingRef.current = false;
@@ -340,13 +344,15 @@ export function useQueryEngine() {
         setExecTimeMs(Math.round((t1 - t0) * 10) / 10);
         setStatusText(`Query executed in ${Math.round((t1 - t0) * 10) / 10}ms`);
       } catch (err: any) {
-        console.warn('DuckDB query error, falling back to in-memory engine:', err);
-        try {
-          await runFallbackQuery(sqlQuery);
-        } catch {
-          setErrorText(err.message || String(err));
-          setStatusText('Execution failed');
-        }
+        console.warn('DuckDB query error:', err);
+        const rawMsg = err?.message || String(err);
+        const cleanMsg = rawMsg.replace(/^Error:\s*/i, '');
+        setErrorText(cleanMsg);
+        setStatusText('Query error');
+        setHasExecuted(false);
+        setResultRows([]);
+        setColumns([]);
+        setExecTimeMs(null);
       } finally {
         setIsExecuting(false);
         isExecutingRef.current = false;
