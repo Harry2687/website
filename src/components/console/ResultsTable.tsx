@@ -197,6 +197,18 @@ export default function ResultsTable({
             </div>
             <div className="text-[11px] font-mono text-vsc-fg-subtle">{statusText}</div>
           </div>
+        ) : errorText ? (
+          <div className="flex flex-col items-center justify-center py-20 px-4 text-center text-vsc-fg-muted space-y-3">
+            <div className="w-8 h-8 rounded-full border border-red-500/40 bg-red-500/10 flex items-center justify-center text-red-500 font-mono text-xs font-bold">
+              !
+            </div>
+            <div className="text-xs font-mono text-red-500 dark:text-red-400 font-semibold">
+              Query execution error
+            </div>
+            <div className="text-[11px] font-mono text-vsc-fg-muted max-w-lg break-words bg-vsc-bar px-3 py-2 rounded border border-vsc-border">
+              {errorText}
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-vsc-fg-muted space-y-2">
             <div className="text-xs font-mono text-vsc-fg">Query ready to execute.</div>
