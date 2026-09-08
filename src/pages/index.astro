@@ -1,7 +1,20 @@
 ---
 import CareerConsole from '../components/CareerConsole.tsx';
 import Header from '../components/Header.astro';
+import aboutData from '../data/about.json';
+import careerData from '../data/career.json';
+import educationData from '../data/education.json';
+import researchData from '../data/research.json';
 import Layout from '../layouts/Layout.astro';
+
+const profile = aboutData[0] ?? {
+  name: 'Harry Zhong',
+  contact: 'h.zhong2687@gmail.com',
+};
+
+const latestRole = [...careerData].sort((a, b) => (b.start_date > a.start_date ? 1 : -1))[0];
+const headline = latestRole ? `${latestRole.role} at ${latestRole.company}` : 'Data Scientist';
+const location = latestRole?.location ?? 'Perth, WA';
 ---
 
 <Layout>
@@ -11,6 +24,69 @@ import Layout from '../layouts/Layout.astro';
     <!-- Centerpiece: The Interactive Database Terminal -->
     <section class="w-full">
       <CareerConsole client:load />
+
+      <noscript>
+        <div class="mt-8 p-6 rounded-lg border border-vsc-border bg-vsc-surface space-y-6 text-sm">
+          <div>
+            <h1 class="text-xl font-semibold text-vsc-fg mb-1">{profile.name}</h1>
+            <p class="text-vsc-fg-muted">{headline} based in {location}</p>
+            <p class="text-xs text-vsc-fg-muted mt-1">
+              Contact: <a href={`mailto:${profile.contact}`} class="text-vsc-blue underline">{profile.contact}</a>
+            </p>
+          </div>
+
+          <div>
+            <h2 class="text-base font-semibold text-vsc-fg mb-2">Experience</h2>
+            <ul class="space-y-3">
+              {careerData.map((job) => (
+                <li class="border-l-2 border-vsc-border pl-3">
+                  <div class="font-medium text-vsc-fg">{job.role} - {job.company}</div>
+                  <div class="text-xs text-vsc-fg-muted">
+                    {job.start_date} to {job.end_date || 'Present'} | {job.location} | {job.domain}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-base font-semibold text-vsc-fg mb-2">Education</h2>
+            <ul class="space-y-3">
+              {educationData.map((edu) => (
+                <li class="border-l-2 border-vsc-border pl-3">
+                  <div class="font-medium text-vsc-fg">{edu.qualification} - {edu.institution}</div>
+                  <div class="text-xs text-vsc-fg-muted">
+                    {edu.start_date} to {edu.end_date} | {edu.location}
+                  </div>
+                  {edu.details && <div class="text-xs text-vsc-fg-muted mt-0.5">{edu.details}</div>}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-base font-semibold text-vsc-fg mb-2">Research</h2>
+            <ul class="space-y-3">
+              {researchData.map((res) => (
+                <li class="border-l-2 border-vsc-border pl-3">
+                  <div class="font-medium text-vsc-fg">
+                    <a href={res.link} target="_blank" rel="noopener noreferrer" class="text-vsc-blue underline">
+                      {res.title}
+                    </a>
+                  </div>
+                  <div class="text-xs text-vsc-fg-muted">
+                    {res.institution} | {res.year} | {res.domain}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p class="text-xs text-vsc-fg-muted italic border-t border-vsc-border pt-4">
+            Enable JavaScript to interact with the in-browser DuckDB-WASM query console.
+          </p>
+        </div>
+      </noscript>
     </section>
   </main>
 </Layout>
