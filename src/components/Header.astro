@@ -10,9 +10,9 @@ const profile = aboutData[0] ?? {
 
 const latestRole = [...careerData].sort((a, b) => (b.start_date > a.start_date ? 1 : -1))[0];
 
-const role = latestRole?.role ?? 'Senior Quantitative Analyst';
+const role = latestRole?.role ?? 'Senior Associate Data Scientist';
 const company = latestRole?.company ?? 'Commonwealth Bank';
-const location = latestRole?.location ?? 'Perth, WA';
+const location = latestRole?.location ?? 'Sydney, NSW';
 ---
 
 <header class="sticky top-0 z-50 backdrop-blur-md bg-vsc-header/90 border-b border-vsc-border transition-colors duration-150">
