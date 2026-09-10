@@ -6,6 +6,7 @@ interface SchemaDrawerProps {
   onToggle: () => void;
   onTableClick: (tableName: string) => void;
   tables?: TableSchema[];
+  onRestoreDatabase?: () => void;
 }
 
 export default function SchemaDrawer({
@@ -13,6 +14,7 @@ export default function SchemaDrawer({
   onToggle,
   onTableClick,
   tables = SCHEMA_TABLES,
+  onRestoreDatabase,
 }: SchemaDrawerProps) {
   return (
     <>
@@ -43,8 +45,17 @@ export default function SchemaDrawer({
           }`}
         >
           {tables.length === 0 ? (
-            <div className="py-4 text-center text-vsc-fg-muted text-xs font-mono">
-              No tables found in catalog
+            <div className="py-4 text-center text-vsc-fg-muted text-xs font-mono space-y-1">
+              <p>No tables found in catalog</p>
+              {onRestoreDatabase && (
+                <button
+                  type="button"
+                  onClick={onRestoreDatabase}
+                  className="text-xs font-mono text-vsc-blue hover:underline cursor-pointer"
+                >
+                  Restore default tables
+                </button>
+              )}
             </div>
           ) : (
             <div className="space-y-3">
@@ -152,11 +163,22 @@ export default function SchemaDrawer({
             </div>
 
             {tables.length === 0 ? (
-              <div className="py-8 px-2 text-center text-vsc-fg-muted space-y-1">
+              <div className="py-8 px-2 text-center text-vsc-fg-muted space-y-1.5">
                 <p className="text-xs font-mono font-medium text-vsc-fg">No tables found</p>
                 <p className="text-[10px] text-vsc-fg-subtle leading-relaxed">
-                  Run a CREATE TABLE query to add tables
+                  Run a CREATE TABLE query or restore defaults
                 </p>
+                {onRestoreDatabase && (
+                  <p className="pt-1">
+                    <button
+                      type="button"
+                      onClick={onRestoreDatabase}
+                      className="text-[11px] font-mono text-vsc-blue hover:underline cursor-pointer"
+                    >
+                      Restore default tables
+                    </button>
+                  </p>
+                )}
               </div>
             ) : (
               <div className="space-y-3">
