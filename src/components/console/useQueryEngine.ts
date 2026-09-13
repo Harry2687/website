@@ -245,10 +245,12 @@ export function useQueryEngine() {
         const selectClause = parts[0]?.replace(/^select\s+/i, '').replace(/\([^)]*\)/g, '') || '';
         const wantsDob = q.includes('*') || /\bdate_of_birth\b/i.test(selectClause);
         const wantsPhoto = q.includes('*') || /\bphoto\b/i.test(selectClause);
-        const latestRole = [...careerData].sort((a, b) =>
-          b.start_date > a.start_date ? 1 : -1
-        )[0];
-        const derivedLocation = latestRole?.location || 'Sydney, NSW';
+        const latestRole = [...careerData].sort((a, b) => {
+          const dateA = a.start_date ?? '9999-12-31';
+          const dateB = b.start_date ?? '9999-12-31';
+          return dateB.localeCompare(dateA);
+        })[0];
+        const derivedLocation = latestRole?.location ?? null;
         if (q.includes('age')) {
           data = aboutData.map((a: any) => {
             const row: Record<string, any> = {

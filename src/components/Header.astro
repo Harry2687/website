@@ -8,11 +8,15 @@ const profile = aboutData[0] ?? {
   contact: 'h.zhong2687@gmail.com',
 };
 
-const latestRole = [...careerData].sort((a, b) => (b.start_date > a.start_date ? 1 : -1))[0];
+const latestRole = [...careerData].sort((a, b) => {
+  const dateA = a.start_date ?? '9999-12-31';
+  const dateB = b.start_date ?? '9999-12-31';
+  return dateB.localeCompare(dateA);
+})[0];
 
-const role = latestRole?.role ?? 'Senior Quantitative Analyst';
-const company = latestRole?.company ?? 'Commonwealth Bank';
-const location = latestRole?.location ?? 'Perth, WA';
+const role = latestRole?.role;
+const company = latestRole?.company;
+const location = latestRole?.location;
 ---
 
 <header class="sticky top-0 z-50 backdrop-blur-md bg-vsc-header/90 border-b border-vsc-border transition-colors duration-150">
@@ -36,15 +40,17 @@ const location = latestRole?.location ?? 'Perth, WA';
             />
             <div class="min-w-0 flex-1">
               <span class="font-bold text-sm text-vsc-fg-bright tracking-tight block truncate">{profile.name}</span>
-              <p class="text-xs text-vsc-blue font-mono font-medium mt-0.5">{role}</p>
-              <p class="text-[11px] text-vsc-fg-muted font-mono mt-0.5 truncate">{company}</p>
-              <div class="flex items-center space-x-1 text-[11px] text-vsc-fg-subtle font-mono mt-1">
-                <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                <span>{location}</span>
-              </div>
+              {role && <p class="text-xs text-vsc-blue font-mono font-medium mt-0.5">{role}</p>}
+              {company && <p class="text-[11px] text-vsc-fg-muted font-mono mt-0.5 truncate">{company}</p>}
+              {location && (
+                <div class="flex items-center space-x-1 text-[11px] text-vsc-fg-subtle font-mono mt-1">
+                  <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>{location}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
