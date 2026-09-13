@@ -209,7 +209,7 @@ export function useQueryEngine() {
     setStatusText('Executing SQL query...');
 
     const t0 = performance.now();
-    const delayMs = Math.floor(320 + Math.random() * 160);
+    const delayMs = Math.floor(300 + Math.random() * 100);
     await new Promise((resolve) => setTimeout(resolve, delayMs));
 
     try {
@@ -380,13 +380,17 @@ export function useQueryEngine() {
     setStatusText('Restoring database from immutable snapshot...');
 
     const t0 = performance.now();
+    const delayMs = Math.floor(300 + Math.random() * 100);
     try {
-      await conn.query(`
-        CREATE TABLE IF NOT EXISTS about AS SELECT * FROM read_json_auto('about.json');
-        CREATE TABLE IF NOT EXISTS experience AS SELECT * FROM read_json_auto('experience.json');
-        CREATE TABLE IF NOT EXISTS education AS SELECT * FROM read_json_auto('education.json');
-        CREATE TABLE IF NOT EXISTS research AS SELECT * FROM read_json_auto('research.json');
-      `);
+      await Promise.all([
+        conn.query(`
+          CREATE TABLE IF NOT EXISTS about AS SELECT * FROM read_json_auto('about.json');
+          CREATE TABLE IF NOT EXISTS experience AS SELECT * FROM read_json_auto('experience.json');
+          CREATE TABLE IF NOT EXISTS education AS SELECT * FROM read_json_auto('education.json');
+          CREATE TABLE IF NOT EXISTS research AS SELECT * FROM read_json_auto('research.json');
+        `),
+        new Promise((resolve) => setTimeout(resolve, delayMs)),
+      ]);
 
       const updatedSchemas = await fetchDynamicSchemas(conn);
       setTableSchemas(updatedSchemas);
@@ -431,7 +435,7 @@ export function useQueryEngine() {
       setStatusText('Planning & executing DuckDB query...');
 
       const t0 = performance.now();
-      const delayMs = Math.floor(320 + Math.random() * 160);
+      const delayMs = Math.floor(300 + Math.random() * 100);
 
       try {
         let result: any;
