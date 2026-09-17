@@ -91,6 +91,20 @@ ORDER BY e.start_date DESC;`,
   SELECT company AS organization, role AS title, location, start_date, end_date, 'Industry' AS track FROM experience
   UNION ALL
   SELECT institution AS organization, qualification AS title, location, start_date, end_date, 'Academic' AS track FROM education
+),
+calculated AS (
+  SELECT 
+    organization,
+    title,
+    location,
+    track,
+    start_date,
+    end_date,
+    CASE 
+      WHEN start_date > CURRENT_DATE AND end_date IS NULL THEN 0
+      ELSE DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1 
+    END AS total_months
+  FROM timeline
 )
 SELECT 
   organization,
@@ -101,10 +115,15 @@ SELECT
   DATEDIFF('year', date_of_birth, start_date) - 
     CASE WHEN strftime(start_date, '%m%d') < strftime(date_of_birth, '%m%d') THEN 1 ELSE 0 END AS age_at_start,
   CASE 
-    WHEN start_date > CURRENT_DATE AND end_date IS NULL THEN 0
-    ELSE DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1 
-  END AS duration_months
-FROM timeline
+    WHEN total_months >= 12 AND total_months % 12 > 0 THEN 
+      (total_months // 12) || ' yr' || CASE WHEN total_months // 12 > 1 THEN 's ' ELSE ' ' END || 
+      (total_months % 12) || ' mo' || CASE WHEN total_months % 12 > 1 THEN 's' ELSE '' END
+    WHEN total_months >= 12 THEN 
+      (total_months // 12) || ' yr' || CASE WHEN total_months // 12 > 1 THEN 's' ELSE '' END
+    ELSE 
+      total_months || ' mo' || CASE WHEN total_months = 1 THEN '' ELSE 's' END
+  END AS duration
+FROM calculated
 CROSS JOIN about
 ORDER BY start_date DESC;`,
   },

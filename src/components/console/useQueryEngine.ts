@@ -3,7 +3,7 @@ import aboutData from '../../data/about.json';
 import careerData from '../../data/career.json';
 import educationData from '../../data/education.json';
 import researchData from '../../data/research.json';
-import { getAge, getInclusiveMonths } from './dateUtils';
+import { formatDuration, getAge, getInclusiveMonths } from './dateUtils';
 import { SCHEMA_TABLES } from './presets';
 import type { TableSchema } from './types';
 
@@ -214,7 +214,7 @@ export function useQueryEngine() {
           track: item.track,
           dates: `${item.start_date} to ${item.end_date || 'Present'}`,
           age_at_start: getAge(dob, item.start_date),
-          duration_months: getInclusiveMonths(item.start_date, item.end_date),
+          duration: formatDuration(getInclusiveMonths(item.start_date, item.end_date)),
         }));
       } else if (q.includes('join')) {
         data = educationData

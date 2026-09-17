@@ -16,6 +16,21 @@ export function getInclusiveMonths(startDateStr: string, endDateStr?: string | n
   return Math.max(0, months);
 }
 
+// Helper to format duration in months into human-readable years and months string
+export function formatDuration(totalMonths: number): string {
+  if (totalMonths <= 0) return '0 mos';
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+
+  if (years > 0 && months > 0) {
+    return `${years} yr${years > 1 ? 's' : ''} ${months} mo${months > 1 ? 's' : ''}`;
+  }
+  if (years > 0) {
+    return `${years} yr${years > 1 ? 's' : ''}`;
+  }
+  return `${months} mo${months > 1 ? 's' : ''}`;
+}
+
 // Helper for age calculation from date of birth (YYYY-MM-DD) as of a target date (defaults to today)
 export function getAge(dobStr: string, asOfStr?: string | null): number {
   const [birthYear, birthMonth, birthDay] = dobStr.split('-').map(Number);
