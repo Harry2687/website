@@ -13,7 +13,7 @@ export function getInclusiveMonths(startDateStr: string, endDateStr?: string | n
     eMonth = now.getMonth() + 1;
   }
   const months = (eYear - sYear) * 12 + (eMonth - sMonth) + 1;
-  return months;
+  return Math.max(0, months);
 }
 
 // Helper for age calculation from date of birth (YYYY-MM-DD) as of a target date (defaults to today)

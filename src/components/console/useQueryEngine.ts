@@ -188,15 +188,14 @@ export function useQueryEngine() {
 
       if (q.includes('union') || q.includes('timeline')) {
         const dob = aboutData[0]?.date_of_birth || '2001-06-25';
-        data = [
+        const items = [
           ...careerData.map((c) => ({
             organization: c.company,
             title: c.role,
             location: c.location,
             track: 'Industry',
             start_date: c.start_date,
-            age_at_start: getAge(dob, c.start_date),
-            duration_months: getInclusiveMonths(c.start_date, c.end_date),
+            end_date: c.end_date,
           })),
           ...educationData.map((e) => ({
             organization: e.institution,
@@ -204,13 +203,21 @@ export function useQueryEngine() {
             location: e.location,
             track: 'Academic',
             start_date: e.start_date,
-            age_at_start: getAge(dob, e.start_date),
-            duration_months: getInclusiveMonths(e.start_date, e.end_date),
+            end_date: e.end_date,
           })),
         ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
+
+        data = items.map((item) => ({
+          organization: item.organization,
+          title: item.title,
+          location: item.location,
+          track: item.track,
+          dates: `${item.start_date} to ${item.end_date || 'Present'}`,
+          age_at_start: getAge(dob, item.start_date),
+          duration_months: getInclusiveMonths(item.start_date, item.end_date),
+        }));
       } else if (q.includes('join')) {
         data = educationData
-          .filter((e) => researchData.some((r) => r.institution === e.institution))
           .map((e) => {
             const r = researchData.find((res) => res.institution === e.institution);
             return {
@@ -218,10 +225,11 @@ export function useQueryEngine() {
               qualification: e.qualification,
               start_date: e.start_date,
               end_date: e.end_date,
-              thesis_title: r ? r.title : '',
-              link: r ? r.link : '',
+              thesis_title: r ? r.title : null,
+              link: r ? r.link : null,
             };
-          });
+          })
+          .sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
       } else if (q.includes('group by') || q.includes('roles_held')) {
         const map: Record<string, { company: string; roles_held: number; total_months: number }> =
           {};

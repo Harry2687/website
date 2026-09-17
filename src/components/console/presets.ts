@@ -81,8 +81,9 @@ ORDER BY total_months DESC;`,
   r.title AS thesis_title,
   r.link
 FROM education e
-INNER JOIN research r 
-  ON e.institution = r.institution;`,
+LEFT JOIN research r 
+  ON e.institution = r.institution
+ORDER BY e.start_date DESC;`,
   },
   {
     label: 'Unified Timeline',
@@ -96,10 +97,13 @@ SELECT
   title,
   location,
   track,
-  start_date,
+  start_date || ' to ' || COALESCE(end_date::VARCHAR, 'Present') AS dates,
   DATEDIFF('year', date_of_birth, start_date) - 
     CASE WHEN strftime(start_date, '%m%d') < strftime(date_of_birth, '%m%d') THEN 1 ELSE 0 END AS age_at_start,
-  DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1 AS duration_months
+  CASE 
+    WHEN start_date > CURRENT_DATE AND end_date IS NULL THEN 0
+    ELSE DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1 
+  END AS duration_months
 FROM timeline
 CROSS JOIN about
 ORDER BY start_date DESC;`,
