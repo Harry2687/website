@@ -61,17 +61,6 @@ FROM about;`,
     sql: 'SELECT role, company, location, start_date, end_date, domain FROM experience;',
   },
   {
-    label: 'Tenure & Duration',
-    sql: `SELECT 
-  company,
-  COUNT(*) AS roles_held,
-  SUM(DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1) AS total_months,
-  ROUND(SUM(DATEDIFF('month', start_date, COALESCE(end_date, CURRENT_DATE)) + 1) / 12.0, 1) AS total_years
-FROM experience
-GROUP BY company
-ORDER BY total_months DESC;`,
-  },
-  {
     label: 'Education & Research',
     sql: `SELECT 
   e.institution,
