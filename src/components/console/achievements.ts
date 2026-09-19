@@ -4,7 +4,6 @@ export interface Achievement {
   id: AchievementId;
   title: string;
   description: string;
-  category: string;
 }
 
 export const ACHIEVEMENTS: Record<AchievementId, Achievement> = {
@@ -12,19 +11,16 @@ export const ACHIEVEMENTS: Record<AchievementId, Achievement> = {
     id: 'root_privilege',
     title: 'Root Privilege',
     description: 'Turns out we gave you unrestricted write access.',
-    category: 'SECURITY',
   },
   rm_rf: {
     id: 'rm_rf',
     title: 'rm -rf /',
     description: 'Successfully wiped everything down to bare metal.',
-    category: 'DESTRUCTIVE',
   },
   cold_reboot: {
     id: 'cold_reboot',
     title: 'Cold Reboot',
     description: 'Reloaded immutable assets back into memory.',
-    category: 'RECOVERY',
   },
 };
 
