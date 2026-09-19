@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import AchievementToast from './console/AchievementToast';
 import ConsoleHeader from './console/ConsoleHeader';
 import { PRESETS } from './console/presets';
 import QueryEditor from './console/QueryEditor';
@@ -37,6 +38,10 @@ export default function CareerConsole() {
     isExecuting,
     tableSchemas,
     executeQuery,
+    restoreDatabase,
+    isDatabaseModified,
+    activeAchievement,
+    dismissAchievement,
   } = useQueryEngine();
 
   const hasAutoRunRef = useRef<boolean>(false);
@@ -285,6 +290,8 @@ export default function CareerConsole() {
                   onSelectPreset={handleSelectPreset}
                   onReset={handleReset}
                   isExecuting={isExecuting || isInitializing}
+                  isDatabaseModified={isDatabaseModified}
+                  onRestoreDatabase={restoreDatabase}
                 />
 
                 <ResultsTable
@@ -304,6 +311,12 @@ export default function CareerConsole() {
           </div>
         </div>
       </div>
+
+      <AchievementToast
+        key={activeAchievement?.id ?? 'none'}
+        achievement={activeAchievement}
+        onDismiss={dismissAchievement}
+      />
     </>
   );
 }

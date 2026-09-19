@@ -44,7 +44,7 @@ export default function SchemaDrawer({
         >
           {tables.length === 0 ? (
             <div className="py-4 text-center text-vsc-fg-muted text-xs font-mono">
-              No tables found in catalog
+              <p>No tables found in catalog</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -152,10 +152,10 @@ export default function SchemaDrawer({
             </div>
 
             {tables.length === 0 ? (
-              <div className="py-8 px-2 text-center text-vsc-fg-muted space-y-1">
+              <div className="py-8 px-2 text-center text-vsc-fg-muted space-y-1.5">
                 <p className="text-xs font-mono font-medium text-vsc-fg">No tables found</p>
                 <p className="text-[10px] text-vsc-fg-subtle leading-relaxed">
-                  Run a CREATE TABLE query to add tables
+                  Run a CREATE TABLE query or restore defaults
                 </p>
               </div>
             ) : (

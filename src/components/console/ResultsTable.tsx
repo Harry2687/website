@@ -185,8 +185,9 @@ export default function ResultsTable({
               </table>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-vsc-fg-muted">
-              <p>No rows returned.</p>
+            <div className="flex flex-col items-center justify-center py-20 text-vsc-fg-muted space-y-2">
+              <div className="text-xs font-mono text-vsc-fg">Query executed successfully.</div>
+              <div className="text-[11px] font-mono text-vsc-fg-subtle">0 rows returned</div>
             </div>
           )
         ) : isExecuting || isInitializing ? (

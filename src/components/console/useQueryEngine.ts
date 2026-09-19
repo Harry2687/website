@@ -3,6 +3,13 @@ import aboutData from '../../data/about.json';
 import careerData from '../../data/career.json';
 import educationData from '../../data/education.json';
 import researchData from '../../data/research.json';
+import {
+  ACHIEVEMENTS,
+  type Achievement,
+  type AchievementId,
+  CORE_TABLES,
+  saveUnlockedAchievement,
+} from './achievements';
 import { formatDuration, getAge, getInclusiveMonths } from './dateUtils';
 import { SCHEMA_TABLES } from './presets';
 import type { TableSchema } from './types';
@@ -84,6 +91,29 @@ export function useQueryEngine() {
   const duckDbRef = useRef<any>(null);
   const connRef = useRef<any>(null);
   const isExecutingRef = useRef<boolean>(false);
+  const prevMissingCountRef = useRef<number>(0);
+
+  const [activeAchievement, setActiveAchievement] = useState<Achievement | null>(null);
+  const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
+
+  const triggerAchievement = useCallback((id: AchievementId) => {
+    const isNew = saveUnlockedAchievement(id);
+    if (!isNew) return;
+    const achievement = ACHIEVEMENTS[id];
+    setAchievementQueue((prev) => [...prev, achievement]);
+  }, []);
+
+  useEffect(() => {
+    if (!activeAchievement && achievementQueue.length > 0) {
+      const [next, ...rest] = achievementQueue;
+      setActiveAchievement(next);
+      setAchievementQueue(rest);
+    }
+  }, [activeAchievement, achievementQueue]);
+
+  const dismissAchievement = useCallback(() => {
+    setActiveAchievement(null);
+  }, []);
 
   // Initialize DuckDB-WASM client-side
   useEffect(() => {
@@ -179,7 +209,7 @@ export function useQueryEngine() {
     setStatusText('Executing SQL query...');
 
     const t0 = performance.now();
-    const delayMs = Math.floor(320 + Math.random() * 160);
+    const delayMs = Math.floor(300 + Math.random() * 100);
     await new Promise((resolve) => setTimeout(resolve, delayMs));
 
     try {
@@ -340,6 +370,48 @@ export function useQueryEngine() {
     }
   }, []);
 
+  const restoreDatabase = useCallback(async () => {
+    const conn = connRef.current;
+    if (!conn) return;
+
+    setIsExecuting(true);
+    isExecutingRef.current = true;
+    setErrorText(null);
+    setStatusText('Restoring database from immutable snapshot...');
+
+    const t0 = performance.now();
+    const delayMs = Math.floor(300 + Math.random() * 100);
+    try {
+      await Promise.all([
+        conn.query(`
+          CREATE TABLE IF NOT EXISTS about AS SELECT * FROM read_json_auto('about.json');
+          CREATE TABLE IF NOT EXISTS experience AS SELECT * FROM read_json_auto('experience.json');
+          CREATE TABLE IF NOT EXISTS education AS SELECT * FROM read_json_auto('education.json');
+          CREATE TABLE IF NOT EXISTS research AS SELECT * FROM read_json_auto('research.json');
+        `),
+        new Promise((resolve) => setTimeout(resolve, delayMs)),
+      ]);
+
+      const updatedSchemas = await fetchDynamicSchemas(conn);
+      setTableSchemas(updatedSchemas);
+
+      const t1 = performance.now();
+      const execTime = Math.round((t1 - t0) * 10) / 10;
+      setExecTimeMs(execTime);
+      setStatusText(`Database restored from snapshot (${execTime}ms)`);
+      prevMissingCountRef.current = 0;
+      triggerAchievement('cold_reboot');
+    } catch (err: any) {
+      console.warn('Failed to restore database:', err);
+      const rawMsg = err?.message || String(err);
+      setErrorText(rawMsg.replace(/^Error:\s*/i, ''));
+      setStatusText('Restore error');
+    } finally {
+      setIsExecuting(false);
+      isExecutingRef.current = false;
+    }
+  }, [triggerAchievement]);
+
   // True DuckDB-WASM query execution
   const runSqlQuery = useCallback(
     async (sqlQuery: string) => {
@@ -355,7 +427,7 @@ export function useQueryEngine() {
       setStatusText('Planning & executing DuckDB query...');
 
       const t0 = performance.now();
-      const delayMs = Math.floor(320 + Math.random() * 160);
+      const delayMs = Math.floor(300 + Math.random() * 100);
 
       try {
         let result: any;
@@ -432,6 +504,21 @@ export function useQueryEngine() {
           try {
             const updatedSchemas = await fetchDynamicSchemas(activeConn);
             setTableSchemas(updatedSchemas);
+
+            const existingNames = new Set(updatedSchemas.map((s) => s.name.toLowerCase()));
+            const missing = CORE_TABLES.filter((t) => !existingNames.has(t));
+            const prevMissing = prevMissingCountRef.current;
+            prevMissingCountRef.current = missing.length;
+
+            if (prevMissing === 0 && missing.length >= 1) {
+              triggerAchievement('root_privilege');
+            }
+            if (missing.length === CORE_TABLES.length && prevMissing < CORE_TABLES.length) {
+              triggerAchievement('rm_rf');
+            }
+            if (prevMissing > 0 && missing.length === 0) {
+              triggerAchievement('cold_reboot');
+            }
           } catch (schemaErr) {
             console.warn('Failed to refresh dynamic schema:', schemaErr);
           }
@@ -451,7 +538,7 @@ export function useQueryEngine() {
         isExecutingRef.current = false;
       }
     },
-    [runFallbackQuery]
+    [runFallbackQuery, triggerAchievement]
   );
 
   const executeQuery = useCallback(
@@ -461,6 +548,10 @@ export function useQueryEngine() {
     },
     [runSqlQuery]
   );
+
+  const existingTableNames = new Set(tableSchemas.map((s) => s.name.toLowerCase()));
+  const missingCoreTables = CORE_TABLES.filter((t) => !existingTableNames.has(t));
+  const isDatabaseModified = missingCoreTables.length > 0;
 
   return {
     duckDbReady,
@@ -475,5 +566,10 @@ export function useQueryEngine() {
     isExecuting,
     tableSchemas,
     executeQuery,
+    restoreDatabase,
+    isDatabaseModified,
+    missingCoreTables,
+    activeAchievement,
+    dismissAchievement,
   };
 }
