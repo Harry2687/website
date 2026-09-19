@@ -12,8 +12,6 @@ interface ResultsTableProps {
   isFullscreen: boolean;
   isExecuting?: boolean;
   isInitializing?: boolean;
-  isDatabaseModified?: boolean;
-  onRestoreDatabase?: () => void;
 }
 
 export default function ResultsTable({
@@ -27,8 +25,6 @@ export default function ResultsTable({
   isFullscreen,
   isExecuting = false,
   isInitializing = false,
-  isDatabaseModified = false,
-  onRestoreDatabase,
 }: ResultsTableProps) {
   const modifierKey = useModifierKey();
   return (
@@ -191,21 +187,7 @@ export default function ResultsTable({
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-vsc-fg-muted space-y-2">
               <div className="text-xs font-mono text-vsc-fg">Query executed successfully.</div>
-              <div className="text-[11px] font-mono text-vsc-fg-subtle">
-                0 rows returned
-                {isDatabaseModified && onRestoreDatabase && (
-                  <>
-                    {' · '}
-                    <button
-                      type="button"
-                      onClick={onRestoreDatabase}
-                      className="text-vsc-blue hover:underline cursor-pointer"
-                    >
-                      Restore default tables
-                    </button>
-                  </>
-                )}
-              </div>
+              <div className="text-[11px] font-mono text-vsc-fg-subtle">0 rows returned</div>
             </div>
           )
         ) : isExecuting || isInitializing ? (
@@ -227,18 +209,6 @@ export default function ResultsTable({
             <div className="text-[11px] font-mono text-vsc-fg-muted max-w-lg break-words bg-vsc-bar px-3 py-2 rounded border border-vsc-border">
               {errorText}
             </div>
-            {isDatabaseModified && onRestoreDatabase && (
-              <div className="text-[11px] font-mono text-vsc-fg-subtle pt-1">
-                Tables missing?{' '}
-                <button
-                  type="button"
-                  onClick={onRestoreDatabase}
-                  className="text-vsc-blue hover:underline cursor-pointer"
-                >
-                  Restore default tables
-                </button>
-              </div>
-            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-vsc-fg-muted space-y-2">

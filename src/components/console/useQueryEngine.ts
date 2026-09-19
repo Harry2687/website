@@ -421,14 +421,6 @@ export function useQueryEngine() {
         return;
       }
 
-      if (/^\s*restore(\s+database)?\s*;?\s*$/i.test(sqlQuery.trim())) {
-        await restoreDatabase();
-        setHasExecuted(true);
-        setResultRows([]);
-        setColumns([]);
-        return;
-      }
-
       setIsExecuting(true);
       isExecutingRef.current = true;
       setErrorText(null);
@@ -546,7 +538,7 @@ export function useQueryEngine() {
         isExecutingRef.current = false;
       }
     },
-    [runFallbackQuery, restoreDatabase, triggerAchievement]
+    [runFallbackQuery, triggerAchievement]
   );
 
   const executeQuery = useCallback(
