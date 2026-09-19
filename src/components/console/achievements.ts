@@ -103,6 +103,15 @@ export function playAchievementChime(): void {
     gain2.connect(ctx.destination);
     osc2.start(now + 0.12);
     osc2.stop(now + 0.85);
+
+    osc2.onended = () => {
+      ctx.close().catch(() => {});
+    };
+    setTimeout(() => {
+      if (ctx.state !== 'closed') {
+        ctx.close().catch(() => {});
+      }
+    }, 1200);
   } catch {
     // Silently continue if audio context is blocked
   }
