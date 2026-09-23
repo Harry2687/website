@@ -5,12 +5,16 @@ import { PRESETS } from './console/presets';
 import QueryEditor from './console/QueryEditor';
 import ResultsTable from './console/ResultsTable';
 import SchemaDrawer from './console/SchemaDrawer';
-import type { QueryPreset } from './console/types';
+import type { InitialQueryResult, QueryPreset } from './console/types';
 import { useQueryEngine } from './console/useQueryEngine';
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-export default function CareerConsole() {
+interface CareerConsoleProps {
+  initialData?: InitialQueryResult;
+}
+
+export default function CareerConsole({ initialData }: CareerConsoleProps = {}) {
   const [query, setQuery] = useState<string>(PRESETS[0].sql);
   const [isSchemaOpen, setIsSchemaOpen] = useState<boolean>(false);
   const [isClosed, setIsClosed] = useState<boolean>(false);
@@ -42,16 +46,18 @@ export default function CareerConsole() {
     isDatabaseModified,
     activeAchievement,
     dismissAchievement,
-  } = useQueryEngine();
+  } = useQueryEngine(initialData);
 
   const hasAutoRunRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!hasAutoRunRef.current && engineReady) {
       hasAutoRunRef.current = true;
-      executeQuery(query);
+      if (!initialData) {
+        executeQuery(query);
+      }
     }
-  }, [engineReady, executeQuery, query]);
+  }, [engineReady, executeQuery, query, initialData]);
 
   const isInitializing = !engineReady && !hasExecuted;
 

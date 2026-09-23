@@ -12,7 +12,7 @@ import {
 } from './achievements';
 import { formatDuration, getAge, getInclusiveMonths } from './dateUtils';
 import { SCHEMA_TABLES } from './presets';
-import type { TableSchema } from './types';
+import type { InitialQueryResult, TableSchema } from './types';
 
 function formatDuckDbType(dataType: string): string {
   const dt = dataType.toUpperCase();
@@ -76,13 +76,15 @@ async function fetchDynamicSchemas(conn: any): Promise<TableSchema[]> {
     }));
 }
 
-export function useQueryEngine() {
-  const [hasExecuted, setHasExecuted] = useState<boolean>(false);
-  const [resultRows, setResultRows] = useState<Record<string, any>[]>([]);
-  const [columns, setColumns] = useState<string[]>([]);
+export function useQueryEngine(initialData?: InitialQueryResult) {
+  const [hasExecuted, setHasExecuted] = useState<boolean>(Boolean(initialData));
+  const [resultRows, setResultRows] = useState<Record<string, any>[]>(initialData?.rows ?? []);
+  const [columns, setColumns] = useState<string[]>(initialData?.columns ?? []);
   const [tableSchemas, setTableSchemas] = useState<TableSchema[]>(SCHEMA_TABLES);
   const [execTimeMs, setExecTimeMs] = useState<number | null>(null);
-  const [statusText, setStatusText] = useState<string>('Initializing DuckDB-WASM...');
+  const [statusText, setStatusText] = useState<string>(
+    initialData ? 'Pre-rendered' : 'Initializing DuckDB-WASM...'
+  );
   const [errorText, setErrorText] = useState<string | null>(null);
   const [duckDbReady, setDuckDbReady] = useState<boolean>(false);
   const [engineReady, setEngineReady] = useState<boolean>(false);
@@ -92,6 +94,7 @@ export function useQueryEngine() {
   const connRef = useRef<any>(null);
   const isExecutingRef = useRef<boolean>(false);
   const prevMissingCountRef = useRef<number>(0);
+  const initialDataRef = useRef<InitialQueryResult | undefined>(initialData);
 
   const [activeAchievement, setActiveAchievement] = useState<Achievement | null>(null);
   const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
@@ -121,7 +124,9 @@ export function useQueryEngine() {
 
     async function initDuckDB() {
       try {
-        setStatusText('Initializing DuckDB-WASM...');
+        if (!initialDataRef.current) {
+          setStatusText('Initializing DuckDB-WASM...');
+        }
         const duckdb = await import('@duckdb/duckdb-wasm');
         const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
         const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);

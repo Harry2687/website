@@ -8,3 +8,8 @@ export interface TableSchema {
   description: string;
   columns: string[];
 }
+
+export interface InitialQueryResult {
+  columns: string[];
+  rows: Record<string, any>[];
+}
