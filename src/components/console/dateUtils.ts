@@ -55,3 +55,22 @@ export function getAge(dobStr: string, asOfStr?: string | null): number {
   }
   return age;
 }
+
+// Coerces Apache Arrow date and timestamp values to ISO YYYY-MM-DD format
+export function coerceArrowDate(val: unknown): string | unknown {
+  if (val === null || val === undefined) return val;
+  if (val instanceof Date) {
+    return Number.isNaN(val.getTime()) ? '' : val.toISOString().split('T')[0];
+  }
+  if (typeof val === 'number' || typeof val === 'bigint') {
+    const num = typeof val === 'bigint' ? Number(val) : val;
+    // Arrow's row.toJSON() outputs milliseconds. If raw epoch days (|days| < 100,000) are encountered, scale to ms.
+    const ms = Math.abs(num) < 100_000 ? num * 86_400_000 : num;
+    const d = new Date(ms);
+    return Number.isNaN(d.getTime()) ? String(val) : d.toISOString().split('T')[0];
+  }
+  if (typeof val === 'string' && val.includes('T')) {
+    return val.split('T')[0];
+  }
+  return val;
+}

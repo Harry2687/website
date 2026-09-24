@@ -4,6 +4,7 @@ import careerData from '../../data/career.json';
 import educationData from '../../data/education.json';
 import researchData from '../../data/research.json';
 import { CORE_TABLES } from './achievements';
+import { coerceArrowDate } from './dateUtils';
 import { executeFallbackQuery } from './fallbackEngine';
 import { SCHEMA_TABLES } from './presets';
 import type { TableSchema } from './types';
@@ -308,17 +309,7 @@ export function useQueryEngine() {
           for (const [key, val] of Object.entries(obj)) {
             if (val === null || val === undefined) continue;
             if (dateFieldNames.has(key) || key.toLowerCase().includes('date')) {
-              if (val instanceof Date) {
-                obj[key] = val.toISOString().split('T')[0];
-              } else if (typeof val === 'number') {
-                const ms = val > 100000000 ? val : val * 86400000;
-                const d = new Date(ms);
-                if (!Number.isNaN(d.getTime())) {
-                  obj[key] = d.toISOString().split('T')[0];
-                }
-              } else if (typeof val === 'string' && val.includes('T')) {
-                obj[key] = val.split('T')[0];
-              }
+              obj[key] = coerceArrowDate(val);
             } else if (typeof val === 'bigint') {
               obj[key] = Number(val);
             }
