@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react';
+import { coerceArrowDate } from './dateUtils';
 import { useModifierKey } from './useModifierKey';
 
 interface ResultsTableProps {
@@ -115,22 +116,8 @@ export default function ResultsTable({
                           formatted = 'null';
                         } else if (typeof val === 'bigint') {
                           formatted = val.toString();
-                        } else if (val instanceof Date) {
-                          formatted = Number.isNaN(val.getTime())
-                            ? ''
-                            : val.toISOString().split('T')[0];
-                        } else if (col.toLowerCase().includes('date') && typeof val === 'number') {
-                          const ms = val > 100000000 ? val : val * 86400000;
-                          const d = new Date(ms);
-                          formatted = !Number.isNaN(d.getTime())
-                            ? d.toISOString().split('T')[0]
-                            : String(val);
-                        } else if (
-                          col.toLowerCase().includes('date') &&
-                          typeof val === 'string' &&
-                          val.includes('T')
-                        ) {
-                          formatted = val.split('T')[0];
+                        } else if (col.toLowerCase().includes('date') || val instanceof Date) {
+                          formatted = String(coerceArrowDate(val));
                         } else {
                           formatted = String(val);
                         }
