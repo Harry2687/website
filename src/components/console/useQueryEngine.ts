@@ -38,6 +38,28 @@ const TABLE_DESCRIPTIONS: Record<string, string> = {
   research: 'Academic thesis and papers',
 };
 
+const ARTIFICIAL_DELAY_MIN_MS = 300;
+const ARTIFICIAL_DELAY_VARIANCE_MS = 100;
+
+function simulateLatency(
+  minMs = ARTIFICIAL_DELAY_MIN_MS,
+  varianceMs = ARTIFICIAL_DELAY_VARIANCE_MS
+): Promise<void> {
+  const ms = Math.floor(minMs + Math.random() * varianceMs);
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const TABLE_FILES = [
+  { name: 'about', filename: 'about.json', data: aboutData },
+  { name: 'experience', filename: 'experience.json', data: careerData },
+  { name: 'education', filename: 'education.json', data: educationData },
+  { name: 'research', filename: 'research.json', data: researchData },
+] as const;
+
+const INIT_TABLES_SQL = TABLE_FILES.map(
+  (t) => `CREATE TABLE IF NOT EXISTS ${t.name} AS SELECT * FROM read_json_auto('${t.filename}');`
+).join('\n');
+
 async function fetchDynamicSchemas(conn: any): Promise<TableSchema[]> {
   const res = await conn.query(`
     SELECT table_name, column_name, data_type 
@@ -139,21 +161,10 @@ export function useQueryEngine() {
         const conn = await db.connect();
 
         // Register in-memory tables
-        await db.registerFileText('about.json', JSON.stringify(aboutData));
-        await conn.query(`CREATE TABLE about AS SELECT * FROM read_json_auto('about.json')`);
-
-        await db.registerFileText('experience.json', JSON.stringify(careerData));
-        await conn.query(
-          `CREATE TABLE experience AS SELECT * FROM read_json_auto('experience.json')`
-        );
-
-        await db.registerFileText('education.json', JSON.stringify(educationData));
-        await conn.query(
-          `CREATE TABLE education AS SELECT * FROM read_json_auto('education.json')`
-        );
-
-        await db.registerFileText('research.json', JSON.stringify(researchData));
-        await conn.query(`CREATE TABLE research AS SELECT * FROM read_json_auto('research.json')`);
+        for (const { filename, data } of TABLE_FILES) {
+          await db.registerFileText(filename, JSON.stringify(data));
+        }
+        await conn.query(INIT_TABLES_SQL);
 
         // Preload ICU extension and warm up temporal functions
         try {
@@ -209,8 +220,7 @@ export function useQueryEngine() {
     setStatusText('Executing SQL query...');
 
     const t0 = performance.now();
-    const delayMs = Math.floor(300 + Math.random() * 100);
-    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    await simulateLatency();
 
     try {
       const q = sqlQuery.toLowerCase().trim();
@@ -380,17 +390,8 @@ export function useQueryEngine() {
     setStatusText('Restoring database from immutable snapshot...');
 
     const t0 = performance.now();
-    const delayMs = Math.floor(300 + Math.random() * 100);
     try {
-      await Promise.all([
-        conn.query(`
-          CREATE TABLE IF NOT EXISTS about AS SELECT * FROM read_json_auto('about.json');
-          CREATE TABLE IF NOT EXISTS experience AS SELECT * FROM read_json_auto('experience.json');
-          CREATE TABLE IF NOT EXISTS education AS SELECT * FROM read_json_auto('education.json');
-          CREATE TABLE IF NOT EXISTS research AS SELECT * FROM read_json_auto('research.json');
-        `),
-        new Promise((resolve) => setTimeout(resolve, delayMs)),
-      ]);
+      await Promise.all([conn.query(INIT_TABLES_SQL), simulateLatency()]);
 
       const updatedSchemas = await fetchDynamicSchemas(conn);
       setTableSchemas(updatedSchemas);
@@ -427,15 +428,11 @@ export function useQueryEngine() {
       setStatusText('Planning & executing DuckDB query...');
 
       const t0 = performance.now();
-      const delayMs = Math.floor(300 + Math.random() * 100);
 
       try {
         let result: any;
         try {
-          const [res] = await Promise.all([
-            activeConn.query(sqlQuery),
-            new Promise((resolve) => setTimeout(resolve, delayMs)),
-          ]);
+          const [res] = await Promise.all([activeConn.query(sqlQuery), simulateLatency()]);
           result = res;
         } catch (firstErr: any) {
           const msg = String(firstErr?.message || firstErr);
