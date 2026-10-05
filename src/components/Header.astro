@@ -2,11 +2,7 @@
 import aboutData from '../data/about.json';
 import careerData from '../data/career.json';
 
-const profile = aboutData[0] ?? {
-  name: 'Harry Zhong',
-  photo: '/profile.jpg',
-  contact: 'h.zhong2687@gmail.com',
-};
+const profile = aboutData[0];
 
 const latestRole = [...careerData].sort((a, b) => {
   const dateA = a.start_date ?? '9999-12-31';
@@ -75,7 +71,7 @@ const location = latestRole?.location;
         LinkedIn
       </a>
       <a
-        href={`mailto:${profile.contact ?? 'h.zhong2687@gmail.com'}`}
+        href={`mailto:${profile.contact}`}
         class="px-2.5 py-1 rounded bg-vsc-blue hover:bg-vsc-blue-hover text-white font-semibold transition-all shadow-sm"
       >
         Email

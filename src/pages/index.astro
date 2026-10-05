@@ -7,10 +7,7 @@ import educationData from '../data/education.json';
 import researchData from '../data/research.json';
 import Layout from '../layouts/Layout.astro';
 
-const profile = aboutData[0] ?? {
-  name: 'Harry Zhong',
-  contact: 'h.zhong2687@gmail.com',
-};
+const profile = aboutData[0];
 
 const latestRole = [...careerData].sort((a, b) => {
   const dateA = a.start_date ?? '9999-12-31';
