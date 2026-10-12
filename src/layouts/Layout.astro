@@ -1,15 +1,18 @@
 ---
 import '../styles/global.css';
+import { getProfileData } from '../utils/seo';
 
 interface Props {
   title?: string;
   description?: string;
 }
 
-const {
-  title = 'Harry Zhong',
-  description = 'Personal website and interactive SQL console of Harry Zhong.',
-} = Astro.props;
+const { profile, defaultTitle, defaultDescription, jsonLd } = getProfileData();
+
+const { title = defaultTitle, description = defaultDescription } = Astro.props;
+
+const siteImage = `https://harryzhong.com${profile.photo}`;
+const siteName = profile.name;
 ---
 
 <!doctype html>
@@ -103,15 +106,18 @@ const {
     <meta property="og:url" content="https://harryzhong.com" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="https://harryzhong.com/profile.jpg" />
-    <meta property="og:site_name" content="Harry Zhong" />
+    <meta property="og:image" content={siteImage} />
+    <meta property="og:site_name" content={siteName} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://harryzhong.com" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://harryzhong.com/profile.jpg" />
+    <meta name="twitter:image" content={siteImage} />
+
+    <!-- Structured Data (Schema.org JSON-LD) -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
     <!-- Google Analytics (preserved from original site) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SDG552HSPC"></script>
