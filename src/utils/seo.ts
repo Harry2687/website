@@ -21,8 +21,8 @@ export function getProfileData() {
   const defaultTitle = profile.name;
   const defaultDescription = `${profile.name} - ${headline} in ${location}. Interactive SQL portfolio, career timeline, education, and research.`;
 
-  const sameAsLinks = [profile.linkedin, profile.github, ...researchData.map((r) => r.link)].filter(
-    (url): url is string => Boolean(url)
+  const sameAsLinks = [profile.linkedin, profile.github].filter((url): url is string =>
+    Boolean(url)
   );
 
   const knownDomains = Array.from(

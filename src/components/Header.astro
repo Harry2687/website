@@ -1,18 +1,7 @@
 ---
-import aboutData from '../data/about.json';
-import careerData from '../data/career.json';
+import { getProfileData } from '../utils/seo';
 
-const profile = aboutData[0];
-
-const latestRole = [...careerData].sort((a, b) => {
-  const dateA = a.start_date ?? '9999-12-31';
-  const dateB = b.start_date ?? '9999-12-31';
-  return dateB.localeCompare(dateA);
-})[0];
-
-const role = latestRole?.role;
-const company = latestRole?.company;
-const location = latestRole?.location;
+const { profile, role, company, location } = getProfileData();
 ---
 
 <header class="sticky top-0 z-50 backdrop-blur-md bg-vsc-header/90 border-b border-vsc-border transition-colors duration-150">

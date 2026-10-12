@@ -79,6 +79,8 @@ export function executeFallbackQuery(sqlQuery: string): FallbackQueryResult {
     const selectClause = parts[0]?.replace(/^select\s+/i, '').replace(/\([^)]*\)/g, '') || '';
     const wantsDob = q.includes('*') || /\bdate_of_birth\b/i.test(selectClause);
     const wantsPhoto = q.includes('*') || /\bphoto\b/i.test(selectClause);
+    const wantsGithub = q.includes('*') || /\bgithub\b/i.test(selectClause);
+    const wantsLinkedin = q.includes('*') || /\blinkedin\b/i.test(selectClause);
     const latestRole = [...careerData].sort((a, b) => {
       const dateA = a.start_date ?? '9999-12-31';
       const dateB = b.start_date ?? '9999-12-31';
@@ -95,6 +97,8 @@ export function executeFallbackQuery(sqlQuery: string): FallbackQueryResult {
         if (wantsDob) row.date_of_birth = a.date_of_birth;
         row.age = getAge(a.date_of_birth);
         if (wantsPhoto) row.photo = a.photo || '/profile.jpg';
+        if (wantsGithub && a.github) row.github = a.github;
+        if (wantsLinkedin && a.linkedin) row.linkedin = a.linkedin;
         return row;
       });
     } else {
@@ -104,6 +108,8 @@ export function executeFallbackQuery(sqlQuery: string): FallbackQueryResult {
         contact: a.contact,
         ...(wantsDob ? { date_of_birth: a.date_of_birth } : {}),
         ...(wantsPhoto ? { photo: a.photo || '/profile.jpg' } : {}),
+        ...(wantsGithub && a.github ? { github: a.github } : {}),
+        ...(wantsLinkedin && a.linkedin ? { linkedin: a.linkedin } : {}),
       }));
     }
   } else if (
