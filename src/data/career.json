@@ -1,10 +1,18 @@
 [
   {
     "company": "Commonwealth Bank",
+    "role": "Senior Associate Data Scientist",
+    "location": "Sydney, NSW",
+    "start_date": "2026-10-01",
+    "end_date": null,
+    "domain": "Home Buying AI"
+  },
+  {
+    "company": "Commonwealth Bank",
     "role": "Senior Quantitative Risk Analyst",
     "location": "Perth, WA",
     "start_date": "2026-01-01",
-    "end_date": null,
+    "end_date": "2026-09-30",
     "domain": "Credit Risk Models & Cloud MLOps"
   },
   {
