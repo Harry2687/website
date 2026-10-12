@@ -4,7 +4,14 @@ export const SCHEMA_TABLES: TableSchema[] = [
   {
     name: 'about',
     description: 'Profile overview and contact',
-    columns: ['name: str', 'contact: str', 'date_of_birth: date', 'photo: str'],
+    columns: [
+      'name: str',
+      'contact: str',
+      'date_of_birth: date',
+      'photo: str',
+      'github: str',
+      'linkedin: str',
+    ],
   },
   {
     name: 'experience',

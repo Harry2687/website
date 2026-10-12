@@ -1,25 +1,14 @@
 ---
-import aboutData from '../data/about.json';
-import careerData from '../data/career.json';
+import { getProfileData } from '../utils/seo';
 
-const profile = aboutData[0];
-
-const latestRole = [...careerData].sort((a, b) => {
-  const dateA = a.start_date ?? '9999-12-31';
-  const dateB = b.start_date ?? '9999-12-31';
-  return dateB.localeCompare(dateA);
-})[0];
-
-const role = latestRole?.role;
-const company = latestRole?.company;
-const location = latestRole?.location;
+const { profile, role, company, location } = getProfileData();
 ---
 
 <header class="sticky top-0 z-50 backdrop-blur-md bg-vsc-header/90 border-b border-vsc-border transition-colors duration-150">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
     <div class="relative group/profile flex items-center">
       <a href="#" class="flex items-center min-w-0 py-1">
-        <span class="font-bold text-vsc-fg-bright tracking-tight text-sm group-hover/profile:text-vsc-blue transition-colors truncate">{profile.name}</span>
+        <h1 class="font-bold text-vsc-fg-bright tracking-tight text-sm group-hover/profile:text-vsc-blue transition-colors truncate">{profile.name}</h1>
       </a>
 
       <!-- Profile Hover Card -->
@@ -54,22 +43,26 @@ const location = latestRole?.location;
     </div>
 
     <div class="flex items-center space-x-2 sm:space-x-3 text-xs font-mono shrink-0">
-      <a
-        href="https://github.com/Harry2687"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
-      >
-        GitHub
-      </a>
-      <a
-        href="https://www.linkedin.com/in/harry2687/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
-      >
-        LinkedIn
-      </a>
+      {profile.github && (
+        <a
+          href={profile.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
+        >
+          GitHub
+        </a>
+      )}
+      {profile.linkedin && (
+        <a
+          href={profile.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-vsc-fg-muted hover:text-vsc-fg-bright transition-colors px-1.5 sm:px-2 py-1"
+        >
+          LinkedIn
+        </a>
+      )}
       <a
         href={`mailto:${profile.contact}`}
         class="px-2.5 py-1 rounded bg-vsc-blue hover:bg-vsc-blue-hover text-white font-semibold transition-all shadow-sm"

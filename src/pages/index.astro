@@ -1,22 +1,13 @@
 ---
 import CareerConsole from '../components/CareerConsole.tsx';
 import Header from '../components/Header.astro';
-import aboutData from '../data/about.json';
 import careerData from '../data/career.json';
 import educationData from '../data/education.json';
 import researchData from '../data/research.json';
 import Layout from '../layouts/Layout.astro';
+import { getProfileData } from '../utils/seo';
 
-const profile = aboutData[0];
-
-const latestRole = [...careerData].sort((a, b) => {
-  const dateA = a.start_date ?? '9999-12-31';
-  const dateB = b.start_date ?? '9999-12-31';
-  return dateB.localeCompare(dateA);
-})[0];
-
-const headline = [latestRole?.role, latestRole?.company].filter(Boolean).join(' at ');
-const location = latestRole?.location;
+const { profile, headline, location } = getProfileData();
 ---
 
 <Layout>
@@ -26,6 +17,54 @@ const location = latestRole?.location;
     <!-- Centerpiece: The Interactive Database Terminal -->
     <section class="w-full">
       <CareerConsole client:load />
+
+      <!-- Accessible and crawler-indexable semantic representation of portfolio data -->
+      <section class="sr-only" aria-label="Professional Profile and Career Summary">
+        <h2>About {profile.name}</h2>
+        <p>{headline} based in {location}</p>
+        <p>Contact: <a href={`mailto:${profile.contact}`}>{profile.contact}</a></p>
+
+        <h3>Experience</h3>
+        <ul>
+          {careerData.map((job) => (
+            <li>
+              <h4>{job.role} - {job.company}</h4>
+              <p>
+                {job.start_date} to {job.end_date || 'Present'} | {job.location} | {job.domain}
+              </p>
+            </li>
+          ))}
+        </ul>
+
+        <h3>Education</h3>
+        <ul>
+          {educationData.map((edu) => (
+            <li>
+              <h4>{edu.qualification} - {edu.institution}</h4>
+              <p>
+                {edu.start_date} to {edu.end_date || 'Present'} | {edu.location}
+              </p>
+              {edu.details && <p>{edu.details}</p>}
+            </li>
+          ))}
+        </ul>
+
+        <h3>Research</h3>
+        <ul>
+          {researchData.map((res) => (
+            <li>
+              <h4>
+                <a href={res.link} target="_blank" rel="noopener noreferrer">
+                  {res.title}
+                </a>
+              </h4>
+              <p>
+                {res.institution} | {res.year} | {res.domain}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <noscript>
         <div class="mt-8 p-6 rounded-lg border border-vsc-border bg-vsc-surface space-y-6 text-sm">
