@@ -18,7 +18,7 @@ export function getProfileData() {
   const location = latestRole.location;
 
   const headline = `${role} at ${company}`;
-  const defaultTitle = `${profile.name} | ${headline}`;
+  const defaultTitle = profile.name;
   const defaultDescription = `${profile.name} - ${headline} in ${location}. Interactive SQL portfolio, career timeline, education, and research.`;
 
   const sameAsLinks = [profile.linkedin, profile.github, ...researchData.map((r) => r.link)].filter(
