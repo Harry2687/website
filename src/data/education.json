@@ -1,5 +1,13 @@
 [
   {
+    "institution": "Georgia Institute of Technology",
+    "qualification": "MSc Computer Science",
+    "location": "Atlanta, GA (Remote)",
+    "start_date": "2027-01-01",
+    "end_date": null,
+    "details": "Part-time study concurrent with full-time industry work"
+  },
+  {
     "institution": "Curtin University",
     "qualification": "BSc Actuarial Science (Honours)",
     "location": "Perth, WA",
