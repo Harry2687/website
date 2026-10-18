@@ -57,12 +57,14 @@ export function getProfileData() {
           '@type': 'PostalAddress',
           addressLocality: location,
         },
-        alumniOf: Array.from(new Set(educationData.map((edu) => edu.institution))).map(
-          (institution) => ({
-            '@type': 'EducationalOrganization',
-            name: institution,
-          })
-        ),
+        alumniOf: Array.from(
+          new Set(
+            educationData.filter((edu) => Boolean(edu.end_date)).map((edu) => edu.institution)
+          )
+        ).map((institution) => ({
+          '@type': 'EducationalOrganization',
+          name: institution,
+        })),
         sameAs: sameAsLinks,
         knowsAbout: knownDomains,
       },
