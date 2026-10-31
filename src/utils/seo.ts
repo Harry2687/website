@@ -17,9 +17,13 @@ export function getProfileData() {
   const company = latestRole.company;
   const location = latestRole.location;
 
+  const [city, region] = location.includes(',')
+    ? location.split(',').map((s) => s.trim())
+    : [location, undefined];
+
   const headline = `${role} at ${company}`;
   const defaultTitle = profile.name;
-  const defaultDescription = `${profile.name} - ${headline} in ${location}. Interactive SQL portfolio, career timeline, education, and research.`;
+  const defaultDescription = `${profile.name} - ${headline} in ${location}, Australia. Interactive SQL portfolio, career timeline, education, and research.`;
 
   const sameAsLinks = [profile.linkedin, profile.github].filter((url): url is string =>
     Boolean(url)
@@ -52,10 +56,27 @@ export function getProfileData() {
         worksFor: {
           '@type': 'Organization',
           name: company,
+          ...(company === 'Commonwealth Bank'
+            ? {
+                url: 'https://www.commbank.com.au',
+                address: {
+                  '@type': 'PostalAddress',
+                  addressLocality: city,
+                  ...(region ? { addressRegion: region } : {}),
+                  addressCountry: 'AU',
+                },
+              }
+            : {}),
         },
         address: {
           '@type': 'PostalAddress',
-          addressLocality: location,
+          addressLocality: city,
+          ...(region ? { addressRegion: region } : {}),
+          addressCountry: 'AU',
+        },
+        homeLocation: {
+          '@type': 'Place',
+          name: `${location}, Australia`,
         },
         alumniOf: Array.from(new Set(educationData.map((edu) => edu.institution))).map(
           (institution) => ({

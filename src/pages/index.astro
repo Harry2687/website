@@ -21,7 +21,7 @@ const { profile, headline, location } = getProfileData();
       <!-- Accessible and crawler-indexable semantic representation of portfolio data -->
       <section class="sr-only" aria-label="Professional Profile and Career Summary">
         <h2>About {profile.name}</h2>
-        <p>{headline} based in {location}</p>
+        <p>{profile.name} is a {headline} based in {location}, Australia.</p>
         <p>Contact: <a href={`mailto:${profile.contact}`}>{profile.contact}</a></p>
 
         <h3>Experience</h3>
@@ -72,7 +72,7 @@ const { profile, headline, location } = getProfileData();
             <h1 class="text-xl font-semibold text-vsc-fg mb-1">{profile.name}</h1>
             {(headline || location) && (
               <p class="text-vsc-fg-muted">
-                {headline}{headline && location ? ` based in ${location}` : location ? `Based in ${location}` : ''}
+                {headline}{headline && location ? ` based in ${location}, Australia` : location ? `Based in ${location}, Australia` : ''}
               </p>
             )}
             <p class="text-xs text-vsc-fg-muted mt-1">
