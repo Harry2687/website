@@ -32,16 +32,24 @@ export default function QueryEditor({
         <span className="text-vsc-fg-subtle font-mono text-[11px] uppercase tracking-wider whitespace-nowrap">
           Presets:
         </span>
-        {PRESETS.map((preset) => (
-          <button
-            key={preset.label}
-            type="button"
-            onClick={() => onSelectPreset(preset)}
-            className="px-2.5 py-1 rounded-md bg-vsc-chip-bg hover:bg-vsc-chip-hover text-vsc-chip-text border border-vsc-chip-border whitespace-nowrap transition-colors font-mono text-[11px] cursor-pointer"
-          >
-            {preset.label}
-          </button>
-        ))}
+        {PRESETS.map((preset) => {
+          const isActive = query.trim() === preset.sql.trim();
+          return (
+            <button
+              key={preset.label}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => onSelectPreset(preset)}
+              className={`px-2.5 py-1 rounded-md border whitespace-nowrap transition-colors font-mono text-[11px] cursor-pointer ${
+                isActive
+                  ? 'bg-vsc-hover text-vsc-blue border-vsc-blue/50'
+                  : 'bg-vsc-chip-bg hover:bg-vsc-chip-hover text-vsc-chip-text border-vsc-chip-border'
+              }`}
+            >
+              {preset.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Query Code Editor Area */}
@@ -51,6 +59,8 @@ export default function QueryEditor({
             &gt;
           </div>
           <textarea
+            aria-label="SQL query editor"
+            spellCheck={false}
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             onKeyDown={(e) => {

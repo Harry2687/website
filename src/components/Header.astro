@@ -8,12 +8,12 @@ const { profile, role, company, location } = getProfileData();
   <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
     <div class="relative group/profile flex items-center">
       <a href="#" class="flex items-center min-w-0 py-1">
-        <h1 class="font-bold text-vsc-fg-bright tracking-tight text-sm group-hover/profile:text-vsc-blue transition-colors truncate">{profile.name}</h1>
+        <h1 class="font-bold text-vsc-fg-bright tracking-tight text-sm group-hover/profile:text-vsc-blue group-focus-within/profile:text-vsc-blue transition-colors truncate">{profile.name}</h1>
       </a>
 
       <!-- Profile Hover Card -->
       <div
-        class="absolute left-0 top-full pt-2 w-64 max-w-[calc(100vw-2rem)] opacity-0 invisible group-hover/profile:opacity-100 group-hover/profile:visible transition-all duration-200 z-50 pointer-events-auto"
+        class="absolute left-0 top-full pt-2 w-64 max-w-[calc(100vw-2rem)] opacity-0 invisible group-hover/profile:opacity-100 group-hover/profile:visible group-focus-within/profile:opacity-100 group-focus-within/profile:visible transition-all duration-200 z-50 pointer-events-auto"
         role="tooltip"
       >
         <div class="p-3.5 rounded-xl bg-vsc-card/95 backdrop-blur-md border border-vsc-border shadow-2xl shadow-black/20 animate-fadeIn">
