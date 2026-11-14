@@ -169,6 +169,9 @@ export function useQueryEngine() {
           setDuckDbReady(true);
           setEngineReady(true);
           setStatusText('DuckDB-WASM Active');
+        } else {
+          await conn.close().catch(() => {});
+          await db.terminate().catch(() => {});
         }
       } catch (err: any) {
         console.warn('DuckDB-WASM fallback to client engine:', err);
@@ -184,7 +187,14 @@ export function useQueryEngine() {
 
     return () => {
       isMounted = false;
-      if (connRef.current) connRef.current.close().catch(() => {});
+      if (connRef.current) {
+        connRef.current.close().catch(() => {});
+        connRef.current = null;
+      }
+      if (duckDbRef.current) {
+        duckDbRef.current.terminate().catch(() => {});
+        duckDbRef.current = null;
+      }
     };
   }, []);
 

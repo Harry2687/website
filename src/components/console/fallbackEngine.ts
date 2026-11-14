@@ -2,7 +2,7 @@ import aboutData from '../../data/about.json';
 import careerData from '../../data/career.json';
 import educationData from '../../data/education.json';
 import researchData from '../../data/research.json';
-import { formatDuration, getAge, getInclusiveMonths } from './dateUtils';
+import { formatDuration, getAge, getInclusiveMonths, getLocalIsoDate } from './dateUtils';
 
 export interface FallbackQueryResult {
   rows: Record<string, any>[];
@@ -32,7 +32,7 @@ export function executeFallbackQuery(sqlQuery: string): FallbackQueryResult {
         start_date: e.start_date,
         end_date: e.end_date,
       })),
-    ].sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
+    ].sort((a, b) => b.start_date.localeCompare(a.start_date));
 
     data = items.map((item) => ({
       organization: item.organization,
@@ -56,7 +56,7 @@ export function executeFallbackQuery(sqlQuery: string): FallbackQueryResult {
           link: r ? r.link : null,
         };
       })
-      .sort((a, b) => (b.start_date > a.start_date ? 1 : -1));
+      .sort((a, b) => b.start_date.localeCompare(a.start_date));
   } else if (q.includes('group by') || q.includes('roles_held')) {
     const map: Record<string, { company: string; roles_held: number; total_months: number }> = {};
     for (const exp of careerData) {
@@ -127,7 +127,7 @@ export function executeFallbackQuery(sqlQuery: string): FallbackQueryResult {
         role: c.role,
         location: c.location,
         start_date: c.start_date,
-        end_date: c.end_date ?? new Date().toISOString().split('T')[0],
+        end_date: c.end_date ?? getLocalIsoDate(),
         months,
         years,
       };
