@@ -80,7 +80,7 @@ export default function ResultsTable({
         {hasExecuted ? (
           resultRows.length > 0 ? (
             <div
-              className={`w-full min-h-full overflow-x-auto transition-opacity duration-200 ${
+              className={`w-full min-h-full transition-opacity duration-200 ${
                 isExecuting ? 'opacity-35 pointer-events-none' : 'opacity-100'
               }`}
             >
